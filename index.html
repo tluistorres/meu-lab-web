@@ -1,0 +1,179 @@
+<html>
+<head>
+    <title>Conversor Glass Pro</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            padding: 40px 0; 
+            margin: 0; 
+        }
+        .container { width: 400px; }
+        
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            padding: 25px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2, h4 { margin-top: 0; color: #ffffff; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #e0e0e0; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            background: rgba(255, 255, 255, 0.9); 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            box-sizing: border-box; 
+        }
+
+        .btn-main { 
+            width: 100%; 
+            background: #4facfe; 
+            color: white; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold;
+        }
+
+        #resultado { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border-radius: 8px; 
+            background: rgba(0, 255, 127, 0.2); 
+            color: #00ff7f; 
+            font-weight: bold; 
+            display: none; 
+        }
+
+        .historico { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(5px);
+            padding: 20px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        ul { list-style: none; padding: 0; max-height: 150px; overflow-y: auto; }
+        li { padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; color: #eee; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-sec { 
+            flex: 1; 
+            background: rgba(255,255,255,0.2); 
+            border: none; 
+            color: white; 
+            padding: 8px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 11px; 
+        }
+        .success { display: block !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glass-card">
+            <h2>Conversor Glass 💎</h2>
+            <div class="input-group">
+                <label>Valor (R$):</label>
+                <input type="number" id="valorReal" placeholder="0.00">
+            </div>
+            <div class="input-group">
+                <label>Para:</label>
+                <select id="moedaDestino">
+                    <option value="USD">Dólar (USD)</option>
+                    <option value="EUR">Euro (EUR)</option>
+                    <option value="BTC">Bitcoin (BTC)</option>
+                </select>
+            </div>
+            <button class="btn-main" onclick="converter()">Converter e Salvar</button>
+            <div id="resultado"></div>
+        </div>
+
+        <div class="historico">
+            <h4>📜 Histórico</h4>
+            <ul id="listaHistorico"></ul>
+            <div class="btn-group">
+                <button class="btn-sec" onclick="exportarHistorico()">💾 Baixar TXT</button>
+                <button class="btn-sec" onclick="limparHistorico()">🗑️ Limpar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = exibirHistorico;
+
+        async function converter() {
+            const valor = document.getElementById('valorReal').value;
+            const moeda = document.getElementById('moedaDestino').value;
+            const resDiv = document.getElementById('resultado');
+            if (!valor) return;
+
+            try {
+                const resp = await fetch(`https://economia.awesomeapi.com.br/last/${moeda}-BRL`);
+                const dados = await resp.json();
+                const cotacao = dados[`${moeda}BRL`].bid;
+                const result = (valor / cotacao).toFixed(moeda === 'BTC' ? 6 : 2);
+                const frase = `R$ ${valor} -> ${moeda} ${result}`;
+                resDiv.innerHTML = frase;
+                resDiv.className = "success";
+                salvarNoHistorico(frase);
+            } catch (e) { alert("Erro na API"); }
+        }
+
+        function salvarNoHistorico(item) {
+            let historico = JSON.parse(localStorage.getItem('meuHistorico')) || [];
+            historico.unshift(`${new Date().toLocaleString()} - ${item}`);
+            localStorage.setItem('meuHistorico', JSON.stringify(historico.slice(0, 10)));
+            exibirHistorico();
+        }
+
+        function exibirHistorico() {
+            const lista = document.getElementById('listaHistorico');
+            const historico = JSON.parse(localStorage.getItem('meuHistorico')) || [];
+            lista.innerHTML = historico.map(i => `<li>${i}</li>`).join('');
+        }
+
+        function limparHistorico() {
+            if(confirm("Deseja apagar todo o histórico?")) {
+                localStorage.removeItem('meuHistorico');
+                exibirHistorico();
+            }
+        }
+
+        function exportarHistorico() {
+            const historico = JSON.parse(localStorage.getItem('meuHistorico')) || [];
+            if (historico.length === 0) return alert("Histórico vazio!");
+            
+            // Transforma a lista em texto com quebras de linha
+            const texto = "HISTÓRICO DE CONVERSÕES\n" + historico.join("\n");
+            
+            // Cria um "link" invisível para disparar o download
+            const blob = new Blob([texto], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'historico_moedas.txt';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
