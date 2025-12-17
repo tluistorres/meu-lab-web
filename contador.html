@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>Contador Pro</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #2c3e50; color: white; }
+        h1 { font-size: 80px; margin: 0; color: #1abc9c; }
+        button { padding: 15px 30px; font-size: 20px; cursor: pointer; border: none; border-radius: 5px; background: #e74c3c; color: white; transition: 0.2s; }
+        button:hover { background: #c0392b; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <p>Voce clicou:</p>
+    <h1 id="numero">0</h1>
+    <p>vezes</p>
+    <button onclick="incrementar()">CLICAR!</button>
+
+    <script>
+        let contagem = 0;
+        function incrementar() {
+            contagem++;
+            document.getElementById("numero").innerText = contagem;
+            console.log("Contagem atual: " + contagem);
+        }
+    </script>
+</body>
+</html>

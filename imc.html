@@ -1,0 +1,80 @@
+<html>
+<head>
+    <title>Calculadora de IMC</title>
+    <style>
+        body { font-family: sans-serif; background: #f7f9fc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        h3 { color: #333; margin-bottom: 20px; }
+        label { display: block; margin-top: 10px; font-weight: bold; color: #555; }
+        input { width: calc(100% - 22px); padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        button { background: #3498db; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 17px; transition: background 0.3s ease; }
+        button:hover { background: #2980b9; }
+        #resultado { margin-top: 25px; padding: 15px; border-radius: 6px; font-size: 18px; font-weight: bold; }
+        .verde { background-color: #e6ffe6; color: #28a745; border: 1px solid #28a745; }
+        .vermelho { background-color: #ffe6e6; color: #dc3545; border: 1px solid #dc3545; }
+        .amarelo { background-color: #fffacd; color: #ffc107; border: 1px solid #ffc107; }
+        .azul { background-color: #e0f2f7; color: #007bff; border: 1px solid #007bff; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h3>Calculadora de IMC 📊</h3>
+        <label for="peso">Peso (kg):</label>
+        <input type="number" id="peso" placeholder="Ex: 70" step="0.1">
+
+        <label for="altura">Altura (m):</label>
+        <input type="number" id="altura" placeholder="Ex: 1.75" step="0.01">
+
+        <button onclick="calcularEExibirIMC()">Calcular IMC</button>
+
+        <div id="resultado">Aguardando cálculo...</div>
+    </div>
+
+    <script>
+        function calcularIMC(peso, altura) {
+            if (altura === 0 || isNaN(peso) || isNaN(altura) || peso <= 0 || altura <= 0) {
+                return { imc: 0, classificacao: "Dados Inválidos" };
+            }
+            let imc = peso / (altura * altura);
+            let classificacao = "";
+
+            if (imc < 18.5) {
+                classificacao = "Abaixo do peso";
+            } else if (imc >= 18.5 && imc < 24.9) {
+                classificacao = "Peso normal";
+            } else if (imc >= 24.9 && imc < 29.9) {
+                classificacao = "Sobrepeso";
+            } else if (imc >= 29.9 && imc < 34.9) {
+                classificacao = "Obesidade Grau I";
+            } else if (imc >= 34.9 && imc < 39.9) {
+                classificacao = "Obesidade Grau II";
+            } else {
+                classificacao = "Obesidade Grau III";
+            }
+            return { imc: imc.toFixed(2), classificacao: classificacao };
+        }
+
+        function calcularEExibirIMC() {
+            const peso = parseFloat(document.getElementById("peso").value);
+            const altura = parseFloat(document.getElementById("altura").value);
+            const resultadoDiv = document.getElementById("resultado");
+
+            const { imc, classificacao } = calcularIMC(peso, altura);
+
+            resultadoDiv.innerHTML = `Seu IMC: <strong>${imc}</strong><br>Classificação: <strong>${classificacao}</strong>`;
+            
+            resultadoDiv.className = ''; // Limpa classes anteriores
+
+            if (classificacao === "Peso normal") {
+                resultadoDiv.classList.add("verde");
+            } else if (classificacao === "Abaixo do peso" || classificacao === "Sobrepeso") {
+                resultadoDiv.classList.add("amarelo");
+            } else if (classificacao.includes("Obesidade")) {
+                resultadoDiv.classList.add("vermelho");
+            } else {
+                resultadoDiv.classList.add("azul"); // Para "Dados Inválidos"
+            }
+        }
+    </script>
+</body>
+</html>

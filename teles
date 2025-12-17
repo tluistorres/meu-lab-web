@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+# Menu do cadastro de telefones - versao 3
+#
+# Requer os scripts auxiliares: pp, add, rem, lt, pt.
+
+# --- 1. MODO DE EXECUÇÃO DIRETA (Pesquisa Rápida) ---
+if [ "$#" -ne 0 ]; then
+    # Ao ser chamado com argumentos (ex: ./teles Luis), pesquisa no nome e sai.
+    pp "$*" 
+    exit
+fi
+
+# Variável de controle do loop principal
+OK=
+until [ "$OK" ]; do 
+    clear
+    echo -n "
+
+              Opcao    Acao
+              =====    ====
+                1      Procurar por Nome
+                2      Adicionar Alguem
+                3      Remover Alguem
+                4      Listagem Completa
+                5      Procurar por Telefone
+                0      Sair
+              Escolha Uma Das Opcoes Acima (0-5): "
+    read opcao
+    echo -e "\n"
+    OK=1 # Assume que a opção é válida
+
+    # --- 2. SWITCH DO MENU ---
+    case "$opcao"
+    in
+        # 0) SAÍDA
+        0) exit
+           ;;
+        
+        # 1) PROCURAR POR NOME (Com validação de letras/espaços)
+        1)
+            NOME_VALIDO=
+            # Loop interno para forçar a entrada de nome válido
+            while [ -z "$NOME_VALIDO" ]; do
+                echo -n "        Entre com o nome a pesquisar: "
+                read Nome
+
+                # Validação: Testa se o Nome contém APENAS letras e espaços.
+                if [[ $Nome =~ ^[a-zA-Z\ ]+$ ]]; then
+                    NOME_VALIDO=1 # Entrada válida: sai do loop interno
+                else
+                    # Se for inválido: exibe erro e repete a solicitação de Nome
+                    echo -e "\nErro: O termo de pesquisa deve conter APENAS letras e espacos. Tente novamente.\n"
+                fi
+            done
+            
+            # Executa a pesquisa, que deve ser insensível a maiúsculas/minúsculas
+            pp "$Nome"
+            ;;
+        
+        # 2) ADICIONAR ALGUEM
+        2) echo -n "        Nome a ser adicionado: "
+           read Nome
+           echo -n "        Telefone de $Nome: "
+           read Telef
+           add "$Nome" "$Telef"
+           ;;
+           
+        # 3) REMOVER ALGUEM
+        3) echo -n "        Nome a ser removido: "
+           read Nome
+           rem "$Nome"
+           ;;
+           
+        # 4) LISTAGEM COMPLETA
+        4) lt
+           ;;
+           
+        # 5) PROCURAR POR TELEFONE
+        5) echo -n "        Entre com o Telefone/parte do Telefone: "
+           read TelefBusca
+           pt "$TelefBusca" # Assume que 'pt' é o script auxiliar
+           ;;
+           
+        # *) OPÇÃO INVÁLIDA (Repete o loop principal)
+        *) echo "Soh sao validas opcoes entre 0 e 5" >&2
+           OK= # Limpa a variável, forçando o loop 'until' a repetir o menu
+           ;;
+    esac
+done
+
+exit

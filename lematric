@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Rotina de leitura e crítica de matrícula
+# Esse prg é uma rotina dp prg funcionários
+while true
+do
+    tput cup 10 20
+    echo "Digite a Matrícula:"
+    tput cup 10 40
+    read Matric
+    if  [ ! "$Matric" ]
+    then
+        tput cup 21 35
+        read -p "Deseja Abandonar? (S/n)"
+        if  [[ $(tr n N <<< $REPLY) == N ]]
+        then
+            tput cup 21 35
+            tput el
+            continue
+        fi
+        exit 1
+    fi
+    # . . . Rotina de verificação de DV e Crítica . . .
+    break
+done > /dev/tty        #  A saída de todo o loop será na tela
+echo $Matric
+exit 0

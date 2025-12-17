@@ -1,0 +1,7 @@
+#!/bin/bash
+#  Redirect IO (versão 3)
+#  Esse prg tem de mandar uma msg de erro para o fd 2
+exec 2> arq.err
+echo Saída sem erro
+echo Saída com erro >&2      # Ou a Saída com erro 2> /dev/stderr
+exit

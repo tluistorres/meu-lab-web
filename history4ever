@@ -1,0 +1,49 @@
+  571  cd testa_aplicativos
+  572  PROMPT_COMMAND='echo "$(history 1)" >> history4ever'
+  573  ~/.bashrc
+  574  sudo ~/.bashrc
+  575  nano ~/.bashrc
+  577  PROMPT_COMMAND='echo "$(history 1)" >> history4ever'
+  578  cat ~/.bashrc
+  579  cl
+  580  ls
+  581  cat history4ever
+  525  PROMPT_COMMAND='echo "$(history 1)" >> history4ever'
+  526  cat ~/.bashrc
+  527  cl
+  528  cat history4ever
+  529  echo $Numa. passada
+  530  while [ "$Num" -le 3 ]; do echo ${Num}a. passada; let Num++; done
+  531  echo $Numa. passada
+  532  Var="O que"
+  533  echo $Var???
+  534  Var=Pinga
+  535  echo ${#Var}
+  536  echo ${!#}
+  537  set ${a..f}
+  538  set {a..f}
+  539  echo $#
+  540  echo ${!#}
+  541  echo ${!GNOME@}
+  542  echo ${!GNOME*}
+  543  cl
+  544  read -p "Login ($LOGNAME): " User
+  545  read -p "Login ($LOGNAME): " User
+  546  unset Var
+  547  echo ${var:-Variável não definida}
+  548  echo ${var-Variável não definida}
+  549  var=
+  550  echo ${var:-Variável não definida}
+  551  echo ${var-Variável não definida}
+  552  var=1
+  553  echo ${var:-Variável não definida}
+  554  read -p "Login Name em $Site ($LOGNAME): " User
+  555  echo $User
+  555  echo $User
+  556  echo ${User:=$LOGNAME}
+  557  echo $User
+  558  echo ${User=$LOGNAME}
+  559  unset User
+  560  echo ${User=$LOGNAME}
+  561  read -p "Login Name em $Site ($LOGNAME): " User
+  562  read -p"Login Name em $Site ($LOGNAME): " User

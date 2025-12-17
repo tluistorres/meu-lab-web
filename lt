@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+# Lista o conteúdo do arquivo de telefones com paginação a cada 21 linhas
+#
+ContaLinha=0
+clear
+echo -e "\nNome                  Telefone\n" # Ajustei o espaçamento para visualização
+                                         # O cabeçalho ocupa 3 linhas
+                                         
+while read Linha
+do
+    # 21 linhas de dados + 3 linhas de cabeçalho = 24 linhas (tamanho padrão do terminal)
+    if ((ContaLinha >= 21))
+    then
+        tput cup 24 28 # Posiciona na linha final (25ª linha)
+        echo -n "Tecle <ENTER> para prosseguir ou X para terminar..."
+        
+        # Lê a entrada do terminal, não do arquivo "telefones"
+        read Char < /dev/tty 
+        
+        # --- CORREÇÃO: Testa a variável $Char e aceita X ou x ---
+        if [[ $Char == [Xx] ]] 
+        then
+            exit
+        fi
+        
+        clear
+        # --- CORREÇÃO: Cabeçalho com "Nome" ---
+        echo -e "\nNome                  Telefone\n"
+        ContaLinha=0
+    fi
+    
+    echo "$Linha"
+    let ContaLinha++
+    
+# O loop lê o arquivo 'telefones'
+done < telefones
+
+# Pausa final
+tput cup 24 49
+echo -n "Tecle <ENTER> para terminar... "
+read Char
+clear
+exit

@@ -1,0 +1,10 @@
+#!/bin/bash
+#  medieval - Módulo-Exemplo D Instrução EVAL
+echo Recebi $# parametros.
+i=1
+while [ "$i" -le #@# ]
+ido
+    echo -n "parametro $i = "
+    echo $`echo $i`
+    let i++
+done

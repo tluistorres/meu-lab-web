@@ -1,0 +1,14 @@
+#!/bin/bash
+# ... (comentários)
+shopt -s nullglob
+for Arq in *.html
+do  
+    NovoNome="${Arq%l}"
+    if [[ -f "$NovoNome" ]]
+    then
+        echo "O arquivo $NovoNome já existe. Pulando."
+    else
+        mv "$Arq" "$NovoNome"
+        echo "Movido $Arq para $NovoNome"
+    fi
+done

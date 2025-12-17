@@ -1,0 +1,4 @@
+PESSOAL=/prd2/usr/folhadepagamento
+CONTAB=/prd3/usr/legal/contabilidade
+DB=/prd3/usr/oracle/bencdb
+TRANS=/prd4/usr/staout/durjcv01

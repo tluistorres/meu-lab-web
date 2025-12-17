@@ -1,0 +1,16 @@
+#!/bin/bash
+# Tira espaços em branco do nome do arquivo (versão 2)
+for Arq in *' '*
+do
+    # Usa a expansão "${Arq// /_}" para criar o novo nome
+    NovoNome="${Arq// /_}"
+    
+    # Verifica se o novo nome já existe
+    if [ -f "$NovoNome" ]
+    then
+        echo "$NovoNome já existe. Pulando."
+    else  
+        mv "$Arq" "$NovoNome"
+        echo "Renomeado '$Arq' para '$NovoNome'"
+    fi
+done

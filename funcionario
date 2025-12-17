@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Le Dados dos funcioários
+#
+clear
+if  ! Matric=$(lematric)
+then
+   exit
+fi
+echo "A Matrícula informada foi $Matric"
+# . . . Le os outros dados do empregado

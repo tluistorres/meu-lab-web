@@ -1,0 +1,16 @@
+<html>
+<head><title>Interatividade</title></head>
+<body id="fundo" style="transition: 0.5s;">
+    <h1>Controle de Cor do Luis</h1>
+    <button onclick="mudarCor()">Clique para mudar a cor</button>
+
+    <script>
+        function mudarCor() {
+            const cores = ["#ff5733", "#33ff57", "#3357ff", "#f333ff", "#f3ff33"];
+            const corAleatoria = cores[Math.floor(Math.random() * cores.length)];
+            document.getElementById("fundo").style.backgroundColor = corAleatoria;
+            console.log("Cor alterada para: " + corAleatoria);
+        }
+    </script>
+</body>
+</html>

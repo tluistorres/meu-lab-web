@@ -1,0 +1,8 @@
+Script started on 2025-12-09 08:27:31-03:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="190" LINES="41"]
+[?2004h[01;32mluis@luis-torres:~/testa_aplicativos[00m$ who
+[?2004lluis     seat0        2025-12-09 08:00 (login screen)
+luis     :1           2025-12-09 08:00 (:1)
+[?2004h[01;32mluis@luis-torres:~/testa_aplicativos[00m$ exit
+[?2004lexit
+
+Script done on 2025-12-09 08:27:56-03:00 [COMMAND_EXIT_CODE="0"]
