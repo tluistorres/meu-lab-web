@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luis Lab 💎</title>
+    <title>LAB-DEVELOPER-LUIS 💎</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -11,64 +11,139 @@
             background: radial-gradient(circle at top right, #1e3a8a, #0f172a);
             min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center;
         }
-        h1 { margin-top: 40px; font-weight: 300; letter-spacing: 2px; }
-        .container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 20px; width: 90%; max-width: 900px; margin-top: 40px; padding-bottom: 50px;
+        
+        .header {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 30px;
         }
+
+        h1 { 
+            font-weight: 300; 
+            letter-spacing: 2px; 
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+        }
+
+        h1 span {
+            font-weight: 800;
+            color: #93c5fd;
+            text-shadow: 0 0 20px rgba(147, 197, 253, 0.4);
+        }
+
+        .subtitle {
+            opacity: 0.5;
+            letter-spacing: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .container {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px; 
+            width: 90%; 
+            max-width: 900px; 
+            padding: 20px;
+            padding-bottom: 60px;
+        }
+
         .card {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 25px 15px; border-radius: 24px; text-align: center;
-            text-decoration: none; color: white; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column; align-items: center;
+            padding: 25px 15px; 
+            border-radius: 24px; 
+            text-align: center;
+            text-decoration: none; 
+            color: white; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
         }
-        /* Efeito de Clique Vibrante */
-        .card:active { transform: scale(0.9); }
+
+        /* Efeito Vibrante ao Tocar/Clicar */
+        .card:active { transform: scale(0.92); }
+        
         .card:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-8px);
             border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+
         .card i {
-            font-size: 35px; margin-bottom: 15px;
-            background: linear-gradient(135deg, #fff, #93c5fd);
+            font-size: 32px; 
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff, #93c5fd);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .card h3 { margin: 0; font-size: 14px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+
+        .card h3 { 
+            margin: 0; 
+            font-size: 13px; 
+            font-weight: 500; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+
+        /* Badge de "Novo" para o QR Code */
+        .new-badge {
+            background: #10b981;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-    <h1>LABORATÓRIO <span>💎</span></h1>
-    <p style="opacity: 0.6;">Sistemas Web v2.0</p>
+    <div class="header">
+        <h1>LAB-DEVELOPER-<span>LUIS</span></h1>
+        <div class="subtitle">Solutions & Code v2.5</div>
+    </div>
 
     <div class="container">
         <a href="conversor.html" class="card">
             <i class="fa-solid fa-comments-dollar"></i>
             <h3>Conversor</h3>
         </a>
+        
         <a href="lista-tarefas.html" class="card">
             <i class="fa-solid fa-list-check"></i>
             <h3>Tarefas</h3>
         </a>
+        
         <a href="imc.html" class="card">
             <i class="fa-solid fa-weight-scale"></i>
             <h3>Saúde IMC</h3>
         </a>
+        
         <a href="gerador-senhas.html" class="card">
             <i class="fa-solid fa-shield-halved"></i>
             <h3>Segurança</h3>
         </a>
+        
         <a href="player.html" class="card">
             <i class="fa-solid fa-circle-play"></i>
             <h3>Player</h3>
         </a>
+        
         <a href="clima.html" class="card">
             <i class="fa-solid fa-cloud-sun-rain"></i>
             <h3>Clima</h3>
+        </a>
+
+        <a href="qrcode.html" class="card">
+            <span class="new-badge">NEW</span>
+            <i class="fa-solid fa-qrcode"></i>
+            <h3>QR Code</h3>
         </a>
     </div>
 
