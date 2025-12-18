@@ -1,157 +1,56 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Glass 💎</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            padding: 30px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            color: white;
-            text-align: center;
-        }
-
-        h2 { margin-bottom: 20px; font-weight: 300; }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            color: white;
-            outline: none;
-        }
-
-        input::placeholder { color: rgba(255, 255, 255, 0.6); }
-
-        button {
-            background: #ffffff;
-            color: #764ba2;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        button:hover { transform: scale(1.05); background: #f0f0f0; }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-        }
-
-        li {
-            background: rgba(255, 255, 255, 0.1);
-            margin-bottom: 10px;
-            padding: 12px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .completed {
-            text-decoration: line-through;
-            opacity: 0.6;
-        }
-
-        .delete-btn {
-            background: rgba(255, 80, 80, 0.3);
-            color: white;
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-
-        .back-link {
-            display: block;
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-
-<div class="glass-card">
-    <h2>✅ Minhas Tarefas</h2>
-    
-    <div class="input-group">
-        <input type="text" id="taskInput" placeholder="O que precisa fazer?">
-        <button onclick="addTask()">Add</button>
-    </div>
-
-    <ul id="taskList"></ul>
-
-    <a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a>
-</div>
-
 <script>
     const taskInput = document.getElementById('taskInput');
     const taskList = document.getElementById('taskList');
 
+    // 1. CARREGAR: Assim que o site abre, busca o que está salvo
+    window.onload = function() {
+        const salvas = JSON.parse(localStorage.getItem('minhasTarefas')) || [];
+        salvas.forEach(tarefa => criarElementoTarefa(tarefa.texto, tarefa.concluida));
+    };
+
     function addTask() {
         const text = taskInput.value.trim();
         if (text === '') return;
+        
+        criarElementoTarefa(text, false);
+        saveTasks(); // Salva após adicionar
+        taskInput.value = '';
+    }
 
+    function criarElementoTarefa(texto, concluida) {
         const li = document.createElement('li');
+        if (concluida) li.classList.add('completed');
+        
         li.innerHTML = `
-            <span onclick="toggleTask(this)">${text}</span>
+            <span onclick="toggleTask(this)">${texto}</span>
             <button class="delete-btn" onclick="removeTask(this)">Apagar</button>
         `;
-        
         taskList.appendChild(li);
-        taskInput.value = '';
     }
 
     function toggleTask(span) {
         span.parentElement.classList.toggle('completed');
+        saveTasks(); // Salva após riscar a tarefa
     }
 
     function removeTask(btn) {
         btn.parentElement.remove();
+        saveTasks(); // Salva após apagar
     }
 
-    // Adicionar tarefa com a tecla Enter
+    // 2. SALVAR: Transforma a lista em texto e guarda no navegador
+    function saveTasks() {
+        const tarefas = [];
+        document.querySelectorAll('#taskList li').forEach(li => {
+            tarefas.push({
+                texto: li.querySelector('span').innerText,
+                concluida: li.classList.contains('completed')
+            });
+        });
+        localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
+    }
+
     taskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTask();
     });
 </script>
-
-</body>
-</html>
