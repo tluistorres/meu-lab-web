@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de QR Code 📲</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            color: white;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px;
+            padding: 30px; width: 100%; max-width: 350px; text-align: center;
+        }
+        input {
+            width: 90%; padding: 12px; border-radius: 12px; border: none;
+            background: rgba(255, 255, 255, 0.1); color: white; margin-bottom: 15px;
+            outline: none; text-align: center;
+        }
+        button {
+            background: #93c5fd; color: #0f172a; border: none;
+            padding: 12px 25px; border-radius: 12px; cursor: pointer;
+            font-weight: bold; width: 100%; transition: 0.3s;
+        }
+        #qrcode-container {
+            margin-top: 25px; display: none; background: white;
+            padding: 15px; border-radius: 15px; display: inline-block;
+        }
+        #qrcode-container img { display: block; margin: 0 auto; }
+        .back-link { display: block; margin-top: 25px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2><i class="fa-solid fa-qrcode"></i> QR Code</h2>
+    <p style="font-size: 0.8rem; opacity: 0.7;">Cole um link ou texto abaixo:</p>
+    
+    <input type="text" id="qrText" placeholder="https://google.com">
+    <button onclick="generateQR()">Gerar QR Code</button>
+
+    <div id="qr-result" style="display:none; margin-top:20px;">
+        <div id="qrcode-container">
+            <img id="qrImage" src="" alt="QR Code">
+        </div>
+        <p style="font-size: 0.7rem; color: #93c5fd; margin-top:10px;">Aponte a câmera do celular!</p>
+    </div>
+    
+    <a href="index.html" class="back-link">⬅ Voltar ao Lab</a>
+</div>
+
+<script>
+    function generateQR() {
+        const text = document.getElementById('qrText').value;
+        const resultDiv = document.getElementById('qr-result');
+        const qrImage = document.getElementById('qrImage');
+
+        if (!text) {
+            alert("Por favor, digite um texto ou link!");
+            return;
+        }
+
+        // Usa a API do Google para gerar o QR Code
+        const size = "200x200";
+        qrImage.src = `https://chart.googleapis.com/chart?cht=qr&chl=${encodeURIComponent(text)}&chs=${size}`;
+        
+        resultDiv.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
