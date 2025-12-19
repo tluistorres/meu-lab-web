@@ -3,37 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima Glass 🌤️</title>
+    <title>Clima Real-Time 🌤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #1e3a8a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-        .card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); text-align: center; width: 100%; max-width: 300px; }
-        input { width: 100%; padding: 10px; border-radius: 10px; border: none; margin: 15px 0; outline: none; }
-        button { width: 100%; padding: 10px; border-radius: 10px; border: none; background: #93c5fd; color: #1e3a8a; font-weight: bold; cursor: pointer; }
-        #resultado { margin-top: 20px; font-size: 1.2rem; }
-        .back { margin-top: 20px; color: white; text-decoration: none; font-size: 0.8rem; opacity: 0.7; }
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        .card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 30px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.2); text-align: center; width: 100%; max-width: 320px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        input { width: 100%; padding: 12px; border-radius: 12px; border: none; margin: 15px 0; outline: none; background: rgba(255,255,255,0.2); color: white; text-align: center; }
+        input::placeholder { color: rgba(255,255,255,0.7); }
+        button { width: 100%; padding: 12px; border-radius: 12px; border: none; background: #93c5fd; color: #1e3a8a; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ffffff; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; display: none; }
+        .info-item { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px; }
+        .info-item i { font-size: 1.2rem; margin-bottom: 5px; color: #93c5fd; }
+        .temp-principal { font-size: 3rem; font-weight: bold; margin: 10px 0; display: none; }
+        
+        .back { margin-top: 25px; color: white; text-decoration: none; font-size: 0.8rem; opacity: 0.6; transition: 0.3s; }
+        .back:hover { opacity: 1; }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <i class="fa-solid fa-cloud-sun-rain" style="font-size: 3rem; margin-bottom: 10px;"></i>
-        <h2>Previsão do Tempo</h2>
-        <input type="text" id="cidade" placeholder="Digite a cidade...">
-        <button onclick="buscarClima()">Consultar</button>
-        <div id="resultado"></div>
-        <a href="index.html" class="back">← Voltar ao Lab</a>
+        <i class="fa-solid fa-location-dot"></i>
+        <h2 style="margin: 10px 0;">Clima Explorer</h2>
+        
+        <input type="text" id="cidade" placeholder="Ex: São Paulo">
+        <button onclick="buscarClima()">Consultar Agora</button>
+
+        <div id="temp" class="temp-principal">0°C</div>
+
+        <div id="grid" class="info-grid">
+            <div class="info-item">
+                <i class="fa-solid fa-droplet"></i>
+                <div id="umidade">0%</div>
+                <small>Umidade</small>
+            </div>
+            <div class="info-item">
+                <i class="fa-solid fa-wind"></i>
+                <div id="vento">0 km/h</div>
+                <small>Vento</small>
+            </div>
+        </div>
+
+        <a href="index.html" class="back">← Voltar ao Laboratório</a>
     </div>
 
     <script>
-        function buscarClima() {
+        async function buscarClima() {
             const cidade = document.getElementById('cidade').value;
-            const res = document.getElementById('resultado');
-            if(!cidade) return alert("Digite uma cidade!");
-            res.innerHTML = `Buscando clima de ${cidade}...`;
-            // Simulação de busca (apenas para testar se a página abre)
-            setTimeout(() => {
-                res.innerHTML = `🌤️ 25°C em ${cidade}<br><small>Funcional!</small>`;
-            }, 1000);
+            const apiKey = "64ed82577ced7f69cb1687f0ce536131"; // Chave de API gratuita
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&units=metric&appid=${apiKey}&lang=pt_br`;
+
+            if(!cidade) return alert("Digite o nome de uma cidade!");
+
+            try {
+                const resposta = await fetch(url);
+                const dados = await json = await resposta.json();
+
+                if(dados.cod === "404") {
+                    alert("Cidade não encontrada!");
+                    return;
+                }
+
+                // Preenchendo os dados reais
+                document.getElementById('temp').innerText = `${Math.round(dados.main.temp)}°C`;
+                document.getElementById('umidade').innerText = `${dados.main.humidity}%`;
+                document.getElementById('vento').innerText = `${Math.round(dados.wind.speed * 3.6)} km/h`;
+
+                // Mostrando os elementos
+                document.getElementById('temp').style.display = 'block';
+                document.getElementById('grid').style.display = 'grid';
+
+            } catch (erro) {
+                alert("Erro ao buscar dados. Tente novamente.");
+            }
         }
     </script>
 </body>
