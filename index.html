@@ -9,11 +9,11 @@
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle at top right, #1e3a8a, #0f172a); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; }
         .header { text-align: center; margin-top: 50px; margin-bottom: 30px; }
         h1 span { font-weight: 800; color: #93c5fd; }
-        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; width: 90%; max-width: 900px; padding: 20px; flex: 1; }
-        .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 15px; border-radius: 24px; text-align: center; text-decoration: none; color: white; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
-        .card i { font-size: 32px; margin-bottom: 15px; color: #93c5fd; }
-        .card h3 { margin: 0; font-size: 13px; text-transform: uppercase; }
-        .card:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); border-color: #93c5fd; }
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; width: 95%; max-width: 900px; padding: 20px; flex: 1; }
+        .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 10px; border-radius: 24px; text-align: center; text-decoration: none; color: white; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
+        .card i { font-size: 30px; margin-bottom: 12px; color: #93c5fd; }
+        .card h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .card:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); border-color: #93c5fd; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
 
         .footer {
             margin-top: 50px;
@@ -30,12 +30,9 @@
             text-decoration: none;
             margin: 0 15px;
             transition: 0.3s;
-            font-size: 22px; /* Aumentei um pouco para facilitar o toque no celular */
+            font-size: 22px;
         }
-        .footer a:hover {
-            color: white;
-            text-shadow: 0 0 10px #93c5fd;
-        }
+        .footer a:hover { color: white; text-shadow: 0 0 10px #93c5fd; }
         .footer p { margin-bottom: 15px; }
     </style>
 </head>
@@ -76,6 +73,10 @@
         <a href="biblioteca.html" class="card">
             <i class="fa-solid fa-book"></i>
             <h3>Biblioteca</h3>
+        </a>
+        <a href="mapa.html" class="card">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <h3>Google Mapas</h3>
         </a>
     </div>
 
