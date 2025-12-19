@@ -3,95 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAB-DEVELOPER-LUIS 💎</title>
+    <title>Clima Glass 🌤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at top right, #1e3a8a, #0f172a);
-            min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center;
-        }
-        .header { text-align: center; margin-top: 50px; margin-bottom: 30px; }
-        h1 { font-weight: 300; letter-spacing: 2px; margin-bottom: 5px; font-size: 1.8rem; }
-        h1 span { font-weight: 800; color: #93c5fd; text-shadow: 0 0 20px rgba(147, 197, 253, 0.4); }
-        .subtitle { opacity: 0.5; letter-spacing: 4px; font-size: 0.8rem; text-transform: uppercase; }
-        
-        .container {
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 20px; width: 90%; max-width: 900px; padding: 20px; padding-bottom: 60px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 25px 15px; border-radius: 24px; text-align: center;
-            text-decoration: none; color: white; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        .card:active { transform: scale(0.92); }
-        .card:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-8px);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .card i {
-            font-size: 32px; margin-bottom: 15px;
-            background: linear-gradient(135deg, #ffffff, #93c5fd);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .card h3 { margin: 0; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-        .new-badge { background: #10b981; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-bottom: 5px; font-weight: bold; }
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #1e3a8a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        .card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); text-align: center; width: 100%; max-width: 300px; }
+        input { width: 100%; padding: 10px; border-radius: 10px; border: none; margin: 15px 0; outline: none; }
+        button { width: 100%; padding: 10px; border-radius: 10px; border: none; background: #93c5fd; color: #1e3a8a; font-weight: bold; cursor: pointer; }
+        #resultado { margin-top: 20px; font-size: 1.2rem; }
+        .back { margin-top: 20px; color: white; text-decoration: none; font-size: 0.8rem; opacity: 0.7; }
     </style>
 </head>
 <body>
-
-    <div class="header">
-        <h1>LAB-DEVELOPER-<span>LUIS</span></h1>
-        <div class="subtitle">Solutions & Code v2.5</div>
+    <div class="card">
+        <i class="fa-solid fa-cloud-sun-rain" style="font-size: 3rem; margin-bottom: 10px;"></i>
+        <h2>Previsão do Tempo</h2>
+        <input type="text" id="cidade" placeholder="Digite a cidade...">
+        <button onclick="buscarClima()">Consultar</button>
+        <div id="resultado"></div>
+        <a href="index.html" class="back">← Voltar ao Lab</a>
     </div>
 
-    <div class="container">
-        <a href="conversor.html" class="card">
-            <i class="fa-solid fa-comments-dollar"></i>
-            <h3>Conversor</h3>
-        </a>
-        
-        <a href="lista-tarefas.html" class="card">
-            <i class="fa-solid fa-list-check"></i>
-            <h3>Tarefas</h3>
-        </a>
-        
-        <a href="imc.html" class="card">
-            <i class="fa-solid fa-weight-scale"></i>
-            <h3>Saúde IMC</h3>
-        </a>
-        
-        <a href="gerador-senhas.html" class="card">
-            <i class="fa-solid fa-shield-halved"></i>
-            <h3>Segurança</h3>
-        </a>
-        
-        <a href="player.html" class="card">
-            <i class="fa-solid fa-circle-play"></i>
-            <h3>Player</h3>
-        </a>
-        
-        <a href="clima.html" class="card">
-            <i class="fa-solid fa-cloud-sun-rain"></i>
-            <h3>Clima</h3>
-        </a>
-
-        <a href="qrcode.html" class="card">
-            <span class="new-badge">NEW</span>
-            <i class="fa-solid fa-qrcode"></i>
-            <h3>QR Code</h3>
-        </a>
-    </div>
-
+    <script>
+        function buscarClima() {
+            const cidade = document.getElementById('cidade').value;
+            const res = document.getElementById('resultado');
+            if(!cidade) return alert("Digite uma cidade!");
+            res.innerHTML = `Buscando clima de ${cidade}...`;
+            // Simulação de busca (apenas para testar se a página abre)
+            setTimeout(() => {
+                res.innerHTML = `🌤️ 25°C em ${cidade}<br><small>Funcional!</small>`;
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
