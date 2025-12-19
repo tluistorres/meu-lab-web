@@ -10,22 +10,26 @@
             margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
             background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center;
         }
-        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; backdrop-filter: blur(10px); }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: none; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        #listaLivros { margin-top: 20px; width: 100%; max-width: 400px; }
-        .book-card { background: white; color: #333; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; }
+        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; backdrop-filter: blur(10px); margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; }
+        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #2563eb; }
+        
+        #listaLivros { width: 100%; max-width: 400px; }
+        .book-card { background: white; color: #333; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.5s; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <h2><i class="fa-solid fa-book-open"></i> Minha Biblioteca</h2>
+    <h2><i class="fa-solid fa-book-bookmark"></i> Minha Biblioteca</h2>
 
     <div class="container">
         <input type="text" id="titulo" placeholder="Título do Livro">
-        <input type="text" id="paginas" placeholder="Número de Páginas">
-        <input type="text" id="isbn" placeholder="ISBN">
+        <input type="number" id="paginas" placeholder="Número de Páginas">
+        <input type="text" id="isbn" placeholder="ISBN (opcional)">
         <button onclick="adicionarLivro()">Adicionar à Lista</button>
     </div>
 
@@ -34,37 +38,68 @@
     <a href="index.html" class="back-link">⬅ Voltar ao Lab</a>
 
     <script>
-        // A mesma Função Construtora que você testou no Node!
+        // 1. A Função Construtora que você testou no Node!
         function Book(title, pages, isbn) {
             this.title = title;
             this.pages = pages;
-            this.isbn = isbn;
+            this.isbn = isbn || 'N/A';
         }
+
+        // 2. Array para armazenar os livros
+        let meusLivros = JSON.parse(localStorage.getItem('biblioteca_luis')) || [];
+
+        // 3. Função para carregar livros ao abrir a página
+        window.onload = function() {
+            renderizarLivros();
+        };
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
             const p = document.getElementById('paginas').value;
             const i = document.getElementById('isbn').value;
 
-            if(!t || !p) return alert("Preencha os dados!");
+            if(!t || !p) return alert("Por favor, preencha Título e Páginas!");
 
-            // Criando o objeto usando 'new'
+            // Criando o objeto
             const novoLivro = new Book(t, p, i);
 
-            // Criando o visual do livro
-            const card = document.createElement('div');
-            card.className = 'book-card';
-            card.innerHTML = `
-                <div>
-                    <strong>${novoLivro.title}</strong><br>
-                    <small>${novoLivro.pages} páginas | ISBN: ${novoLivro.isbn}</small>
-                </div>
-                <i class="fa-solid fa-bookmark" style="color:#3b82f6"></i>
-            `;
+            // Adicionando ao Array
+            meusLivros.push(novoLivro);
 
-            document.getElementById('listaLivros').appendChild(card);
-            
-            // Limpa os campos
+            // Salvando no LocalStorage (converte objeto para texto)
+            localStorage.setItem('biblioteca_luis', JSON.stringify(meusLivros));
+
+            renderizarLivros();
+            limparCampos();
+        }
+
+        function renderizarLivros() {
+            const lista = document.getElementById('listaLivros');
+            lista.innerHTML = ''; // Limpa a tela antes de desenhar
+
+            meusLivros.forEach((livro, index) => {
+                const card = document.createElement('div');
+                card.className = 'book-card';
+                card.innerHTML = `
+                    <div>
+                        <strong>${livro.title}</strong><br>
+                        <small>${livro.pages} páginas | ISBN: ${livro.isbn}</small>
+                    </div>
+                    <button onclick="removerLivro(${index})" style="width: auto; background: none; color: #ef4444; padding: 5px;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                lista.appendChild(card);
+            });
+        }
+
+        function removerLivro(index) {
+            meusLivros.splice(index, 1); // Remove do array
+            localStorage.setItem('biblioteca_luis', JSON.stringify(meusLivros)); // Atualiza o "banco"
+            renderizarLivros(); // Atualiza a tela
+        }
+
+        function limparCampos() {
             document.getElementById('titulo').value = '';
             document.getElementById('paginas').value = '';
             document.getElementById('isbn').value = '';
