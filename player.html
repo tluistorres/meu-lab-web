@@ -3,57 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Glass 💎</title>
+    <title>Music Lab Luis 🎵</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            min-height: 100vh; display: flex; justify-content: center; align-items: center;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3); padding: 30px;
-            border-radius: 30px; text-align: center; width: 100%; max-width: 300px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1); color: #722f37;
-        }
-        .cover {
-            width: 150px; height: 150px; background: rgba(255,255,255,0.3);
-            margin: 0 auto 20px; border-radius: 20px; display: flex;
-            align-items: center; justify-content: center; font-size: 50px;
-        }
-        button {
-            background: #722f37; color: white; border: none;
-            padding: 15px 30px; border-radius: 50px; cursor: pointer;
-            font-size: 18px; transition: 0.3s;
-        }
-        button:hover { transform: scale(1.1); }
-        .back-link { display: block; margin-top: 20px; color: #722f37; text-decoration: none; font-size: 14px; opacity: 0.7; }
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 24px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        
+        .form-musica { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        input, select { padding: 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; outline: none; }
+        select option { background: #1e293b; }
+        
+        .btn-add { background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-add:hover { background: #2563eb; transform: scale(1.02); }
+
+        .album-list { width: 100%; margin-top: 20px; }
+        .music-card { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.3s ease; }
+        
+        .music-info h4 { margin: 0; font-size: 1rem; }
+        .music-info span { font-size: 0.8rem; color: #64748b; font-weight: bold; text-transform: uppercase; }
+        
+        .badge-style { padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; color: white; }
+        .style-rock { background: #ef4444; }
+        .style-pop { background: #ec4899; }
+        .style-outros { background: #6366f1; }
+
+        .btn-del { color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-<div class="glass-card">
-    <div class="cover">🎵</div>
-    <h2>Minha Playlist</h2>
-    <p id="status">Pronto para tocar</p>
-    <audio id="audioPlayer" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-    <button onclick="playMusic()" id="btnPlay">Play</button>
-    <a href="index.html" class="back-link">⬅ Voltar ao Lab</a>
-</div>
 
-<script>
-    const audio = document.getElementById('audioPlayer');
-    const btn = document.getElementById('btnPlay');
-    function playMusic() {
-        if (audio.paused) {
-            audio.play();
-            btn.innerText = "Pause";
-            document.getElementById('status').innerText = "Tocando agora...";
-        } else {
-            audio.pause();
-            btn.innerText = "Play";
-            document.getElementById('status').innerText = "Pausado";
-        }
-    }
-</script>
+    <div class="container">
+        <h2><i class="fa-solid fa-compact-disc"></i> Gravador de Álbum</h2>
+        
+        <div class="form-musica">
+            <input type="text" id="nomeMusica" placeholder="Nome da Música">
+            <input type="text" id="artista" placeholder="Artista/Banda">
+            <select id="estiloMusica">
+                <option value="rock">Rock</option>
+                <option value="pop">Pop</option>
+                <option value="outros">Outros Estilos</option>
+            </select>
+            <button class="btn-add" onclick="adicionarMusica()">Gravar no Álbum</button>
+        </div>
+
+        <div class="album-list" id="listaMusicas"></div>
+        <center><a href="index.html" class="back-link">⬅ Voltar ao Lab</a></center>
+    </div>
+
+    <script>
+        // Carregar álbum do banco local
+        let albumLuis = JSON.parse(localStorage.getItem('album_luis_tech')) || [];
+
+        // 1. Arrow Function com Template Literals para renderizar
+        const renderizarAlbum = () => {
+            const lista = document.getElementById('listaMusicas');
+            lista.innerHTML = '';
+
+            albumLuis.forEach((musica, index) => {
+                // Usando as crases para montar o card de forma limpa
+                const card = document.createElement('div');
+                card.className = 'music-card';
+                card.innerHTML = `
+                    <div class="music-info">
+                        <h4>${musica.nome}</h4>
+                        <span>${musica.artista}</span><br>
+                        <span class="badge-style style-${musica.estilo}">${musica.estilo}</span>
+                    </div>
+                    <button class="btn-del" onclick="removerMusica(${index})">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                `;
+                lista.appendChild(card);
+            });
+        };
+
+        // 2. Arrow Function com Default Parameters para segurança
+        const criarMusica = (nome = "Sem título", artista = "Desconhecido", estilo = "outros") => {
+            return { nome, artista, estilo };
+        };
+
+        const adicionarMusica = () => {
+            const nomeInput = document.getElementById('nomeMusica').value;
+            const artistaInput = document.getElementById('artista').value;
+            const estiloInput = document.getElementById('estiloMusica').value;
+
+            if (!nomeInput) return alert("Digite pelo menos o nome da música!");
+
+            // Criando o objeto usando nossa função moderna
+            const novaMusica = criarMusica(nomeInput, artistaInput, estiloInput);
+
+            albumLuis.unshift(novaMusica);
+            salvarESincronizar();
+            
+            // Limpar campos
+            document.getElementById('nomeMusica').value = '';
+            document.getElementById('artista').value = '';
+        };
+
+        const removerMusica = (index) => {
+            albumLuis.splice(index, 1);
+            salvarESincronizar();
+        };
+
+        const salvarESincronizar = () => {
+            localStorage.setItem('album_luis_tech', JSON.stringify(albumLuis));
+            renderizarAlbum();
+        };
+
+        // Inicializar a tela
+        window.onload = renderizarAlbum;
+    </script>
 </body>
 </html>
