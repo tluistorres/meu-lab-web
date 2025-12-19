@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Biblioteca 📚</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
+            background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center;
+        }
+        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; backdrop-filter: blur(10px); }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: none; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #listaLivros { margin-top: 20px; width: 100%; max-width: 400px; }
+        .book-card { background: white; color: #333; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <h2><i class="fa-solid fa-book-open"></i> Minha Biblioteca</h2>
+
+    <div class="container">
+        <input type="text" id="titulo" placeholder="Título do Livro">
+        <input type="text" id="paginas" placeholder="Número de Páginas">
+        <input type="text" id="isbn" placeholder="ISBN">
+        <button onclick="adicionarLivro()">Adicionar à Lista</button>
+    </div>
+
+    <div id="listaLivros"></div>
+
+    <a href="index.html" class="back-link">⬅ Voltar ao Lab</a>
+
+    <script>
+        // A mesma Função Construtora que você testou no Node!
+        function Book(title, pages, isbn) {
+            this.title = title;
+            this.pages = pages;
+            this.isbn = isbn;
+        }
+
+        function adicionarLivro() {
+            const t = document.getElementById('titulo').value;
+            const p = document.getElementById('paginas').value;
+            const i = document.getElementById('isbn').value;
+
+            if(!t || !p) return alert("Preencha os dados!");
+
+            // Criando o objeto usando 'new'
+            const novoLivro = new Book(t, p, i);
+
+            // Criando o visual do livro
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.innerHTML = `
+                <div>
+                    <strong>${novoLivro.title}</strong><br>
+                    <small>${novoLivro.pages} páginas | ISBN: ${novoLivro.isbn}</small>
+                </div>
+                <i class="fa-solid fa-bookmark" style="color:#3b82f6"></i>
+            `;
+
+            document.getElementById('listaLivros').appendChild(card);
+            
+            // Limpa os campos
+            document.getElementById('titulo').value = '';
+            document.getElementById('paginas').value = '';
+            document.getElementById('isbn').value = '';
+        }
+    </script>
+</body>
+</html>
