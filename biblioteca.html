@@ -3,90 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Biblioteca 📚</title>
+    <title>Minha Biblioteca Pro 📚</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
             background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center;
         }
-        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; backdrop-filter: blur(10px); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; }
-        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #2563eb; }
+        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; backdrop-filter: blur(10px); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        #listaLivros { width: 100%; max-width: 400px; }
-        .book-card { background: white; color: #333; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.5s; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+        /* Grid para inputs ficarem organizados */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .full-width { grid-column: span 2; }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
+        input:focus { border-color: #3b82f6; }
+        
+        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
+        button:hover { background: #2563eb; transform: scale(1.01); }
+        
+        #listaLivros { width: 100%; max-width: 450px; }
+        .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.4s ease; }
+        
+        .book-info h4 { margin: 0 0 5px 0; color: #1e3a8a; text-transform: capitalize; }
+        .book-info p { margin: 2px 0; font-size: 0.85rem; color: #475569; }
+        .book-info span { color: #64748b; font-size: 0.75rem; font-style: italic; }
+
+        .btn-delete { background: none; color: #ef4444; border: none; cursor: pointer; font-size: 1.2rem; padding: 10px; transition: 0.2s; }
+        .btn-delete:hover { color: #b91c1c; transform: scale(1.2); }
+
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; opacity: 0.8; }
+        .back-link:hover { opacity: 1; text-decoration: underline; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
 
-    <h2><i class="fa-solid fa-book-bookmark"></i> Minha Biblioteca</h2>
+    <h2><i class="fa-solid fa-layer-group"></i> Acervo Digital</h2>
 
     <div class="container">
-        <input type="text" id="titulo" placeholder="Título do Livro">
-        <input type="number" id="paginas" placeholder="Número de Páginas">
-        <input type="text" id="isbn" placeholder="ISBN (opcional)">
-        <button onclick="adicionarLivro()">Adicionar à Lista</button>
+        <div class="form-grid">
+            <input type="text" id="titulo" placeholder="Título do Livro" class="full-width">
+            <input type="text" id="editora" placeholder="Editora">
+            <input type="number" id="paginas" placeholder="Páginas">
+            <input type="date" id="dataPub" title="Data de Publicação">
+            <input type="text" id="edicao" placeholder="Edição (ex: 2ª Ed)">
+            <input type="text" id="isbn" placeholder="ISBN" class="full-width">
+        </div>
+        <button onclick="adicionarLivro()"><i class="fa-solid fa-plus"></i> Cadastrar Livro</button>
     </div>
 
     <div id="listaLivros"></div>
 
-    <a href="index.html" class="back-link">⬅ Voltar ao Lab</a>
+    <a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a>
 
     <script>
-        // 1. A Função Construtora que você testou no Node!
-        function Book(title, pages, isbn) {
+        // 1. Função Construtora Expandida
+        function Book(title, editora, pages, dataPub, edicao, isbn) {
             this.title = title;
-            this.pages = pages;
-            this.isbn = isbn || 'N/A';
+            this.editora = editora || 'Não informada';
+            this.pages = pages || '0';
+            this.dataPub = dataPub || 'Data n/a';
+            this.edicao = edicao || '1ª Ed';
+            this.isbn = isbn || 'Sem ISBN';
         }
 
-        // 2. Array para armazenar os livros
-        let meusLivros = JSON.parse(localStorage.getItem('biblioteca_luis')) || [];
+        let meusLivros = JSON.parse(localStorage.getItem('biblioteca_luis_pro')) || [];
 
-        // 3. Função para carregar livros ao abrir a página
-        window.onload = function() {
-            renderizarLivros();
-        };
+        window.onload = renderizarLivros;
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
+            const ed = document.getElementById('editora').value;
             const p = document.getElementById('paginas').value;
+            const d = document.getElementById('dataPub').value;
+            const edi = document.getElementById('edicao').value;
             const i = document.getElementById('isbn').value;
 
-            if(!t || !p) return alert("Por favor, preencha Título e Páginas!");
+            if(!t) return alert("O título é obrigatório!");
 
-            // Criando o objeto
-            const novoLivro = new Book(t, p, i);
-
-            // Adicionando ao Array
+            const novoLivro = new Book(t, ed, p, d, edi, i);
             meusLivros.push(novoLivro);
-
-            // Salvando no LocalStorage (converte objeto para texto)
-            localStorage.setItem('biblioteca_luis', JSON.stringify(meusLivros));
+            
+            localStorage.setItem('biblioteca_luis_pro', JSON.stringify(meusLivros));
 
             renderizarLivros();
-            limparCampos();
+            document.querySelectorAll('input').forEach(input => input.value = '');
         }
 
         function renderizarLivros() {
             const lista = document.getElementById('listaLivros');
-            lista.innerHTML = ''; // Limpa a tela antes de desenhar
+            lista.innerHTML = '';
 
             meusLivros.forEach((livro, index) => {
                 const card = document.createElement('div');
                 card.className = 'book-card';
+                
+                // Formatando a data para o padrão brasileiro
+                const dataFormatada = livro.dataPub !== 'Data n/a' 
+                    ? livro.dataPub.split('-').reverse().join('/') 
+                    : 'Data n/a';
+
                 card.innerHTML = `
-                    <div>
-                        <strong>${livro.title}</strong><br>
-                        <small>${livro.pages} páginas | ISBN: ${livro.isbn}</small>
+                    <div class="book-info">
+                        <h4>${livro.title}</h4>
+                        <p><strong>Editora:</strong> ${livro.editora} | <strong>Edição:</strong> ${livro.edicao}</p>
+                        <p><strong>Páginas:</strong> ${livro.pages} | <strong>Publicado em:</strong> ${dataFormatada}</p>
+                        <span>ISBN: ${livro.isbn}</span>
                     </div>
-                    <button onclick="removerLivro(${index})" style="width: auto; background: none; color: #ef4444; padding: 5px;">
-                        <i class="fa-solid fa-trash"></i>
+                    <button class="btn-delete" onclick="removerLivro(${index})">
+                        <i class="fa-solid fa-trash-can"></i>
                     </button>
                 `;
                 lista.appendChild(card);
@@ -94,16 +121,13 @@
         }
 
         function removerLivro(index) {
-            meusLivros.splice(index, 1); // Remove do array
-            localStorage.setItem('biblioteca_luis', JSON.stringify(meusLivros)); // Atualiza o "banco"
-            renderizarLivros(); // Atualiza a tela
-        }
-
-        function limparCampos() {
-            document.getElementById('titulo').value = '';
-            document.getElementById('paginas').value = '';
-            document.getElementById('isbn').value = '';
+            if(confirm("Deseja remover este livro?")) {
+                meusLivros.splice(index, 1);
+                localStorage.setItem('biblioteca_luis_pro', JSON.stringify(meusLivros));
+                renderizarLivros();
+            }
         }
     </script>
 </body>
 </html>
+
