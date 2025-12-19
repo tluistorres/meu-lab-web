@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotas Digital - Lab Luis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
+        .container-rotas { width: 100%; max-width: 800px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; backdrop-filter: blur(10px); margin-bottom: 20px; }
+        
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        input { padding: 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; outline: none; width: 100%; box-sizing: border-box; }
+        input:focus { background: rgba(255,255,255,0.2); border: 1px solid #3b82f6; }
+
+        .btn-area { display: flex; gap: 10px; }
+        .btn-map { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-view { background: #3b82f6; color: white; }
+        .btn-go { background: #22c55e; color: white; }
+        .btn-map:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        .map-wrapper { width: 100%; max-width: 800px; height: 500px; border-radius: 20px; overflow: hidden; border: 2px solid #3b82f6; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; }
+        
+        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <h2><i class="fa-solid fa-route"></i> Traçador de Rotas</h2>
+
+    <div class="container-rotas">
+        <div class="input-group">
+            <input type="text" id="origem" placeholder="📍 Ponto de Origem (ex: Sua Rua)">
+            <input type="text" id="destino" placeholder="🏁 Destino (ex: Shopping)">
+        </div>
+        <div class="btn-area">
+            <button class="btn-map btn-view" onclick="visualizarRota()">
+                <i class="fa-solid fa-eye"></i> Visualizar no Site
+            </button>
+            <button class="btn-map btn-go" onclick="abrirNavegacao()">
+                <i class="fa-solid fa-location-arrow"></i> Abrir GPS
+            </button>
+        </div>
+    </div>
+
+    <div class="map-wrapper">
+        <iframe id="mapaIframe" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63045.32833075673!2d-36.69467664421882!3d-9.754593855013898!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x706786963286377%3A0x6739f5060492b49c!2sArapiraca%2C%20AL!5e0!3m2!1spt-BR!2sbr!4v1700000000000!5m2!1spt-BR!2sbr" 
+            allowfullscreen="" loading="lazy">
+        </iframe>
+    </div>
+
+    <a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a>
+
+    <script>
+        function visualizarRota() {
+            const ori = document.getElementById('origem').value;
+            const dest = document.getElementById('destino').value;
+
+            if (!ori || !dest) {
+                alert("Por favor, preencha origem e destino!");
+                return;
+            }
+
+            // Gera URL do Google Maps para visualização embutida (Embed)
+            const urlEmbed = `https://www.google.com/maps/embed/v1/directions?key=SUA_API_KEY_AQUI&origin=${encodeURIComponent(ori)}&destination=${encodeURIComponent(dest)}&mode=driving`;
+            
+            // Nota: O modo embed gratuito do Google às vezes limita rotas complexas. 
+            // Como alternativa estável sem chave de API, usamos a visualização de pesquisa:
+            const urlAlternativa = `https://maps.google.com/maps?q=${encodeURIComponent(ori)}+to+${encodeURIComponent(dest)}&output=embed`;
+            
+            document.getElementById('mapaIframe').src = urlAlternativa;
+        }
+
+        function abrirNavegacao() {
+            const ori = document.getElementById('origem').value;
+            const dest = document.getElementById('destino').value;
+
+            if (!dest) {
+                alert("Digite pelo menos um destino!");
+                return;
+            }
+
+            // Abre o Google Maps oficial com a rota pronta para iniciar
+            const urlNav = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(ori)}&destination=${encodeURIComponent(dest)}&travelmode=driving`;
+            window.open(urlNav, '_blank');
+        }
+    </script>
+</body>
+</html>
