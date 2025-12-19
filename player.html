@@ -6,114 +6,161 @@
     <title>Music Lab Luis 🎵</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 400px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 24px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle at top right, #1e3a8a, #0f172a); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 450px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 24px; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        .form-musica { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        input, select { padding: 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; outline: none; }
-        select option { background: #1e293b; }
+        .form-musica { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        input, select { padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; outline: none; transition: 0.3s; }
+        input:focus { background: rgba(255,255,255,0.2); box-shadow: 0 0 0 2px #3b82f6; }
         
-        .btn-add { background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-add:hover { background: #2563eb; transform: scale(1.02); }
+        .btn-add { background: #3b82f6; color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 1rem; }
+        .btn-add:hover { background: #2563eb; transform: translateY(-2px); }
 
-        .album-list { width: 100%; margin-top: 20px; }
-        .music-card { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.3s ease; }
-        
-        .music-info h4 { margin: 0; font-size: 1rem; }
-        .music-info span { font-size: 0.8rem; color: #64748b; font-weight: bold; text-transform: uppercase; }
-        
-        .badge-style { padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; color: white; }
-        .style-rock { background: #ef4444; }
-        .style-pop { background: #ec4899; }
-        .style-outros { background: #6366f1; }
+        /* Player Embutido */
+        #areaPlayer { margin-top: 20px; display: none; background: #000; border-radius: 15px; overflow: hidden; border: 2px solid #3b82f6; animation: fadeIn 0.5s ease; }
+        #tocandoAgora { padding: 10px; font-size: 0.9rem; text-align: center; background: #1e293b; color: #93c5fd; margin: 0; }
 
-        .btn-del { color: #ef4444; background: none; border: none; cursor: pointer; font-size: 1.1rem; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .album-list { width: 100%; margin-top: 20px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .music-card { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; cursor: pointer; border: 1px solid transparent; }
+        .music-card:hover { background: rgba(255,255,255,0.15); border-color: #3b82f6; }
+        
+        .music-info h4 { margin: 0; font-size: 1rem; color: #fff; }
+        .music-info span { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 800; }
+        
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.65rem; color: white; margin-top: 5px; display: inline-block; }
+        .rock { background: #ef4444; }
+        .pop { background: #ec4899; }
+        .outros { background: #6366f1; }
+
+        .btn-del { color: #f87171; background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 5px; transition: 0.3s; }
+        .btn-del:hover { color: #ef4444; transform: scale(1.2); }
+
+        .back-link { margin-top: 25px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; opacity: 0.8; transition: 0.3s; }
+        .back-link:hover { opacity: 1; text-shadow: 0 0 10px #3b82f6; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2><i class="fa-solid fa-compact-disc"></i> Gravador de Álbum</h2>
+        <h2 style="text-align: center;"><i class="fa-solid fa-compact-disc"></i> Gravador de Álbum</h2>
         
         <div class="form-musica">
             <input type="text" id="nomeMusica" placeholder="Nome da Música">
-            <input type="text" id="artista" placeholder="Artista/Banda">
+            <input type="text" id="urlMusica" placeholder="Cole o link do YouTube">
             <select id="estiloMusica">
-                <option value="rock">Rock</option>
-                <option value="pop">Pop</option>
-                <option value="outros">Outros Estilos</option>
+                <option value="rock">🎸 Rock</option>
+                <option value="pop">🎤 Pop</option>
+                <option value="outros">🎵 Outros Estilos</option>
             </select>
-            <button class="btn-add" onclick="adicionarMusica()">Gravar no Álbum</button>
+            <button class="btn-add" onclick="adicionarMusica()">
+                <i class="fa-solid fa-plus-circle"></i> Gravar no Álbum
+            </button>
+        </div>
+
+        <div id="areaPlayer">
+            <p id="tocandoAgora"></p>
+            <div id="playerFrame"></div>
         </div>
 
         <div class="album-list" id="listaMusicas"></div>
-        <center><a href="index.html" class="back-link">⬅ Voltar ao Lab</a></center>
+        
+        <center><a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a></center>
     </div>
 
     <script>
-        // Carregar álbum do banco local
+        // Banco de dados local (Persistência)
         let albumLuis = JSON.parse(localStorage.getItem('album_luis_tech')) || [];
 
-        // 1. Arrow Function com Template Literals para renderizar
+        // 1. Arrow Function para renderizar a lista (Template Literals)
         const renderizarAlbum = () => {
             const lista = document.getElementById('listaMusicas');
-            lista.innerHTML = '';
+            lista.innerHTML = albumLuis.length === 0 
+                ? `<p style="text-align:center; opacity:0.5; font-size:0.8rem;">Álbum vazio. Adicione músicas!</p>` 
+                : '';
 
             albumLuis.forEach((musica, index) => {
-                // Usando as crases para montar o card de forma limpa
                 const card = document.createElement('div');
                 card.className = 'music-card';
+                // Ao clicar no card, toca a música
+                card.onclick = (e) => {
+                    if(e.target.closest('.btn-del')) return; // Evita tocar ao clicar em apagar
+                    tocarMusica(musica.url, musica.nome);
+                };
+                
                 card.innerHTML = `
                     <div class="music-info">
-                        <h4>${musica.nome}</h4>
-                        <span>${musica.artista}</span><br>
-                        <span class="badge-style style-${musica.estilo}">${musica.estilo}</span>
+                        <h4><i class="fa-solid fa-play-circle"></i> ${musica.nome}</h4>
+                        <span class="badge ${musica.estilo}">${musica.estilo}</span>
                     </div>
                     <button class="btn-del" onclick="removerMusica(${index})">
-                        <i class="fa-solid fa-circle-xmark"></i>
+                        <i class="fa-solid fa-trash-can"></i>
                     </button>
                 `;
                 lista.appendChild(card);
             });
         };
 
-        // 2. Arrow Function com Default Parameters para segurança
-        const criarMusica = (nome = "Sem título", artista = "Desconhecido", estilo = "outros") => {
-            return { nome, artista, estilo };
+        // 2. Lógica para extrair ID do YouTube e converter em Embed
+        const formatarUrlYouTube = (url) => {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+            const match = url.match(regex);
+            const id = match ? match[1] : null;
+            return id ? `https://www.youtube.com/embed/${id}?autoplay=1` : null;
         };
 
+        // 3. Arrow Function com Parâmetros Predefinidos (Segurança)
         const adicionarMusica = () => {
-            const nomeInput = document.getElementById('nomeMusica').value;
-            const artistaInput = document.getElementById('artista').value;
-            const estiloInput = document.getElementById('estiloMusica').value;
+            const nome = document.getElementById('nomeMusica').value;
+            const urlRaw = document.getElementById('urlMusica').value;
+            const estilo = document.getElementById('estiloMusica').value;
 
-            if (!nomeInput) return alert("Digite pelo menos o nome da música!");
+            if (!nome || !urlRaw) return alert("Por favor, preencha o nome e o link!");
 
-            // Criando o objeto usando nossa função moderna
-            const novaMusica = criarMusica(nomeInput, artistaInput, estiloInput);
+            const urlEmbed = formatarUrlYouTube(urlRaw);
+            if (!urlEmbed) return alert("Link do YouTube inválido!");
 
-            albumLuis.unshift(novaMusica);
-            salvarESincronizar();
+            const novaMusica = { nome, url: urlEmbed, estilo };
             
-            // Limpar campos
+            albumLuis.unshift(novaMusica);
+            salvarSincronizar();
+            
+            // Limpa campos
             document.getElementById('nomeMusica').value = '';
-            document.getElementById('artista').value = '';
+            document.getElementById('urlMusica').value = '';
+        };
+
+        const tocarMusica = (url, nome) => {
+            const area = document.getElementById('areaPlayer');
+            const info = document.getElementById('tocandoAgora');
+            const frame = document.getElementById('playerFrame');
+
+            area.style.display = 'block';
+            info.innerHTML = `<i class="fa-solid fa-volume-high"></i> Tocando: <strong>${nome}</strong>`;
+            frame.innerHTML = `<iframe width="100%" height="250" src="${url}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            
+            // Scroll suave até o player
+            area.scrollIntoView({ behavior: 'smooth' });
         };
 
         const removerMusica = (index) => {
-            albumLuis.splice(index, 1);
-            salvarESincronizar();
+            if(confirm("Remover esta música do álbum?")) {
+                albumLuis.splice(index, 1);
+                salvarSincronizar();
+                document.getElementById('areaPlayer').style.display = 'none';
+            }
         };
 
-        const salvarESincronizar = () => {
+        const salvarSincronizar = () => {
             localStorage.setItem('album_luis_tech', JSON.stringify(albumLuis));
             renderizarAlbum();
         };
 
-        // Inicializar a tela
         window.onload = renderizarAlbum;
     </script>
 </body>
 </html>
+
