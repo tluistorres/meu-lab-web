@@ -3,108 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Glass 💎</title>
+    <title>Minhas Tarefas 📝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
+            background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px;
-            padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            color: white; text-align: center;
-        }
+        .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; backdrop-filter: blur(10px); margin-bottom: 20px; }
+        
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input {
-            flex: 1; background: rgba(255, 255, 255, 0.2); border: none;
-            padding: 12px; border-radius: 12px; color: white; outline: none;
+        input { flex: 1; padding: 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; outline: none; }
+        
+        .btn-add { background: #3b82f6; color: white; border: none; border-radius: 8px; padding: 0 20px; cursor: pointer; font-weight: bold; }
+        .btn-add:hover { background: #2563eb; }
+
+        #listaTarefas { width: 100%; max-width: 400px; list-style: none; padding: 0; }
+        
+        .tarefa-item { 
+            background: white; color: #1e293b; padding: 15px; border-radius: 12px; 
+            margin-bottom: 10px; display: flex; justify-content: space-between; 
+            align-items: center; transition: 0.3s;
         }
-        button.add-btn {
-            background: #ffffff; color: #764ba2; border: none;
-            padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold;
-        }
-        ul { list-style: none; padding: 0; text-align: left; }
-        li {
-            background: rgba(255, 255, 255, 0.1); margin-bottom: 10px;
-            padding: 12px; border-radius: 12px; display: flex;
-            justify-content: space-between; align-items: center;
-        }
-        .completed span { text-decoration: line-through; opacity: 0.6; }
-        .delete-btn {
-            background: rgba(255, 80, 80, 0.3); color: white; border: none;
-            padding: 5px 10px; border-radius: 8px; cursor: pointer;
-        }
-        .back-link { display: block; margin-top: 20px; color: white; text-decoration: none; opacity: 0.7; }
+        
+        .tarefa-item.concluida { opacity: 0.6; background: #e2e8f0; }
+        .tarefa-item.concluida span { text-decoration: line-through; }
+
+        .actions { display: flex; gap: 10px; }
+        .btn-check { color: #10b981; cursor: pointer; background: none; border: none; font-size: 1.2rem; }
+        .btn-del { color: #ef4444; cursor: pointer; background: none; border: none; font-size: 1.2rem; }
+
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-<div class="glass-card">
-    <h2>✅ Minhas Tarefas</h2>
-    <div class="input-group">
-        <input type="text" id="taskInput" placeholder="O que precisa fazer?">
-        <button class="add-btn" onclick="addTask()">Add</button>
+    <h2><i class="fa-solid fa-list-check"></i> Gestor de Tarefas</h2>
+
+    <div class="container">
+        <div class="input-group">
+            <input type="text" id="novaTarefa" placeholder="O que precisa de fazer?">
+            <button class="btn-add" onclick="adicionarTarefa()">+</button>
+        </div>
     </div>
-    <ul id="taskList"></ul>
-    <a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a>
-</div>
 
-<script>
-    const taskInput = document.getElementById('taskInput');
-    const taskList = document.getElementById('taskList');
+    <ul id="listaTarefas"></ul>
 
-    // Carregar ao abrir a página
-    window.onload = function() {
-        const salvas = JSON.parse(localStorage.getItem('minhasTarefas')) || [];
-        salvas.forEach(t => criarElemento(t.texto, t.concluida));
-    };
+    <a href="index.html" class="back-link">⬅ Voltar ao Lab</a>
 
-    function addTask() {
-        const text = taskInput.value.trim();
-        if (text === '') return;
-        criarElemento(text, false);
-        save();
-        taskInput.value = '';
-    }
+    <script>
+        // Carregar tarefas do LocalStorage ou iniciar array vazio
+        let tarefas = JSON.parse(localStorage.getItem('tarefas_luis')) || [];
 
-    function criarElemento(texto, concluida) {
-        const li = document.createElement('li');
-        if (concluida) li.classList.add('completed');
-        
-        li.innerHTML = `
-            <span onclick="toggle(this)">${texto}</span>
-            <button class="delete-btn" onclick="remove(this)">Apagar</button>
-        `;
-        taskList.appendChild(li);
-    }
+        window.onload = renderizarTarefas;
 
-    function toggle(span) {
-        span.parentElement.classList.toggle('completed');
-        save();
-    }
+        function adicionarTarefa() {
+            const input = document.getElementById('novaTarefa');
+            const texto = input.value.trim();
 
-    function remove(btn) {
-        btn.parentElement.remove();
-        save();
-    }
+            if (texto === "") return alert("Digite uma tarefa!");
 
-    function save() {
-        const tarefas = [];
-        document.querySelectorAll('#taskList li').forEach(li => {
-            tarefas.push({
-                texto: li.querySelector('span').innerText,
-                concluida: li.classList.contains('completed')
+            const nova = {
+                texto: texto,
+                concluida: false
+            };
+
+            tarefas.push(nova);
+            salvarERenderizar();
+            input.value = "";
+        }
+
+        function alternarTarefa(index) {
+            tarefas[index].concluida = !tarefas[index].concluida;
+            salvarERenderizar();
+        }
+
+        function removerTarefa(index) {
+            tarefas.splice(index, 1);
+            salvarERenderizar();
+        }
+
+        function salvarERenderizar() {
+            localStorage.setItem('tarefas_luis', JSON.stringify(tarefas));
+            renderizarTarefas();
+        }
+
+        function renderizarTarefas() {
+            const lista = document.getElementById('listaTarefas');
+            lista.innerHTML = "";
+
+            tarefas.forEach((tarefa, index) => {
+                const li = document.createElement('li');
+                li.className = `tarefa-item ${tarefa.concluida ? 'concluida' : ''}`;
+                
+                li.innerHTML = `
+                    <span>${tarefa.texto}</span>
+                    <div class="actions">
+                        <button class="btn-check" onclick="alternarTarefa(${index})">
+                            <i class="fa-solid ${tarefa.concluida ? 'fa-circle-check' : 'fa-circle'}"></i>
+                        </button>
+                        <button class="btn-del" onclick="removerTarefa(${index})">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                lista.appendChild(li);
             });
-        });
-        localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
-    }
-
-    taskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addTask();
-    });
-</script>
-
+        }
+    </script>
 </body>
 </html>
