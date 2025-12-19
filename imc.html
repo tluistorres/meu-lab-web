@@ -14,7 +14,6 @@
         
         #resultado { margin-top: 20px; font-size: 1.2rem; font-weight: bold; min-height: 1.5em; }
         
-        /* Estilo do Histórico */
         .historico { width: 100%; max-width: 350px; margin-top: 30px; }
         .historico h3 { font-size: 1rem; color: #93c5fd; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
         .item-historico { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; animation: slideIn 0.3s ease; }
@@ -30,7 +29,7 @@
         <h2>Calculadora IMC</h2>
         <input type="number" id="peso" placeholder="Peso (kg) ex: 80">
         <input type="number" id="altura" placeholder="Altura (m) ex: 1.75">
-        <button onclick="calcularIMC()">Calcular e Salvar</button>
+        <button onclick="executarCalculo()">Calcular e Salvar</button>
         <div id="resultado"></div>
         <a href="index.html" class="back-link">← Voltar ao Lab</a>
     </div>
@@ -42,66 +41,82 @@
     </div>
 
     <script>
-        // Carrega histórico do LocalStorage
+        // Carrega histórico usando Let e o Operador lógico OR
         let historicoIMC = JSON.parse(localStorage.getItem('historico_imc_luis')) || [];
 
-        window.onload = renderizarHistorico;
+        window.onload = () => renderizarHistorico();
 
-        function calcularIMC() {
+        // 1. Arrow Function para a Lógica de Categoria (Curta e Direta)
+        const obterCategoria = imc => {
+            if (imc < 18.5) return "Abaixo do peso";
+            if (imc < 25) return "Peso normal";
+            if (imc < 30) return "Sobrepeso";
+            return "Obesidade";
+        };
+
+        // 2. Arrow Function principal com Parâmetros Predefinidos
+        const calcularIMC = (p = 0, a = 0) => {
+            if (p === 0 || a === 0) return null;
+            const valor = (p / (a * a)).toFixed(1);
+            return {
+                valor,
+                categoria: obterCategoria(valor),
+                data: new Date().toLocaleDateString('pt-BR')
+            };
+        };
+
+        const executarCalculo = () => {
             const peso = parseFloat(document.getElementById('peso').value);
             const altura = parseFloat(document.getElementById('altura').value);
             const divResultado = document.getElementById('resultado');
 
-            if (!peso || !altura) return alert("Preencha todos os campos!");
+            // Chamada da função moderna
+            const resultado = calcularIMC(peso, altura);
 
-            const imc = (peso / (altura * altura)).toFixed(1);
-            let categoria = "";
+            if (!resultado) return alert("Preencha peso e altura corretamente!");
 
-            if (imc < 18.5) categoria = "Abaixo do peso";
-            else if (imc < 25) categoria = "Peso normal";
-            else if (imc < 30) categoria = "Sobrepeso";
-            else categoria = "Obesidade";
+            // 3. Uso de Template Literals para o HTML
+            divResultado.innerHTML = `
+                Seu IMC: ${resultado.valor}<br>
+                <small>${resultado.categoria}</small>
+            `;
+            
+            divResultado.style.color = resultado.valor < 25 ? "#10b981" : "#f59e0b";
 
-            divResultado.innerHTML = `Seu IMC: ${imc}<br><small>${categoria}</small>`;
-            divResultado.style.color = imc < 25 ? "#10b981" : "#f59e0b";
-
-            // Salvar no Histórico com data
-            const novoRegistro = {
-                valor: imc,
-                cat: categoria,
-                data: new Date().toLocaleDateString('pt-BR')
-            };
-
-            historicoIMC.unshift(novoRegistro); // Adiciona no início da lista
-            if(historicoIMC.length > 5) historicoIMC.pop(); // Mantém apenas os últimos 5
+            // Salvar no Histórico
+            historicoIMC.unshift(resultado);
+            if(historicoIMC.length > 5) historicoIMC.pop();
 
             localStorage.setItem('historico_imc_luis', JSON.stringify(historicoIMC));
             renderizarHistorico();
-        }
+        };
 
-        function renderizarHistorico() {
+        // 4. Renderização usando Arrow Function e Template Literals
+        const renderizarHistorico = () => {
             const lista = document.getElementById('listaHistorico');
-            lista.innerHTML = historicoIMC.length === 0 ? "<p style='font-size:0.8rem; opacity:0.5'>Nenhum registro ainda.</p>" : "";
+            lista.innerHTML = historicoIMC.length === 0 
+                ? `<p style="font-size:0.8rem; opacity:0.5">Nenhum registro ainda.</p>` 
+                : "";
 
             historicoIMC.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'item-historico';
                 div.innerHTML = `
-                    <span><strong>${item.valor}</strong> (${item.cat})</span>
+                    <span><strong>${item.valor}</strong> (${item.categoria})</span>
                     <span style="opacity:0.5">${item.data}</span>
                 `;
                 lista.appendChild(div);
             });
-        }
+        };
 
-        function limparHistorico() {
+        const limparHistorico = () => {
             if(confirm("Deseja apagar o histórico?")) {
                 historicoIMC = [];
                 localStorage.removeItem('historico_imc_luis');
                 renderizarHistorico();
                 document.getElementById('resultado').innerText = "";
             }
-        }
+        };
     </script>
 </body>
 </html>
