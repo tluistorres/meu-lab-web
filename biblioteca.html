@@ -12,7 +12,6 @@
         }
         .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; backdrop-filter: blur(10px); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* Grid para inputs ficarem organizados */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .full-width { grid-column: span 2; }
         
@@ -32,8 +31,7 @@
         .btn-delete { background: none; color: #ef4444; border: none; cursor: pointer; font-size: 1.2rem; padding: 10px; transition: 0.2s; }
         .btn-delete:hover { color: #b91c1c; transform: scale(1.2); }
 
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; opacity: 0.8; }
-        .back-link:hover { opacity: 1; text-decoration: underline; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
@@ -45,7 +43,7 @@
     <div class="container">
         <div class="form-grid">
             <input type="text" id="titulo" placeholder="Título do Livro" class="full-width">
-            <input type="text" id="editora" placeholder="Editora">
+            <input type="text" id="autor" placeholder="Autor(a)" class="full-width"> <input type="text" id="editora" placeholder="Editora">
             <input type="number" id="paginas" placeholder="Páginas">
             <input type="date" id="dataPub" title="Data de Publicação">
             <input type="text" id="edicao" placeholder="Edição (ex: 2ª Ed)">
@@ -59,9 +57,10 @@
     <a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a>
 
     <script>
-        // 1. Função Construtora Expandida
-        function Book(title, editora, pages, dataPub, edicao, isbn) {
+        // 1. Função Construtora Atualizada com Autor
+        function Book(title, author, editora, pages, dataPub, edicao, isbn) {
             this.title = title;
+            this.author = author || 'Autor desconhecido';
             this.editora = editora || 'Não informada';
             this.pages = pages || '0';
             this.dataPub = dataPub || 'Data n/a';
@@ -69,26 +68,29 @@
             this.isbn = isbn || 'Sem ISBN';
         }
 
-        let meusLivros = JSON.parse(localStorage.getItem('biblioteca_luis_pro')) || [];
+        // Chave do localStorage atualizada para evitar conflito com versões anteriores
+        let meusLivros = JSON.parse(localStorage.getItem('biblioteca_luis_final')) || [];
 
         window.onload = renderizarLivros;
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
+            const a = document.getElementById('autor').value;
             const ed = document.getElementById('editora').value;
             const p = document.getElementById('paginas').value;
             const d = document.getElementById('dataPub').value;
             const edi = document.getElementById('edicao').value;
             const i = document.getElementById('isbn').value;
 
-            if(!t) return alert("O título é obrigatório!");
+            if(!t || !a) return alert("Título e Autor são obrigatórios!");
 
-            const novoLivro = new Book(t, ed, p, d, edi, i);
+            const novoLivro = new Book(t, a, ed, p, d, edi, i);
             meusLivros.push(novoLivro);
             
-            localStorage.setItem('biblioteca_luis_pro', JSON.stringify(meusLivros));
+            localStorage.setItem('biblioteca_luis_final', JSON.stringify(meusLivros));
 
             renderizarLivros();
+            // Limpa todos os campos
             document.querySelectorAll('input').forEach(input => input.value = '');
         }
 
@@ -100,7 +102,6 @@
                 const card = document.createElement('div');
                 card.className = 'book-card';
                 
-                // Formatando a data para o padrão brasileiro
                 const dataFormatada = livro.dataPub !== 'Data n/a' 
                     ? livro.dataPub.split('-').reverse().join('/') 
                     : 'Data n/a';
@@ -108,6 +109,7 @@
                 card.innerHTML = `
                     <div class="book-info">
                         <h4>${livro.title}</h4>
+                        <p><strong>Autor:</strong> ${livro.author}</p>
                         <p><strong>Editora:</strong> ${livro.editora} | <strong>Edição:</strong> ${livro.edicao}</p>
                         <p><strong>Páginas:</strong> ${livro.pages} | <strong>Publicado em:</strong> ${dataFormatada}</p>
                         <span>ISBN: ${livro.isbn}</span>
@@ -123,11 +125,12 @@
         function removerLivro(index) {
             if(confirm("Deseja remover este livro?")) {
                 meusLivros.splice(index, 1);
-                localStorage.setItem('biblioteca_luis_pro', JSON.stringify(meusLivros));
+                localStorage.setItem('biblioteca_luis_final', JSON.stringify(meusLivros));
                 renderizarLivros();
             }
         }
     </script>
 </body>
 </html>
+
 
