@@ -12,7 +12,6 @@
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
         .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
-        /* Estilo da sua pesquisa original */
         .search-box { position: relative; margin-bottom: 20px; }
         .search-box input { padding-left: 40px; background: rgba(255,255,255,0.15); border: 1px solid #3b82f6; }
         .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
@@ -20,7 +19,6 @@
         .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
         .livro-item h4 { margin: 0; color: #1e3a8a; }
         .info-extra { font-size: 0.85rem; color: #64748b; margin-top: 5px; }
-        .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 10px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
         
         .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; }
         .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; }
@@ -33,14 +31,14 @@
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="text" id="autor" placeholder="Autor">
-            <input type="number" id="paginas" placeholder="Nº de Páginas">
+            <input type="text" id="isbn" placeholder="Autor ou Detalhes">
+            <input type="number" id="paginas" placeholder="Páginas">
             <button class="btn-add" onclick="adicionarLivro()">Adicionar</button>
         </div>
 
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar por título ou autor..." onkeyup="renderizar()">
+            <input type="text" id="inputBusca" placeholder="Pesquisar..." onkeyup="renderizar()">
         </div>
 
         <div id="listaLivros"></div>
@@ -48,40 +46,46 @@
     </div>
 
     <script>
-        // Função simples de carregar (chave original que você confirmou)
         const CHAVE = 'biblioteca_luis';
-        let meusLivros = JSON.parse(localStorage.getItem(CHAVE)) || [];
+        
+        // Carrega os dados garantindo compatibilidade para evitar o "undefined"
+        function carregarLivros() {
+            const dados = JSON.parse(localStorage.getItem(CHAVE)) || [];
+            return dados.map(item => ({
+                title: item.title || item.titulo || "Sem Título",
+                pages: item.pages || item.paginas || 0,
+                isbn: item.isbn || item.autor || "N/A"
+            }));
+        }
+
+        let meusLivros = carregarLivros();
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
-            const a = document.getElementById('autor').value;
+            const i = document.getElementById('isbn').value;
             const p = document.getElementById('paginas').value;
 
-            if (!t) return alert("Título é obrigatório!");
+            if (!t) return alert("Título obrigatório!");
 
-            const novo = { 
-                titulo: t, 
-                autor: a, 
-                paginas: p || 100 
-            };
-
+            const novo = { title: t, isbn: i, pages: p };
             meusLivros.unshift(novo);
-            localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
+            salvar();
             
-            // Limpar
             document.getElementById('titulo').value = '';
-            document.getElementById('autor').value = '';
+            document.getElementById('isbn').value = '';
             document.getElementById('paginas').value = '';
-            
-            renderizar();
         }
 
         function removerLivro(index) {
-            if(confirm("Excluir livro?")) {
+            if(confirm("Remover livro?")) {
                 meusLivros.splice(index, 1);
-                localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
-                renderizar();
+                salvar();
             }
+        }
+
+        function salvar() {
+            localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
+            renderizar();
         }
 
         function renderizar() {
@@ -90,28 +94,24 @@
             lista.innerHTML = '';
 
             meusLivros.forEach((livro, index) => {
-                // Busca em Título OU Autor (como era na sua versão inicial)
-                const textoLivro = (livro.titulo + " " + (livro.autor || "")).toLowerCase();
+                // A pesquisa volta a verificar título e autor/isbn como antes
+                const termoBusca = (livro.title + " " + livro.isbn).toLowerCase();
                 
-                if (textoLivro.includes(busca)) {
-                    // Cálculo simples direto na renderização
-                    const dias = Math.ceil((livro.paginas || 100) / 50);
-                    
+                if (termoBusca.includes(busca)) {
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
                         <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash"></i></button>
-                        <h4>${livro.titulo}</h4>
-                        <div class="info-extra">${livro.autor || 'Autor não informado'} | ${livro.paginas} págs.</div>
-                        <div class="tempo-tag">⏳ Estimativa: ${dias} dias</div>
+                        <h4>${livro.title}</h4>
+                        <div class="info-extra">${livro.pages} páginas | ${livro.isbn}</div>
                     `;
                     lista.appendChild(div);
                 }
             });
         }
 
-        // Inicializa
         renderizar();
     </script>
 </body>
 </html>
+
