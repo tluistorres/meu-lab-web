@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Estante Luis-Tech 📚</title>
+    <title>Biblioteca Luis-Tech 📚</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 500px; }
         .card-input { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
+        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; display: block; }
         button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
         .search-box { position: relative; margin-bottom: 20px; }
-        .search-box input { padding-left: 40px; background: rgba(255,255,255,0.15); border: 1px solid #3b82f6; }
+        .search-box input { padding-left: 40px; border: 1px solid #3b82f6; }
         .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
 
         .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; }
-        .info-extra { font-size: 0.9rem; color: #64748b; margin-top: 5px; }
+        .livro-item h4 { margin: 0; color: #1e3a8a; font-size: 1.1rem; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.85rem; color: #64748b; margin-top: 8px; }
         
         .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; }
         .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
@@ -31,13 +31,16 @@
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="text" id="autor" placeholder="Autor ou Tecnologia">
+            <input type="text" id="autor" placeholder="Autor">
+            <input type="number" id="paginas" placeholder="Nº de Páginas">
+            <input type="text" id="edicao" placeholder="Edição">
+            <input type="text" id="isbn" placeholder="ISBN">
             <button onclick="adicionarLivro()">Adicionar à Estante</button>
         </div>
 
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar..." onkeyup="renderizar()">
+            <input type="text" id="inputBusca" placeholder="Pesquisar em qualquer campo..." onkeyup="renderizar()">
         </div>
 
         <div id="listaLivros"></div>
@@ -47,23 +50,30 @@
     <script>
         const CHAVE = 'biblioteca_luis';
         
-        // Carrega o que existir (se quiser limpar tudo de vez, mude para [])
-        let meusLivros = JSON.parse(localStorage.getItem(CHAVE)) || [];
+        // Carrega e tenta mapear o que existir para o formato novo
+        let meusLivros = (JSON.parse(localStorage.getItem(CHAVE)) || []).map(item => ({
+            titulo: item.titulo || item.title || "Sem título",
+            autor: item.autor || item.isbn || "Desconhecido",
+            paginas: item.paginas || item.pages || "---",
+            edicao: item.edicao || "---",
+            isbn: item.isbn || "---"
+        }));
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
             const a = document.getElementById('autor').value;
+            const p = document.getElementById('paginas').value;
+            const e = document.getElementById('edicao').value;
+            const i = document.getElementById('isbn').value;
 
-            if (!t) return alert("Digite o título!");
+            if (!t) return alert("Título é obrigatório!");
 
-            // Estrutura simplificada: só o que você precisa
-            const novo = { titulo: t, autor: a };
+            const novo = { titulo: t, autor: a, paginas: p, edicao: e, isbn: i };
             meusLivros.unshift(novo);
-            
             salvar();
             
-            document.getElementById('titulo').value = '';
-            document.getElementById('autor').value = '';
+            // Limpa todos os campos
+            ['titulo', 'autor', 'paginas', 'edicao', 'isbn'].forEach(id => document.getElementById(id).value = '');
         }
 
         function removerLivro(index) {
@@ -84,16 +94,21 @@
             lista.innerHTML = '';
 
             meusLivros.forEach((livro, index) => {
-                // PESQUISA: Verifica título e autor
-                const textoLivro = ((livro.titulo || "") + " " + (livro.autor || "")).toLowerCase();
+                // PESQUISA TOTAL: Título, Autor, Edição ou ISBN
+                const textoCompleto = `${livro.titulo} ${livro.autor} ${livro.edicao} ${livro.isbn}`.toLowerCase();
                 
-                if (textoLivro.includes(busca)) {
+                if (textoCompleto.includes(busca)) {
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
                         <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
-                        <h4>${livro.titulo || "Sem título"}</h4>
-                        <div class="info-extra">${livro.autor || "Autor não informado"}</div>
+                        <h4>${livro.titulo}</h4>
+                        <div class="info-grid">
+                            <span><strong>Autor:</strong> ${livro.autor}</span>
+                            <span><strong>Páginas:</strong> ${livro.paginas}</span>
+                            <span><strong>Edição:</strong> ${livro.edicao}</span>
+                            <span><strong>ISBN:</strong> ${livro.isbn}</span>
+                        </div>
                     `;
                     lista.appendChild(div);
                 }
