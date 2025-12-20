@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,33 +13,32 @@
         input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
         input:focus { border-color: #3b82f6; }
         
-        /* Contador em Destaque */
-        .contador-badge { background: #3b82f6; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: inline-block; }
+        /* Contador em Destaque - Agora VISÍVEL */
+        .contador-badge { background: #3b82f6; color: white; padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: bold; margin: 15px 0; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
 
         .search-box { width: 100%; max-width: 450px; margin-bottom: 15px; position: relative; }
-        .search-box input { background: rgba(255, 255, 255, 0.9); color: #0f172a; font-weight: 600; padding-left: 40px; border-radius: 12px; }
+        .search-box input { background: rgba(255, 255, 255, 0.95); color: #0f172a; font-weight: 600; padding-left: 40px; border-radius: 12px; border: none; }
         .search-box i { position: absolute; left: 15px; top: 18px; color: #64748b; }
 
-        .btn-principal { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
+        .btn-principal { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 1rem; }
         
         #listaLivros { width: 100%; max-width: 450px; }
-        .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.4s ease; }
-        .book-info h4 { margin: 0 0 5px 0; color: #1e3a8a; text-transform: capitalize; }
-        .book-info p { margin: 2px 0; font-size: 0.85rem; color: #475569; }
-        .isbn-tag { font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 5px; }
+        .book-card { background: white; color: #1e293b; padding: 20px; border-radius: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #3b82f6; }
+        .book-info h4 { margin: 0 0 5px 0; color: #1e3a8a; font-size: 1.1rem; }
+        .book-info p { margin: 3px 0; font-size: 0.85rem; color: #475569; line-height: 1.4; }
+        .summary-text { font-style: italic; color: #64748b; font-size: 0.8rem; border-top: 1px solid #e2e8f0; margin-top: 8px; padding-top: 5px; display: block; }
 
-        .actions { display: flex; flex-direction: column; gap: 10px; }
-        .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .actions { display: flex; flex-direction: column; gap: 12px; }
+        .btn-action { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
         .btn-edit { color: #3b82f6; }
         .btn-del { color: #ef4444; }
 
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .back-link { margin-top: 25px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <h2><i class="fa-solid fa-layer-group"></i> Acervo Digital</h2>
+    <h2><i class="fa-solid fa-layer-group"></i> Acervo Digital Luis-Tech</h2>
 
     <div class="container">
         <div class="form-grid">
@@ -54,11 +53,11 @@
         <button id="btnSalvar" class="btn-principal" onclick="adicionarOuSalvar()"><i class="fa-solid fa-plus"></i> Cadastrar Livro</button>
     </div>
 
-    <div class="contador-badge" id="contadorLivros">Total: 0 exemplares</div>
+    <div class="contador-badge" id="contadorLivros">A carregar acervo...</div>
 
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="busca" placeholder="Pesquisar por título ou autor..." onkeyup="renderizarLivros()">
+        <input type="text" id="busca" placeholder="Procurar título ou autor..." onkeyup="renderizarLivros()">
     </div>
 
     <div id="listaLivros"></div>
@@ -66,7 +65,25 @@
 
     <script>
         const CHAVE = 'biblioteca_luis_final';
-        function buscarLivros() { return JSON.parse(localStorage.getItem(CHAVE)) || []; }
+
+        // DEFINIÇÃO DA CLASSE (Igual ao teu teste no Node!)
+        class LivroIT {
+            constructor(titulo, autor, paginas, editora, edicao, isbn, data) {
+                this.titulo = titulo;
+                this.autor = autor;
+                this.paginas = paginas;
+                this.editora = editora;
+                this.edicao = edicao;
+                this.isbn = isbn;
+                this.data = data;
+            }
+
+            // O método que criaste no terminal agora renderiza no HTML
+            getSummary() {
+                return `${this.titulo} (${this.editora}) - ${this.paginas} páginas. ISBN: ${this.isbn}`;
+            }
+        }
+
         let indexEditando = -1;
 
         function adicionarOuSalvar() {
@@ -74,18 +91,19 @@
             const a = document.getElementById('autor').value;
             if(!t || !a) return alert("Título e Autor são obrigatórios!");
 
-            let lista = buscarLivros();
-            const livro = {
-                title: t, author: a, 
+            let lista = JSON.parse(localStorage.getItem(CHAVE)) || [];
+            
+            const novoLivro = {
+                titulo: t, autor: a, 
                 editora: document.getElementById('editora').value,
-                pages: document.getElementById('paginas').value,
-                dataPub: document.getElementById('dataPub').value,
+                paginas: document.getElementById('paginas').value,
+                data: document.getElementById('dataPub').value,
                 edicao: document.getElementById('edicao').value,
                 isbn: document.getElementById('isbn').value
             };
 
-            if (indexEditando === -1) { lista.push(livro); } 
-            else { lista[indexEditando] = livro; indexEditando = -1; }
+            if (indexEditando === -1) { lista.push(novoLivro); } 
+            else { lista[indexEditando] = novoLivro; indexEditando = -1; }
             
             localStorage.setItem(CHAVE, JSON.stringify(lista));
             limparFormulario();
@@ -95,24 +113,27 @@
         function renderizarLivros() {
             const listaDiv = document.getElementById('listaLivros');
             const termo = document.getElementById('busca').value.toLowerCase();
-            const livros = buscarLivros();
+            const dadosSalvos = JSON.parse(localStorage.getItem(CHAVE)) || [];
             
-            // Atualiza o contador
-            document.getElementById('contadorLivros').innerHTML = `<i class="fa-solid fa-book"></i> Total: ${livros.length} exemplares`;
+            document.getElementById('contadorLivros').innerHTML = `<i class="fa-solid fa-bookmark"></i> Total: ${dadosSalvos.length} livros no acervo`;
             
             listaDiv.innerHTML = '';
-            livros.forEach((l, index) => {
-                if (l.title.toLowerCase().includes(termo) || l.author.toLowerCase().includes(termo)) {
-                    const dataF = l.dataPub ? l.dataPub.split('-').reverse().join('/') : 'n/a';
+            dadosSalvos.forEach((d, index) => {
+                if (d.titulo.toLowerCase().includes(termo) || d.autor.toLowerCase().includes(termo)) {
+                    
+                    // Transformamos os dados crus num Objeto da Classe LivroIT
+                    const objLivro = new LivroIT(d.titulo, d.autor, d.paginas, d.editora, d.edicao, d.isbn, d.data);
+                    const dataF = d.data ? d.data.split('-').reverse().join('/') : 'n/a';
+
                     const card = document.createElement('div');
                     card.className = 'book-card';
                     card.innerHTML = `
                         <div class="book-info">
-                            <h4>${l.title}</h4>
-                            <p><strong>Autor:</strong> ${l.author}</p>
-                            <p><strong>Editora:</strong> ${l.editora} | <strong>Edição:</strong> ${l.edicao}</p>
-                            <p><strong>Páginas:</strong> ${l.pages} | <strong>Data:</strong> ${dataF}</p>
-                            <span class="isbn-tag">ISBN: ${l.isbn}</span>
+                            <h4>${objLivro.titulo}</h4>
+                            <p><strong>Autor:</strong> ${objLivro.autor}</p>
+                            <p><strong>Editora:</strong> ${objLivro.editora} | <strong>Edição:</strong> ${objLivro.edicao}</p>
+                            <p><strong>Data:</strong> ${dataF}</p>
+                            <span class="summary-text"><i class="fa-solid fa-circle-info"></i> ${objLivro.getSummary()}</span>
                         </div>
                         <div class="actions">
                             <button class="btn-action btn-edit" onclick="prepararEdicao(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -125,22 +146,23 @@
         }
 
         function prepararEdicao(idx) {
-            const l = buscarLivros()[idx];
+            const lista = JSON.parse(localStorage.getItem(CHAVE));
+            const l = lista[idx];
             indexEditando = idx;
-            document.getElementById('titulo').value = l.title;
-            document.getElementById('autor').value = l.author;
+            document.getElementById('titulo').value = l.titulo;
+            document.getElementById('autor').value = l.autor;
             document.getElementById('editora').value = l.editora;
-            document.getElementById('paginas').value = l.pages;
-            document.getElementById('dataPub').value = l.dataPub;
+            document.getElementById('paginas').value = l.paginas;
+            document.getElementById('dataPub').value = l.data;
             document.getElementById('edicao').value = l.edicao;
             document.getElementById('isbn').value = l.isbn;
-            document.getElementById('btnSalvar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
+            document.getElementById('btnSalvar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Alterações';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function removerLivro(idx) {
-            if(confirm("Remover livro?")) {
-                let lista = buscarLivros();
+            if(confirm("Eliminar este exemplar do acervo?")) {
+                let lista = JSON.parse(localStorage.getItem(CHAVE));
                 lista.splice(idx, 1);
                 localStorage.setItem(CHAVE, JSON.stringify(lista));
                 renderizarLivros();
