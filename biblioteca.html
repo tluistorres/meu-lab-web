@@ -12,20 +12,29 @@
         .full-width { grid-column: span 2; }
         input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
         input:focus { border-color: #3b82f6; }
+        
+        /* Contador de Livros */
+        .contador { width: 100%; max-width: 450px; text-align: right; font-size: 0.9rem; color: #93c5fd; margin-bottom: 5px; font-weight: bold; }
+
         .search-box { width: 100%; max-width: 450px; margin-bottom: 15px; position: relative; }
         .search-box input { background: rgba(255, 255, 255, 0.9); color: #0f172a; font-weight: 600; padding-left: 40px; border-radius: 12px; }
         .search-box i { position: absolute; left: 15px; top: 18px; color: #64748b; }
+
         .btn-principal { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
         .btn-principal.editando { background: #f59e0b; }
+        
         #listaLivros { width: 100%; max-width: 450px; }
-        .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; }
+        .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.4s ease; }
         .book-info h4 { margin: 0 0 5px 0; color: #1e3a8a; text-transform: capitalize; }
         .book-info p { margin: 2px 0; font-size: 0.85rem; color: #475569; }
+
         .actions { display: flex; flex-direction: column; gap: 10px; }
         .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
         .btn-edit { color: #3b82f6; }
         .btn-del { color: #ef4444; }
+
         .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
@@ -45,6 +54,8 @@
         <button id="btnSalvar" class="btn-principal" onclick="adicionarOuSalvar()"><i class="fa-solid fa-plus"></i> Cadastrar Livro</button>
     </div>
 
+    <div class="contador" id="contadorLivros">Total: 0 livros</div>
+
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" id="busca" placeholder="Pesquisar por título ou autor..." onkeyup="renderizarLivros()">
@@ -55,46 +66,28 @@
 
     <script>
         const CHAVE = 'biblioteca_luis_final';
-        
-        // Função para sempre pegar a lista atualizada do banco
-        function buscarLivrosDoStorage() {
-            return JSON.parse(localStorage.getItem(CHAVE)) || [];
-        }
-
+        function buscarLivrosDoStorage() { return JSON.parse(localStorage.getItem(CHAVE)) || []; }
         let indexEditando = -1;
 
         function adicionarOuSalvar() {
             const t = document.getElementById('titulo').value;
             const a = document.getElementById('autor').value;
-            const ed = document.getElementById('editora').value;
-            const p = document.getElementById('paginas').value;
-            const d = document.getElementById('dataPub').value;
-            const edi = document.getElementById('edicao').value;
-            const i = document.getElementById('isbn').value;
-
             if(!t || !a) return alert("Título e Autor são obrigatórios!");
 
-            // Pega a lista mais recente antes de alterar
             let listaAtual = buscarLivrosDoStorage();
-
             const livroObj = {
-                title: t, author: a, editora: ed, pages: p, 
-                dataPub: d, edicao: edi, isbn: i
+                title: t, author: a, 
+                editora: document.getElementById('editora').value,
+                pages: document.getElementById('paginas').value,
+                dataPub: document.getElementById('dataPub').value,
+                edicao: document.getElementById('edicao').value,
+                isbn: document.getElementById('isbn').value
             };
 
-            if (indexEditando === -1) {
-                // ADICIONA NOVO
-                listaAtual.push(livroObj);
-            } else {
-                // EDITA EXISTENTE
-                listaAtual[indexEditando] = livroObj;
-                indexEditando = -1;
-                resetarBotao();
-            }
+            if (indexEditando === -1) { listaAtual.push(livroObj); } 
+            else { listaAtual[indexEditando] = livroObj; indexEditando = -1; resetarBotao(); }
             
-            // Grava a lista completa de volta
             localStorage.setItem(CHAVE, JSON.stringify(listaAtual));
-            
             limparFormulario();
             renderizarLivros();
         }
@@ -102,11 +95,12 @@
         function renderizarLivros() {
             const listaDiv = document.getElementById('listaLivros');
             const termoBusca = document.getElementById('busca').value.toLowerCase();
-            const livrosParaExibir = buscarLivrosDoStorage();
+            const livros = buscarLivrosDoStorage();
             
+            document.getElementById('contadorLivros').innerText = `Total: ${livros.length} livros`;
             listaDiv.innerHTML = '';
 
-            livrosParaExibir.forEach((livro, index) => {
+            livros.forEach((livro, index) => {
                 if (livro.title.toLowerCase().includes(termoBusca) || livro.author.toLowerCase().includes(termoBusca)) {
                     const dataF = livro.dataPub ? livro.dataPub.split('-').reverse().join('/') : 'n/a';
                     const card = document.createElement('div');
@@ -117,7 +111,6 @@
                             <p><strong>Autor:</strong> ${livro.author}</p>
                             <p><strong>Editora:</strong> ${livro.editora} | <strong>Edição:</strong> ${livro.edicao}</p>
                             <p><strong>Páginas:</strong> ${livro.pages} | <strong>Data:</strong> ${dataF}</p>
-                            <span style="font-size: 0.75rem; color: #64748b;">ISBN: ${livro.isbn}</span>
                         </div>
                         <div class="actions">
                             <button class="btn-action btn-edit" onclick="prepararEdicao(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -133,7 +126,6 @@
             const lista = buscarLivrosDoStorage();
             const l = lista[index];
             indexEditando = index;
-
             document.getElementById('titulo').value = l.title;
             document.getElementById('autor').value = l.author;
             document.getElementById('editora').value = l.editora;
@@ -141,7 +133,6 @@
             document.getElementById('dataPub').value = l.dataPub;
             document.getElementById('edicao').value = l.edicao;
             document.getElementById('isbn').value = l.isbn;
-
             const btn = document.getElementById('btnSalvar');
             btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
             btn.classList.add('editando');
@@ -167,7 +158,6 @@
             document.querySelectorAll('input:not(#busca)').forEach(input => input.value = '');
         }
 
-        // Inicia a página lendo o que já existe
         window.onload = renderizarLivros;
     </script>
 </body>
