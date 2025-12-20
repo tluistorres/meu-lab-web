@@ -10,40 +10,36 @@
         .container { width: 100%; max-width: 500px; }
         .card-input { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
-        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        .btn-add:hover { background: #2563eb; }
+        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
         .search-box { position: relative; margin-bottom: 20px; }
-        .search-box input { padding-left: 40px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.1); }
+        .search-box input { padding-left: 40px; background: rgba(255,255,255,0.2); border: 1px solid #3b82f6; }
         .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
 
-        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; animation: slideIn 0.3s ease; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; padding-right: 35px; font-size: 1.1rem; }
+        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
+        .livro-item h4 { margin: 0; color: #1e3a8a; }
         .info-extra { font-size: 0.85rem; color: #64748b; margin-top: 5px; }
         .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 10px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
         
-        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
-        .btn-del:hover { color: #ef4444; transform: scale(1.1); }
-
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2 style="text-align: center;"><i class="fa-solid fa-book-bookmark"></i> Minha Estante Luis-Tech</h2>
+        <h2 style="text-align: center;"><i class="fa-solid fa-book-bookmark"></i> Estante Inteligente</h2>
         
         <div class="card-input">
-            <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="number" id="paginas" placeholder="Número de Páginas (Ex: 300)">
-            <input type="text" id="isbn" placeholder="ISBN (Opcional)">
-            <button class="btn-add" onclick="adicionarLivro()">Adicionar à Estante</button>
+            <input type="text" id="titulo" placeholder="Título ou Autor">
+            <input type="number" id="paginas" placeholder="Páginas">
+            <input type="text" id="isbn" placeholder="ISBN ou Detalhes">
+            <button class="btn-add" onclick="adicionarLivro()">Gravar na Estante</button>
         </div>
 
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar em toda a estante..." onkeyup="filtrar()">
+            <input type="text" id="inputBusca" placeholder="Pesquise por título, autor, páginas ou ISBN..." onkeyup="filtrar()">
         </div>
 
         <div id="listaLivros"></div>
@@ -51,115 +47,85 @@
     </div>
 
     <script>
-        // 1. Classe de Negócio - Define o comportamento do Livro
         class Book {
             constructor(title, pages, isbn) {
-                this.title = title || "Título Indisponível";
-                this.pages = parseInt(pages) || 100; // Valor padrão para livros antigos sem páginas
+                this.title = title || "Sem nome";
+                this.pages = parseInt(pages) || 100;
                 this.isbn = isbn || "N/A";
             }
-            getTempoLeitura() {
-                const paginasPorDia = 50;
-                return Math.ceil(this.pages / paginasPorDia);
-            }
+            getTempo() { return Math.ceil(this.pages / 50); }
         }
 
-        // 2. Sistema de Migração: Busca dados em todas as chaves possíveis
-        const realizarMigracao = () => {
-            const possiveisChaves = ['biblioteca_luis', 'estante_luis', 'livros', 'biblioteca', 'meus_livros'];
-            let acervoAgrupado = [];
-
-            possiveisChaves.forEach(chave => {
-                const dados = localStorage.getItem(chave);
-                if (dados) {
-                    try {
-                        const lista = JSON.parse(dados);
-                        if (Array.isArray(lista)) {
-                            lista.forEach(item => {
-                                // Padroniza campos diferentes (titulo vs title / paginas vs pages)
-                                acervoAgrupado.push({
-                                    title: item.title || item.titulo || "Título Antigo",
-                                    pages: item.pages || item.paginas || 100,
-                                    isbn: item.isbn || "N/A"
-                                });
+        const resgatarTudo = () => {
+            // Vasculha TODAS as chaves do seu navegador para não perder nada
+            let unificado = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const chave = localStorage.key(i);
+                try {
+                    const dados = JSON.parse(localStorage.getItem(chave));
+                    if (Array.isArray(dados)) {
+                        dados.forEach(item => {
+                            unificado.push({
+                                title: item.title || item.titulo || item.nome || "Título Antigo",
+                                pages: item.pages || item.paginas || 100,
+                                isbn: item.isbn || item.autor || item.detalhes || "N/A"
                             });
-                        }
-                    } catch (e) { console.error("Erro ao ler chave " + chave); }
-                }
-            });
-
-            // Remove duplicados (livros com o mesmo título exato)
-            return acervoAgrupado.filter((livro, index, self) =>
-                index === self.findIndex((l) => l.title === livro.title)
-            );
+                        });
+                    }
+                } catch(e) {}
+            }
+            // Remove duplicados exatos
+            return unificado.filter((v,i,a)=>a.findIndex(t=>(t.title===v.title))===i);
         };
 
-        // Carrega o acervo unificado no início
-        let minhaEstante = realizarMigracao();
+        let minhaEstante = resgatarTudo();
 
         const adicionarLivro = () => {
             const t = document.getElementById('titulo').value;
             const p = document.getElementById('paginas').value;
             const i = document.getElementById('isbn').value;
-
-            if (!t) return alert("O título é obrigatório!");
-
+            if (!t) return alert("Título obrigatório!");
             minhaEstante.unshift({ title: t, pages: p, isbn: i });
             salvar();
-            
-            // Limpa formulário
             document.getElementById('titulo').value = '';
             document.getElementById('paginas').value = '';
             document.getElementById('isbn').value = '';
         };
 
         const removerLivro = (index) => {
-            if(confirm("Deseja remover este livro?")) {
-                minhaEstante.splice(index, 1);
-                salvar();
-            }
-        };
-
-        const filtrar = () => {
-            const termo = document.getElementById('inputBusca').value.toLowerCase();
-            renderizar(termo);
+            if(confirm("Remover?")) { minhaEstante.splice(index, 1); salvar(); }
         };
 
         const renderizar = (busca = "") => {
             const lista = document.getElementById('listaLivros');
-            if (!lista) return;
             lista.innerHTML = '';
+            const termo = busca.toLowerCase();
 
-            minhaEstante.forEach((dados, index) => {
-                if (dados.title.toLowerCase().includes(busca)) {
-                    // Transforma o dado bruto em um Objeto da Classe Book
-                    const livro = new Book(dados.title, dados.pages, dados.isbn);
-                    
+            minhaEstante.forEach((item, index) => {
+                // PESQUISA MULTICAMPO: Título ou ISBN (onde você guardava o autor)
+                const buscaTexto = (item.title + " " + item.isbn).toLowerCase();
+                
+                if (buscaTexto.includes(termo)) {
+                    const livro = new Book(item.title, item.pages, item.isbn);
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
-                        <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
+                        <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash"></i></button>
                         <h4>${livro.title}</h4>
-                        <div class="info-extra">
-                            <i class="fa-solid fa-file-lines"></i> ${livro.pages} páginas | 
-                            <i class="fa-solid fa-barcode"></i> ISBN: ${livro.isbn}
-                        </div>
-                        <div class="tempo-tag">
-                            <i class="fa-solid fa-hourglass-half"></i> Estimativa: ${livro.getTempoLeitura()} dias
-                        </div>
+                        <div class="info-extra">${livro.pages} páginas | Ref: ${livro.isbn}</div>
+                        <div class="tempo-tag">⏳ Ler em ${livro.getTempo()} dias</div>
                     `;
                     lista.appendChild(div);
                 }
             });
         };
 
+        const filtrar = () => renderizar(document.getElementById('inputBusca').value);
         const salvar = () => {
-            // Salva sempre na chave oficial biblioteca_luis
             localStorage.setItem('biblioteca_luis', JSON.stringify(minhaEstante));
             renderizar();
         };
 
-        // Inicia a renderização ao carregar a página
         window.onload = () => renderizar();
     </script>
 </body>
