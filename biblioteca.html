@@ -8,29 +8,25 @@
     <style>
         body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 500px; }
-        .card-input { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; display: block; }
-        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #2563eb; }
-        
-        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; font-size: 1.1rem; }
-        .info-extra { font-size: 0.85rem; color: #64748b; margin-top: 5px; }
-        .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 10px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
-        
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; display: inline-block; }
+        .card-input { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
+        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; text-align: left; }
+        .livro-item h4 { margin: 0; color: #1e3a8a; }
+        .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 8px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; display: block; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2 style="text-align: center;"><i class="fa-solid fa-book-bookmark"></i> Minha Estante</h2>
+        <h2>Minha Estante Luis-Tech</h2>
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="number" id="paginas" placeholder="Número de Páginas (Ex: 300)">
-            <input type="text" id="isbn" placeholder="ISBN (Opcional)">
-            <button onclick="adicionarLivro()">Adicionar à Estante</button>
+            <input type="number" id="paginas" placeholder="Número de Páginas">
+            <input type="text" id="isbn" placeholder="ISBN">
+            <button class="btn-add" onclick="adicionarLivro()">Adicionar à Estante</button>
         </div>
 
         <div id="listaLivros"></div>
@@ -38,83 +34,77 @@
     </div>
 
     <script>
-        // Definição da Classe
+        // 1. Classe definida de forma simples
         class Book {
             constructor(title, pages, isbn) {
-                this.title = title || "Título Indisponível";
-                this.pages = Number(pages) || 100; // Se for antigo/vazio, assume 100
+                this.title = title || "Sem Título";
+                this.pages = parseInt(pages) || 100;
                 this.isbn = isbn || "N/A";
             }
-
-            calcularTempoLeitura() {
-                const paginasPorDia = 50;
-                return Math.ceil(this.pages / paginasPorDia);
+            getTempo() {
+                return Math.ceil(this.pages / 50);
             }
         }
 
-        // Carregar dados com a chave correta
+        // 2. Variável global do histórico
         let minhaEstante = [];
-        try {
-            minhaEstante = JSON.parse(localStorage.getItem('biblioteca_luis')) || [];
-        } catch (e) {
-            console.error("Erro ao carregar localStorage", e);
-            minhaEstante = [];
-        }
 
-        const adicionarLivro = () => {
+        // 3. Função de carregar (com proteção total)
+        const carregarDados = () => {
+            try {
+                const dadosSalvos = localStorage.getItem('biblioteca_luis');
+                minhaEstante = dadosSalvos ? JSON.parse(dadosSalvos) : [];
+                renderizar();
+            } catch (err) {
+                console.error("Erro ao carregar:", err);
+                minhaEstante = [];
+                renderizar();
+            }
+        };
+
+        // 4. Função de adicionar
+        window.adicionarLivro = () => {
             const t = document.getElementById('titulo').value;
             const p = document.getElementById('paginas').value;
             const i = document.getElementById('isbn').value;
 
-            if (!t) {
-                alert("Por favor, digite ao menos o título do livro.");
-                return;
-            }
+            if (!t) return alert("Digite o título!");
 
-            const novoLivro = new Book(t, p, i);
-            minhaEstante.unshift(novoLivro);
-            salvarESincronizar();
+            const novo = new Book(t, p, i);
+            minhaEstante.unshift({ title: novo.title, pages: novo.pages, isbn: novo.isbn });
             
-            // Limpar campos
+            localStorage.setItem('biblioteca_luis', JSON.stringify(minhaEstante));
+            
             document.getElementById('titulo').value = '';
             document.getElementById('paginas').value = '';
             document.getElementById('isbn').value = '';
+            
+            renderizar();
         };
 
+        // 5. Função de renderizar
         const renderizar = () => {
             const lista = document.getElementById('listaLivros');
             if (!lista) return;
-            
             lista.innerHTML = '';
 
             minhaEstante.forEach(item => {
-                // Re-instancia para garantir que o método calcularTempoLeitura exista
-                const livro = new Book(item.title, item.pages, item.isbn);
-                const dias = livro.calcularTempoLeitura();
-
+                // Criamos o objeto da classe para usar o método getTempo
+                const objLivro = new Book(item.title, item.pages, item.isbn);
+                
                 const div = document.createElement('div');
                 div.className = 'livro-item';
                 div.innerHTML = `
-                    <h4>${livro.title}</h4>
-                    <div class="info-extra">
-                        <i class="fa-solid fa-file-lines"></i> ${livro.pages} páginas | 
-                        <i class="fa-solid fa-barcode"></i> ISBN: ${livro.isbn}
-                    </div>
-                    <div class="tempo-tag">
-                        <i class="fa-solid fa-calendar-check"></i> Ler em aprox. ${dias} dias
-                    </div>
+                    <h4>${objLivro.title}</h4>
+                    <small>Páginas: ${objLivro.pages} | ISBN: ${objLivro.isbn}</small><br>
+                    <div class="tempo-tag">⏳ Estimativa: ${objLivro.getTempo()} dias</div>
                 `;
                 lista.appendChild(div);
             });
         };
 
-        const salvarESincronizar = () => {
-            localStorage.setItem('biblioteca_luis', JSON.stringify(minhaEstante));
-            renderizar();
-        };
-
-        // Inicia a renderização ao carregar a página
-        window.onload = renderizar;
+        // Iniciar tudo
+        carregarDados();
     </script>
 </body>
 </html>
