@@ -8,26 +8,26 @@
     <style>
         body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 500px; }
-        .card-input { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .card-input { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
         .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
         .btn-add:hover { background: #2563eb; }
         
-        /* Estilo da Pesquisa */
-        .search-container { position: relative; margin-bottom: 15px; width: 100%; }
-        .search-container input { padding-left: 40px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); }
-        .search-container i { position: absolute; left: 15px; top: 22px; color: #93c5fd; }
+        /* Barra de Pesquisa */
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box input { padding-left: 40px; background: rgba(255,255,255,0.15); }
+        .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
 
-        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; animation: fadeIn 0.3s ease; }
+        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; animation: slideIn 0.3s ease; }
         .livro-item h4 { margin: 0; color: #1e3a8a; padding-right: 30px; }
         .info-extra { font-size: 0.85rem; color: #64748b; margin-top: 5px; }
         .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 10px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
         
-        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
         .btn-del:hover { color: #ef4444; transform: scale(1.1); }
 
         .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -37,14 +37,14 @@
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="number" id="paginas" placeholder="Nº de Páginas (Ex: 400)">
+            <input type="number" id="paginas" placeholder="Páginas (Ex: 400)">
             <input type="text" id="isbn" placeholder="ISBN (Opcional)">
             <button class="btn-add" onclick="adicionarLivro()">Adicionar à Estante</button>
         </div>
 
-        <div class="search-container">
+        <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar na estante..." onkeyup="filtrarLivros()">
+            <input type="text" id="inputBusca" placeholder="Pesquisar título..." onkeyup="filtrar()">
         </div>
 
         <div id="listaLivros"></div>
@@ -52,17 +52,20 @@
     </div>
 
     <script>
+        // Classe Book - O coração da lógica
         class Book {
             constructor(title, pages, isbn) {
                 this.title = title || "Sem Título";
                 this.pages = parseInt(pages) || 100;
                 this.isbn = isbn || "N/A";
             }
-            getTempo() {
-                return Math.ceil(this.pages / 50);
+            getTempoLeitura() {
+                const paginasPorDia = 50;
+                return Math.ceil(this.pages / paginasPorDia);
             }
         }
 
+        // Carrega dados da chave biblioteca_luis
         let minhaEstante = JSON.parse(localStorage.getItem('biblioteca_luis')) || [];
 
         const adicionarLivro = () => {
@@ -72,42 +75,45 @@
 
             if (!t) return alert("O título é obrigatório!");
 
-            const novo = new Book(t, p, i);
-            minhaEstante.unshift({ title: novo.title, pages: novo.pages, isbn: novo.isbn });
+            // Salva como objeto simples no array
+            minhaEstante.unshift({ title: t, pages: p, isbn: i });
             salvar();
             
+            // Limpa os campos
             document.getElementById('titulo').value = '';
             document.getElementById('paginas').value = '';
             document.getElementById('isbn').value = '';
         };
 
         const removerLivro = (index) => {
-            if(confirm("Deseja remover este livro?")) {
+            if(confirm("Deseja remover este livro da estante?")) {
                 minhaEstante.splice(index, 1);
                 salvar();
             }
         };
 
-        const filtrarLivros = () => {
+        const filtrar = () => {
             const termo = document.getElementById('inputBusca').value.toLowerCase();
             renderizar(termo);
         };
 
-        const renderizar = (filtro = "") => {
+        const renderizar = (busca = "") => {
             const lista = document.getElementById('listaLivros');
             lista.innerHTML = '';
 
-            minhaEstante.forEach((item, index) => {
-                if (item.title.toLowerCase().includes(filtro)) {
-                    const obj = new Book(item.title, item.pages, item.isbn);
+            minhaEstante.forEach((dados, index) => {
+                // Só renderiza se passar no filtro de busca
+                if (dados.title.toLowerCase().includes(busca)) {
+                    // Re-instancia a classe para usar o método getTempoLeitura
+                    const livro = new Book(dados.title, dados.pages, dados.isbn);
                     
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
                         <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
-                        <h4>${obj.title}</h4>
-                        <div class="info-extra">Páginas: ${obj.pages} | ISBN: ${obj.isbn}</div>
-                        <div class="tempo-tag">⏳ Estimativa: ${obj.getTempo()} dias</div>
+                        <h4>${livro.title}</h4>
+                        <div class="info-extra">Páginas: ${livro.pages} | ISBN: ${livro.isbn}</div>
+                        <div class="tempo-tag"><i class="fa-solid fa-clock"></i> Estimativa: ${livro.getTempoLeitura()} dias</div>
                     `;
                     lista.appendChild(div);
                 }
@@ -119,6 +125,7 @@
             renderizar();
         };
 
+        // Inicialização
         window.onload = () => renderizar();
     </script>
 </body>
