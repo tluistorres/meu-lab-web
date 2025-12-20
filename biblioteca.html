@@ -17,11 +17,11 @@
         .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
 
         .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; }
-        .info-extra { font-size: 0.85rem; color: #64748b; margin-top: 5px; }
+        .livro-item h4 { margin: 0; color: #1e3a8a; font-size: 1.1rem; }
+        .info-extra { font-size: 0.9rem; color: #64748b; margin-top: 5px; }
         
-        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; }
+        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -31,7 +31,7 @@
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="text" id="autor" placeholder="Autor">
+            <input type="text" id="autor" placeholder="Autor ou Tecnologia (Python, etc)">
             <button onclick="adicionarLivro()">Adicionar à Estante</button>
         </div>
 
@@ -45,22 +45,24 @@
     </div>
 
     <script>
-        // Chave oficial que usamos no início
         const CHAVE = 'biblioteca_luis';
-        
-        // Carrega os livros e tenta recuperar dados de qualquer formato anterior
-        let meusLivros = (JSON.parse(localStorage.getItem(CHAVE)) || []).map(item => {
-            return {
-                titulo: item.titulo || item.title || "Sem título",
-                autor: item.autor || item.isbn || "Desconhecido"
-            };
-        });
+
+        // Função para carregar e "consertar" dados antigos automaticamente
+        function carregarDados() {
+            const salvo = JSON.parse(localStorage.getItem(CHAVE)) || [];
+            return salvo.map(item => ({
+                titulo: item.titulo || item.title || "Título Indisponível",
+                autor: item.autor || item.isbn || "Autor não informado"
+            }));
+        }
+
+        let meusLivros = carregarDados();
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
             const a = document.getElementById('autor').value;
 
-            if (!t) return alert("Digite ao menos o título!");
+            if (!t) return alert("Por favor, digite o título.");
 
             const novo = { titulo: t, autor: a };
             meusLivros.unshift(novo);
@@ -71,7 +73,7 @@
         }
 
         function removerLivro(index) {
-            if(confirm("Remover este livro?")) {
+            if(confirm("Deseja apagar este livro?")) {
                 meusLivros.splice(index, 1);
                 salvar();
             }
@@ -84,29 +86,28 @@
 
         function renderizar() {
             const lista = document.getElementById('listaLivros');
-            const busca = document.getElementById('inputBusca').value.toLowerCase();
+            const termo = document.getElementById('inputBusca').value.toLowerCase();
             lista.innerHTML = '';
 
             meusLivros.forEach((livro, index) => {
-                // Busca em tudo: título e autor
-                const textoParaBusca = (livro.titulo + " " + livro.autor).toLowerCase();
+                // A PESQUISA: Olha no título e no autor ao mesmo tempo
+                const conteudoParaBusca = (livro.titulo + " " + livro.autor).toLowerCase();
                 
-                if (textoParaBusca.includes(busca)) {
+                if (conteudoParaBusca.includes(termo)) {
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
-                        <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
                         <h4>${livro.titulo}</h4>
-                        <div class="info-extra">Autor: ${livro.autor}</div>
+                        <div class="info-extra"><i class="fa-solid fa-user-pen"></i> ${livro.autor}</div>
                     `;
                     lista.appendChild(div);
                 }
             });
         }
 
-        // Inicia a lista
+        // Inicia a exibição
         renderizar();
     </script>
 </body>
 </html>
-
