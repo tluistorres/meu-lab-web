@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca Luis-Tech 📚</title>
+    <title>Minha Estante Luis-Tech 📚</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
@@ -17,10 +17,10 @@
         .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
 
         .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; font-size: 1.1rem; }
+        .livro-item h4 { margin: 0; color: #1e3a8a; }
         .info-extra { font-size: 0.9rem; color: #64748b; margin-top: 5px; }
         
-        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; }
         .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
     </style>
 </head>
@@ -31,13 +31,13 @@
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="text" id="autor" placeholder="Autor ou Tecnologia (Python, etc)">
+            <input type="text" id="autor" placeholder="Autor ou Tecnologia">
             <button onclick="adicionarLivro()">Adicionar à Estante</button>
         </div>
 
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar título ou autor..." onkeyup="renderizar()">
+            <input type="text" id="inputBusca" placeholder="Pesquisar..." onkeyup="renderizar()">
         </div>
 
         <div id="listaLivros"></div>
@@ -46,26 +46,20 @@
 
     <script>
         const CHAVE = 'biblioteca_luis';
-
-        // Função para carregar e "consertar" dados antigos automaticamente
-        function carregarDados() {
-            const salvo = JSON.parse(localStorage.getItem(CHAVE)) || [];
-            return salvo.map(item => ({
-                titulo: item.titulo || item.title || "Título Indisponível",
-                autor: item.autor || item.isbn || "Autor não informado"
-            }));
-        }
-
-        let meusLivros = carregarDados();
+        
+        // Carrega o que existir (se quiser limpar tudo de vez, mude para [])
+        let meusLivros = JSON.parse(localStorage.getItem(CHAVE)) || [];
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
             const a = document.getElementById('autor').value;
 
-            if (!t) return alert("Por favor, digite o título.");
+            if (!t) return alert("Digite o título!");
 
+            // Estrutura simplificada: só o que você precisa
             const novo = { titulo: t, autor: a };
             meusLivros.unshift(novo);
+            
             salvar();
             
             document.getElementById('titulo').value = '';
@@ -73,7 +67,7 @@
         }
 
         function removerLivro(index) {
-            if(confirm("Deseja apagar este livro?")) {
+            if(confirm("Remover este exemplar?")) {
                 meusLivros.splice(index, 1);
                 salvar();
             }
@@ -86,27 +80,26 @@
 
         function renderizar() {
             const lista = document.getElementById('listaLivros');
-            const termo = document.getElementById('inputBusca').value.toLowerCase();
+            const busca = document.getElementById('inputBusca').value.toLowerCase();
             lista.innerHTML = '';
 
             meusLivros.forEach((livro, index) => {
-                // A PESQUISA: Olha no título e no autor ao mesmo tempo
-                const conteudoParaBusca = (livro.titulo + " " + livro.autor).toLowerCase();
+                // PESQUISA: Verifica título e autor
+                const textoLivro = ((livro.titulo || "") + " " + (livro.autor || "")).toLowerCase();
                 
-                if (conteudoParaBusca.includes(termo)) {
+                if (textoLivro.includes(busca)) {
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
                         <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
-                        <h4>${livro.titulo}</h4>
-                        <div class="info-extra"><i class="fa-solid fa-user-pen"></i> ${livro.autor}</div>
+                        <h4>${livro.titulo || "Sem título"}</h4>
+                        <div class="info-extra">${livro.autor || "Autor não informado"}</div>
                     `;
                     lista.appendChild(div);
                 }
             });
         }
 
-        // Inicia a exibição
         renderizar();
     </script>
 </body>
