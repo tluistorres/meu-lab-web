@@ -10,7 +10,7 @@
         .container { width: 100%; max-width: 500px; }
         .card-input { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
-        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
         .search-box { position: relative; margin-bottom: 20px; }
         .search-box input { padding-left: 40px; background: rgba(255,255,255,0.15); border: 1px solid #3b82f6; }
@@ -31,14 +31,13 @@
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="text" id="isbn" placeholder="Autor ou Detalhes">
-            <input type="number" id="paginas" placeholder="Páginas">
-            <button class="btn-add" onclick="adicionarLivro()">Adicionar</button>
+            <input type="text" id="autor" placeholder="Autor">
+            <button onclick="adicionarLivro()">Adicionar à Estante</button>
         </div>
 
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar..." onkeyup="renderizar()">
+            <input type="text" id="inputBusca" placeholder="Pesquisar título ou autor..." onkeyup="renderizar()">
         </div>
 
         <div id="listaLivros"></div>
@@ -46,38 +45,33 @@
     </div>
 
     <script>
+        // Chave oficial que usamos no início
         const CHAVE = 'biblioteca_luis';
         
-        // Carrega os dados garantindo compatibilidade para evitar o "undefined"
-        function carregarLivros() {
-            const dados = JSON.parse(localStorage.getItem(CHAVE)) || [];
-            return dados.map(item => ({
-                title: item.title || item.titulo || "Sem Título",
-                pages: item.pages || item.paginas || 0,
-                isbn: item.isbn || item.autor || "N/A"
-            }));
-        }
-
-        let meusLivros = carregarLivros();
+        // Carrega os livros e tenta recuperar dados de qualquer formato anterior
+        let meusLivros = (JSON.parse(localStorage.getItem(CHAVE)) || []).map(item => {
+            return {
+                titulo: item.titulo || item.title || "Sem título",
+                autor: item.autor || item.isbn || "Desconhecido"
+            };
+        });
 
         function adicionarLivro() {
             const t = document.getElementById('titulo').value;
-            const i = document.getElementById('isbn').value;
-            const p = document.getElementById('paginas').value;
+            const a = document.getElementById('autor').value;
 
-            if (!t) return alert("Título obrigatório!");
+            if (!t) return alert("Digite ao menos o título!");
 
-            const novo = { title: t, isbn: i, pages: p };
+            const novo = { titulo: t, autor: a };
             meusLivros.unshift(novo);
             salvar();
             
             document.getElementById('titulo').value = '';
-            document.getElementById('isbn').value = '';
-            document.getElementById('paginas').value = '';
+            document.getElementById('autor').value = '';
         }
 
         function removerLivro(index) {
-            if(confirm("Remover livro?")) {
+            if(confirm("Remover este livro?")) {
                 meusLivros.splice(index, 1);
                 salvar();
             }
@@ -94,22 +88,23 @@
             lista.innerHTML = '';
 
             meusLivros.forEach((livro, index) => {
-                // A pesquisa volta a verificar título e autor/isbn como antes
-                const termoBusca = (livro.title + " " + livro.isbn).toLowerCase();
+                // Busca em tudo: título e autor
+                const textoParaBusca = (livro.titulo + " " + livro.autor).toLowerCase();
                 
-                if (termoBusca.includes(busca)) {
+                if (textoParaBusca.includes(busca)) {
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
                         <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash"></i></button>
-                        <h4>${livro.title}</h4>
-                        <div class="info-extra">${livro.pages} páginas | ${livro.isbn}</div>
+                        <h4>${livro.titulo}</h4>
+                        <div class="info-extra">Autor: ${livro.autor}</div>
                     `;
                     lista.appendChild(div);
                 }
             });
         }
 
+        // Inicia a lista
         renderizar();
     </script>
 </body>
