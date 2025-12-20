@@ -3,122 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca Luis-Tech 📚</title>
+    <title>LAB-DEVELOPER-LUIS 💎</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 500px; }
-        .card-input { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; display: block; }
-        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        
-        .search-box { position: relative; margin-bottom: 20px; width: 100%; }
-        .search-box input { padding-left: 40px; border: 1px solid #3b82f6; width: 100%; }
-        .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
-
-        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; }
-        .info-detalhes { font-size: 0.85rem; color: #64748b; margin-top: 8px; line-height: 1.4; }
-        
-        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; display: block; text-align: center; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle at top right, #1e3a8a, #0f172a); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; }
+        .header { text-align: center; margin-top: 50px; margin-bottom: 30px; }
+        h1 span { font-weight: 800; color: #93c5fd; }
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; width: 90%; max-width: 900px; padding: 20px; }
+        .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 15px; border-radius: 24px; text-align: center; text-decoration: none; color: white; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
+        .card i { font-size: 32px; margin-bottom: 15px; color: #93c5fd; }
+        .card h3 { margin: 0; font-size: 13px; text-transform: uppercase; }
+        .card:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); border-color: #93c5fd; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h2 style="text-align: center;"><i class="fa-solid fa-book-bookmark"></i> Minha Estante</h2>
-        
-        <div class="card-input">
-            <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="text" id="autor" placeholder="Autor">
-            <input type="number" id="paginas" placeholder="Páginas">
-            <input type="text" id="edicao" placeholder="Edição">
-            <input type="text" id="isbn" placeholder="ISBN">
-            <button class="btn-add" onclick="adicionarLivro()">Adicionar à Estante</button>
-        </div>
-
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar título, autor ou tecnologia..." onkeyup="renderizar()">
-        </div>
-
-        <div id="listaLivros"></div>
-        <a href="index.html" class="back-link">← Voltar ao Lab</a>
+    <div class="header">
+        <h1>LAB-DEVELOPER-<span>LUIS</span></h1>
     </div>
 
-    <script>
-        const CHAVE = 'biblioteca_luis';
-
-        // Carregar dados de forma segura
-        function obterDados() {
-            try {
-                const dados = localStorage.getItem(CHAVE);
-                return dados ? JSON.parse(dados) : [];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        let meusLivros = obterDados();
-
-        function adicionarLivro() {
-            const novoLivro = {
-                t: document.getElementById('titulo').value,
-                a: document.getElementById('autor').value,
-                p: document.getElementById('paginas').value,
-                e: document.getElementById('edicao').value,
-                i: document.getElementById('isbn').value
-            };
-
-            if (!novoLivro.t) return alert("O título é obrigatório!");
-
-            meusLivros.unshift(novoLivro);
-            salvar();
-
-            // Limpar campos
-            ['titulo', 'autor', 'paginas', 'edicao', 'isbn'].forEach(id => document.getElementById(id).value = '');
-        }
-
-        function removerLivro(index) {
-            if(confirm("Deseja remover este livro?")) {
-                meusLivros.splice(index, 1);
-                salvar();
-            }
-        }
-
-        function salvar() {
-            localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
-            renderizar();
-        }
-
-        function renderizar() {
-            const lista = document.getElementById('listaLivros');
-            const busca = document.getElementById('inputBusca').value.toLowerCase();
-            lista.innerHTML = '';
-
-            meusLivros.forEach((livro, index) => {
-                // Pesquisa em todos os campos que você preencheu
-                const textoBusca = `${livro.t} ${livro.a} ${livro.e} ${livro.i}`.toLowerCase();
-                
-                if (textoBusca.includes(busca)) {
-                    const div = document.createElement('div');
-                    div.className = 'livro-item';
-                    div.innerHTML = `
-                        <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
-                        <h4>${livro.t || 'Sem Título'}</h4>
-                        <div class="info-detalhes">
-                            <b>Autor:</b> ${livro.a || '---'} | <b>Págs:</b> ${livro.p || '---'}<br>
-                            <b>Edição:</b> ${livro.e || '---'} | <b>ISBN:</b> ${livro.i || '---'}
-                        </div>
-                    `;
-                    lista.appendChild(div);
-                }
-            });
-        }
-
-        // Rodar ao abrir
-        renderizar();
-    </script>
+    <div class="container">
+        <a href="conversor.html" class="card">
+            <i class="fa-solid fa-comments-dollar"></i>
+            <h3>Conversor</h3>
+        </a>
+        <a href="lista-tarefas.html" class="card">
+            <i class="fa-solid fa-list-check"></i>
+            <h3>Tarefas</h3>
+        </a>
+        <a href="imc.html" class="card">
+            <i class="fa-solid fa-weight-scale"></i>
+            <h3>Saúde IMC</h3>
+        </a>
+        <a href="gerador-senhas.html" class="card">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3>Segurança</h3>
+        </a>
+        <a href="player.html" class="card">
+            <i class="fa-solid fa-circle-play"></i>
+            <h3>Player</h3>
+        </a>
+        <a href="clima.html" class="card">
+            <i class="fa-solid fa-cloud-sun-rain"></i>
+            <h3>Clima</h3>
+        </a>
+        <a href="qrcode.html" class="card">
+            <i class="fa-solid fa-qrcode"></i>
+            <h3>QR Code</h3>
+        </a>
+        <a href="biblioteca.html" class="card">
+            <i class="fa-solid fa-book"></i>
+            <h3>Biblioteca</h3>
+        </a>
+    </div>
 </body>
 </html>
