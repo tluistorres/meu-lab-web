@@ -15,19 +15,17 @@
         .search-box { width: 100%; max-width: 450px; margin-bottom: 15px; position: relative; }
         .search-box input { background: rgba(255, 255, 255, 0.9); color: #0f172a; font-weight: 500; padding-left: 40px; border-radius: 12px; }
         .search-box i { position: absolute; left: 15px; top: 18px; color: #64748b; }
-        .btn-principal { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
+        .btn-principal { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; }
         .btn-principal.editando { background: #f59e0b; }
         #listaLivros { width: 100%; max-width: 450px; }
-        .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.4s ease; }
+        .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; }
         .book-info h4 { margin: 0 0 5px 0; color: #1e3a8a; text-transform: capitalize; }
         .book-info p { margin: 2px 0; font-size: 0.85rem; color: #475569; }
-        .book-info span { color: #64748b; font-size: 0.75rem; font-style: italic; }
         .actions { display: flex; flex-direction: column; gap: 10px; }
-        .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+        .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
         .btn-edit { color: #3b82f6; }
         .btn-del { color: #ef4444; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -41,7 +39,7 @@
             <input type="text" id="editora" placeholder="Editora">
             <input type="number" id="paginas" placeholder="Páginas">
             <input type="date" id="dataPub">
-            <input type="text" id="edicao" placeholder="Edição (ex: 6ª Ed)">
+            <input type="text" id="edicao" placeholder="Edição">
             <input type="text" id="isbn" placeholder="ISBN" class="full-width">
         </div>
         <button id="btnSalvar" class="btn-principal" onclick="adicionarOuSalvar()"><i class="fa-solid fa-plus"></i> Cadastrar Livro</button>
@@ -49,16 +47,15 @@
 
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="busca" placeholder="Pesquisar por título ou autor..." onkeyup="renderizarLivros()">
+        <input type="text" id="busca" placeholder="Pesquisar..." onkeyup="renderizarLivros()">
     </div>
 
     <div id="listaLivros"></div>
-
     <a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a>
 
     <script>
-        // Nome da chave única para o recomeço limpo
-        const CHAVE = 'biblioteca_luis_v3';
+        // CHAVE ORIGINAL PARA NÃO SUMIR NADA:
+        const CHAVE = 'biblioteca_luis_final';
 
         let meusLivros = JSON.parse(localStorage.getItem(CHAVE)) || [];
         let indexEditando = -1;
@@ -89,83 +86,62 @@
                 resetarBotao();
             }
             
-            salvarDados();
+            localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
             renderizarLivros();
             limparFormulario();
         }
 
         function renderizarLivros() {
             const lista = document.getElementById('listaLivros');
-            const termoBusca = document.getElementById('busca').value.toLowerCase();
+            const termo = document.getElementById('busca').value.toLowerCase();
             lista.innerHTML = '';
 
-            const filtrados = meusLivros.filter(l => 
-                l.title.toLowerCase().includes(termoBusca) || 
-                l.author.toLowerCase().includes(termoBusca)
-            );
-
-            filtrados.forEach((livro) => {
-                const realIndex = meusLivros.indexOf(livro);
-                const card = document.createElement('div');
-                card.className = 'book-card';
-                
-                const dataF = livro.dataPub ? livro.dataPub.split('-').reverse().join('/') : 'n/a';
-
-                card.innerHTML = `
-                    <div class="book-info">
-                        <h4>${livro.title}</h4>
-                        <p><strong>Autor:</strong> ${livro.author}</p>
-                        <p><strong>Editora:</strong> ${livro.editora} | <strong>Edição:</strong> ${livro.edicao}</p>
-                        <p><strong>Páginas:</strong> ${livro.pages} | <strong>Data:</strong> ${dataF}</p>
-                        <span>ISBN: ${livro.isbn}</span>
-                    </div>
-                    <div class="actions">
-                        <button class="btn-action btn-edit" onclick="prepararEdicao(${realIndex})"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button class="btn-action btn-del" onclick="removerLivro(${realIndex})"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                `;
-                lista.appendChild(card);
+            meusLivros.forEach((livro, index) => {
+                // Pesquisa no Título ou Autor
+                if (livro.title.toLowerCase().includes(termo) || livro.author.toLowerCase().includes(termo)) {
+                    const card = document.createElement('div');
+                    card.className = 'book-card';
+                    card.innerHTML = `
+                        <div class="book-info">
+                            <h4>${livro.title}</h4>
+                            <p><strong>Autor:</strong> ${livro.author}</p>
+                            <p><strong>Editora:</strong> ${livro.editora} | <strong>Págs:</strong> ${livro.pages}</p>
+                            <p><strong>Edição:</strong> ${livro.edicao} | <strong>ISBN:</strong> ${livro.isbn}</p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-action btn-edit" onclick="prepararEdicao(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="btn-action btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    `;
+                    lista.appendChild(card);
+                }
             });
         }
 
         function prepararEdicao(index) {
-            const livro = meusLivros[index];
+            const l = meusLivros[index];
             indexEditando = index;
-            document.getElementById('titulo').value = livro.title;
-            document.getElementById('autor').value = livro.author;
-            document.getElementById('editora').value = livro.editora;
-            document.getElementById('paginas').value = livro.pages;
-            document.getElementById('dataPub').value = livro.dataPub;
-            document.getElementById('edicao').value = livro.edicao;
-            document.getElementById('isbn').value = livro.isbn;
-
-            const btn = document.getElementById('btnSalvar');
-            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
-            btn.classList.add('editando');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('titulo').value = l.title;
+            document.getElementById('autor').value = l.author;
+            document.getElementById('editora').value = l.editora;
+            document.getElementById('paginas').value = l.pages;
+            document.getElementById('dataPub').value = l.dataPub;
+            document.getElementById('edicao').value = l.edicao;
+            document.getElementById('isbn').value = l.isbn;
+            document.getElementById('btnSalvar').innerHTML = 'Salvar Alterações';
+            window.scrollTo(0,0);
         }
 
         function removerLivro(index) {
-            if(confirm("Remover este livro?")) {
+            if(confirm("Remover?")) {
                 meusLivros.splice(index, 1);
-                salvarDados();
+                localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
                 renderizarLivros();
             }
         }
 
-        function salvarDados() {
-            localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
-        }
-
-        function resetarBotao() {
-            const btn = document.getElementById('btnSalvar');
-            btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Livro';
-            btn.classList.remove('editando');
-        }
-
-        function limparFormulario() {
-            document.querySelectorAll('input:not(#busca)').forEach(input => input.value = '');
-        }
+        function resetarBotao() { document.getElementById('btnSalvar').innerHTML = 'Cadastrar Livro'; }
+        function limparFormulario() { document.querySelectorAll('input:not(#busca)').forEach(i => i.value = ''); }
     </script>
 </body>
 </html>
