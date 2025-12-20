@@ -8,25 +8,43 @@
     <style>
         body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 500px; }
-        .card-input { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; text-align: center; }
+        .card-input { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
-        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; text-align: left; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; }
-        .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 8px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; display: block; }
+        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        .btn-add:hover { background: #2563eb; }
+        
+        /* Estilo da Pesquisa */
+        .search-container { position: relative; margin-bottom: 15px; width: 100%; }
+        .search-container input { padding-left: 40px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); }
+        .search-container i { position: absolute; left: 15px; top: 22px; color: #93c5fd; }
+
+        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; animation: fadeIn 0.3s ease; }
+        .livro-item h4 { margin: 0; color: #1e3a8a; padding-right: 30px; }
+        .info-extra { font-size: 0.85rem; color: #64748b; margin-top: 5px; }
+        .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 10px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
+        
+        .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+        .btn-del:hover { color: #ef4444; transform: scale(1.1); }
+
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Minha Estante Luis-Tech</h2>
+        <h2 style="text-align: center;"><i class="fa-solid fa-book-bookmark"></i> Minha Estante</h2>
         
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="number" id="paginas" placeholder="Número de Páginas">
-            <input type="text" id="isbn" placeholder="ISBN">
+            <input type="number" id="paginas" placeholder="Nº de Páginas (Ex: 400)">
+            <input type="text" id="isbn" placeholder="ISBN (Opcional)">
             <button class="btn-add" onclick="adicionarLivro()">Adicionar à Estante</button>
+        </div>
+
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="inputBusca" placeholder="Pesquisar na estante..." onkeyup="filtrarLivros()">
         </div>
 
         <div id="listaLivros"></div>
@@ -34,7 +52,6 @@
     </div>
 
     <script>
-        // 1. Classe definida de forma simples
         class Book {
             constructor(title, pages, isbn) {
                 this.title = title || "Sem Título";
@@ -46,67 +63,63 @@
             }
         }
 
-        // 2. Variável global do histórico
-        let minhaEstante = [];
+        let minhaEstante = JSON.parse(localStorage.getItem('biblioteca_luis')) || [];
 
-        // 3. Função de carregar (com proteção total)
-        const carregarDados = () => {
-            try {
-                const dadosSalvos = localStorage.getItem('biblioteca_luis');
-                minhaEstante = dadosSalvos ? JSON.parse(dadosSalvos) : [];
-                renderizar();
-            } catch (err) {
-                console.error("Erro ao carregar:", err);
-                minhaEstante = [];
-                renderizar();
-            }
-        };
-
-        // 4. Função de adicionar
-        window.adicionarLivro = () => {
+        const adicionarLivro = () => {
             const t = document.getElementById('titulo').value;
             const p = document.getElementById('paginas').value;
             const i = document.getElementById('isbn').value;
 
-            if (!t) return alert("Digite o título!");
+            if (!t) return alert("O título é obrigatório!");
 
             const novo = new Book(t, p, i);
             minhaEstante.unshift({ title: novo.title, pages: novo.pages, isbn: novo.isbn });
-            
-            localStorage.setItem('biblioteca_luis', JSON.stringify(minhaEstante));
+            salvar();
             
             document.getElementById('titulo').value = '';
             document.getElementById('paginas').value = '';
             document.getElementById('isbn').value = '';
-            
-            renderizar();
         };
 
-        // 5. Função de renderizar
-        const renderizar = () => {
+        const removerLivro = (index) => {
+            if(confirm("Deseja remover este livro?")) {
+                minhaEstante.splice(index, 1);
+                salvar();
+            }
+        };
+
+        const filtrarLivros = () => {
+            const termo = document.getElementById('inputBusca').value.toLowerCase();
+            renderizar(termo);
+        };
+
+        const renderizar = (filtro = "") => {
             const lista = document.getElementById('listaLivros');
-            if (!lista) return;
             lista.innerHTML = '';
 
-            minhaEstante.forEach(item => {
-                // Criamos o objeto da classe para usar o método getTempo
-                const objLivro = new Book(item.title, item.pages, item.isbn);
-                
-                const div = document.createElement('div');
-                div.className = 'livro-item';
-                div.innerHTML = `
-                    <h4>${objLivro.title}</h4>
-                    <small>Páginas: ${objLivro.pages} | ISBN: ${objLivro.isbn}</small><br>
-                    <div class="tempo-tag">⏳ Estimativa: ${objLivro.getTempo()} dias</div>
-                `;
-                lista.appendChild(div);
+            minhaEstante.forEach((item, index) => {
+                if (item.title.toLowerCase().includes(filtro)) {
+                    const obj = new Book(item.title, item.pages, item.isbn);
+                    
+                    const div = document.createElement('div');
+                    div.className = 'livro-item';
+                    div.innerHTML = `
+                        <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
+                        <h4>${obj.title}</h4>
+                        <div class="info-extra">Páginas: ${obj.pages} | ISBN: ${obj.isbn}</div>
+                        <div class="tempo-tag">⏳ Estimativa: ${obj.getTempo()} dias</div>
+                    `;
+                    lista.appendChild(div);
+                }
             });
         };
 
-        // Iniciar tudo
-        carregarDados();
+        const salvar = () => {
+            localStorage.setItem('biblioteca_luis', JSON.stringify(minhaEstante));
+            renderizar();
+        };
+
+        window.onload = () => renderizar();
     </script>
 </body>
 </html>
-
-
