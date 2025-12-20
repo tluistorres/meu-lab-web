@@ -12,8 +12,9 @@
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
         .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
+        /* Estilo da sua pesquisa original */
         .search-box { position: relative; margin-bottom: 20px; }
-        .search-box input { padding-left: 40px; background: rgba(255,255,255,0.2); border: 1px solid #3b82f6; }
+        .search-box input { padding-left: 40px; background: rgba(255,255,255,0.15); border: 1px solid #3b82f6; }
         .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
 
         .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
@@ -28,18 +29,18 @@
 <body>
 
     <div class="container">
-        <h2 style="text-align: center;"><i class="fa-solid fa-book-bookmark"></i> Estante Inteligente</h2>
+        <h2 style="text-align: center;"><i class="fa-solid fa-book-bookmark"></i> Minha Estante</h2>
         
         <div class="card-input">
-            <input type="text" id="titulo" placeholder="Título ou Autor">
-            <input type="number" id="paginas" placeholder="Páginas">
-            <input type="text" id="isbn" placeholder="ISBN ou Detalhes">
-            <button class="btn-add" onclick="adicionarLivro()">Gravar na Estante</button>
+            <input type="text" id="titulo" placeholder="Título do Livro">
+            <input type="text" id="autor" placeholder="Autor">
+            <input type="number" id="paginas" placeholder="Nº de Páginas">
+            <button class="btn-add" onclick="adicionarLivro()">Adicionar</button>
         </div>
 
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquise por título, autor, páginas ou ISBN..." onkeyup="filtrar()">
+            <input type="text" id="inputBusca" placeholder="Pesquisar por título ou autor..." onkeyup="renderizar()">
         </div>
 
         <div id="listaLivros"></div>
@@ -47,86 +48,70 @@
     </div>
 
     <script>
-        class Book {
-            constructor(title, pages, isbn) {
-                this.title = title || "Sem nome";
-                this.pages = parseInt(pages) || 100;
-                this.isbn = isbn || "N/A";
-            }
-            getTempo() { return Math.ceil(this.pages / 50); }
+        // Função simples de carregar (chave original que você confirmou)
+        const CHAVE = 'biblioteca_luis';
+        let meusLivros = JSON.parse(localStorage.getItem(CHAVE)) || [];
+
+        function adicionarLivro() {
+            const t = document.getElementById('titulo').value;
+            const a = document.getElementById('autor').value;
+            const p = document.getElementById('paginas').value;
+
+            if (!t) return alert("Título é obrigatório!");
+
+            const novo = { 
+                titulo: t, 
+                autor: a, 
+                paginas: p || 100 
+            };
+
+            meusLivros.unshift(novo);
+            localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
+            
+            // Limpar
+            document.getElementById('titulo').value = '';
+            document.getElementById('autor').value = '';
+            document.getElementById('paginas').value = '';
+            
+            renderizar();
         }
 
-        const resgatarTudo = () => {
-            // Vasculha TODAS as chaves do seu navegador para não perder nada
-            let unificado = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const chave = localStorage.key(i);
-                try {
-                    const dados = JSON.parse(localStorage.getItem(chave));
-                    if (Array.isArray(dados)) {
-                        dados.forEach(item => {
-                            unificado.push({
-                                title: item.title || item.titulo || item.nome || "Título Antigo",
-                                pages: item.pages || item.paginas || 100,
-                                isbn: item.isbn || item.autor || item.detalhes || "N/A"
-                            });
-                        });
-                    }
-                } catch(e) {}
+        function removerLivro(index) {
+            if(confirm("Excluir livro?")) {
+                meusLivros.splice(index, 1);
+                localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
+                renderizar();
             }
-            // Remove duplicados exatos
-            return unificado.filter((v,i,a)=>a.findIndex(t=>(t.title===v.title))===i);
-        };
+        }
 
-        let minhaEstante = resgatarTudo();
-
-        const adicionarLivro = () => {
-            const t = document.getElementById('titulo').value;
-            const p = document.getElementById('paginas').value;
-            const i = document.getElementById('isbn').value;
-            if (!t) return alert("Título obrigatório!");
-            minhaEstante.unshift({ title: t, pages: p, isbn: i });
-            salvar();
-            document.getElementById('titulo').value = '';
-            document.getElementById('paginas').value = '';
-            document.getElementById('isbn').value = '';
-        };
-
-        const removerLivro = (index) => {
-            if(confirm("Remover?")) { minhaEstante.splice(index, 1); salvar(); }
-        };
-
-        const renderizar = (busca = "") => {
+        function renderizar() {
             const lista = document.getElementById('listaLivros');
+            const busca = document.getElementById('inputBusca').value.toLowerCase();
             lista.innerHTML = '';
-            const termo = busca.toLowerCase();
 
-            minhaEstante.forEach((item, index) => {
-                // PESQUISA MULTICAMPO: Título ou ISBN (onde você guardava o autor)
-                const buscaTexto = (item.title + " " + item.isbn).toLowerCase();
+            meusLivros.forEach((livro, index) => {
+                // Busca em Título OU Autor (como era na sua versão inicial)
+                const textoLivro = (livro.titulo + " " + (livro.autor || "")).toLowerCase();
                 
-                if (buscaTexto.includes(termo)) {
-                    const livro = new Book(item.title, item.pages, item.isbn);
+                if (textoLivro.includes(busca)) {
+                    // Cálculo simples direto na renderização
+                    const dias = Math.ceil((livro.paginas || 100) / 50);
+                    
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
                         <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash"></i></button>
-                        <h4>${livro.title}</h4>
-                        <div class="info-extra">${livro.pages} páginas | Ref: ${livro.isbn}</div>
-                        <div class="tempo-tag">⏳ Ler em ${livro.getTempo()} dias</div>
+                        <h4>${livro.titulo}</h4>
+                        <div class="info-extra">${livro.autor || 'Autor não informado'} | ${livro.paginas} págs.</div>
+                        <div class="tempo-tag">⏳ Estimativa: ${dias} dias</div>
                     `;
                     lista.appendChild(div);
                 }
             });
-        };
+        }
 
-        const filtrar = () => renderizar(document.getElementById('inputBusca').value);
-        const salvar = () => {
-            localStorage.setItem('biblioteca_luis', JSON.stringify(minhaEstante));
-            renderizar();
-        };
-
-        window.onload = () => renderizar();
+        // Inicializa
+        renderizar();
     </script>
 </body>
 </html>
