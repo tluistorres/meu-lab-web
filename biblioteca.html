@@ -9,19 +9,19 @@
         body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 500px; }
         .card-input { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; display: block; }
-        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; display: block; }
+        .btn-add { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
-        .search-box { position: relative; margin-bottom: 20px; }
-        .search-box input { padding-left: 40px; border: 1px solid #3b82f6; }
+        .search-box { position: relative; margin-bottom: 20px; width: 100%; }
+        .search-box input { padding-left: 40px; border: 1px solid #3b82f6; width: 100%; }
         .search-box i { position: absolute; left: 15px; top: 20px; color: #93c5fd; }
 
         .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; font-size: 1.1rem; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.85rem; color: #64748b; margin-top: 8px; }
+        .livro-item h4 { margin: 0; color: #1e3a8a; }
+        .info-detalhes { font-size: 0.85rem; color: #64748b; margin-top: 8px; line-height: 1.4; }
         
         .btn-del { position: absolute; top: 15px; right: 15px; color: #f87171; background: none; border: none; cursor: pointer; }
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
+        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; display: block; text-align: center; }
     </style>
 </head>
 <body>
@@ -32,52 +32,56 @@
         <div class="card-input">
             <input type="text" id="titulo" placeholder="Título do Livro">
             <input type="text" id="autor" placeholder="Autor">
-            <input type="number" id="paginas" placeholder="Nº de Páginas">
+            <input type="number" id="paginas" placeholder="Páginas">
             <input type="text" id="edicao" placeholder="Edição">
             <input type="text" id="isbn" placeholder="ISBN">
-            <button onclick="adicionarLivro()">Adicionar à Estante</button>
+            <button class="btn-add" onclick="adicionarLivro()">Adicionar à Estante</button>
         </div>
 
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="inputBusca" placeholder="Pesquisar em qualquer campo..." onkeyup="renderizar()">
+            <input type="text" id="inputBusca" placeholder="Pesquisar título, autor ou tecnologia..." onkeyup="renderizar()">
         </div>
 
         <div id="listaLivros"></div>
-        <center><a href="index.html" class="back-link">← Voltar ao Lab</a></center>
+        <a href="index.html" class="back-link">← Voltar ao Lab</a>
     </div>
 
     <script>
         const CHAVE = 'biblioteca_luis';
-        
-        // Carrega e tenta mapear o que existir para o formato novo
-        let meusLivros = (JSON.parse(localStorage.getItem(CHAVE)) || []).map(item => ({
-            titulo: item.titulo || item.title || "Sem título",
-            autor: item.autor || item.isbn || "Desconhecido",
-            paginas: item.paginas || item.pages || "---",
-            edicao: item.edicao || "---",
-            isbn: item.isbn || "---"
-        }));
+
+        // Carregar dados de forma segura
+        function obterDados() {
+            try {
+                const dados = localStorage.getItem(CHAVE);
+                return dados ? JSON.parse(dados) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        let meusLivros = obterDados();
 
         function adicionarLivro() {
-            const t = document.getElementById('titulo').value;
-            const a = document.getElementById('autor').value;
-            const p = document.getElementById('paginas').value;
-            const e = document.getElementById('edicao').value;
-            const i = document.getElementById('isbn').value;
+            const novoLivro = {
+                t: document.getElementById('titulo').value,
+                a: document.getElementById('autor').value,
+                p: document.getElementById('paginas').value,
+                e: document.getElementById('edicao').value,
+                i: document.getElementById('isbn').value
+            };
 
-            if (!t) return alert("Título é obrigatório!");
+            if (!novoLivro.t) return alert("O título é obrigatório!");
 
-            const novo = { titulo: t, autor: a, paginas: p, edicao: e, isbn: i };
-            meusLivros.unshift(novo);
+            meusLivros.unshift(novoLivro);
             salvar();
-            
-            // Limpa todos os campos
+
+            // Limpar campos
             ['titulo', 'autor', 'paginas', 'edicao', 'isbn'].forEach(id => document.getElementById(id).value = '');
         }
 
         function removerLivro(index) {
-            if(confirm("Remover este exemplar?")) {
+            if(confirm("Deseja remover este livro?")) {
                 meusLivros.splice(index, 1);
                 salvar();
             }
@@ -94,20 +98,18 @@
             lista.innerHTML = '';
 
             meusLivros.forEach((livro, index) => {
-                // PESQUISA TOTAL: Título, Autor, Edição ou ISBN
-                const textoCompleto = `${livro.titulo} ${livro.autor} ${livro.edicao} ${livro.isbn}`.toLowerCase();
+                // Pesquisa em todos os campos que você preencheu
+                const textoBusca = `${livro.t} ${livro.a} ${livro.e} ${livro.i}`.toLowerCase();
                 
-                if (textoCompleto.includes(busca)) {
+                if (textoBusca.includes(busca)) {
                     const div = document.createElement('div');
                     div.className = 'livro-item';
                     div.innerHTML = `
                         <button class="btn-del" onclick="removerLivro(${index})"><i class="fa-solid fa-trash-can"></i></button>
-                        <h4>${livro.titulo}</h4>
-                        <div class="info-grid">
-                            <span><strong>Autor:</strong> ${livro.autor}</span>
-                            <span><strong>Páginas:</strong> ${livro.paginas}</span>
-                            <span><strong>Edição:</strong> ${livro.edicao}</span>
-                            <span><strong>ISBN:</strong> ${livro.isbn}</span>
+                        <h4>${livro.t || 'Sem Título'}</h4>
+                        <div class="info-detalhes">
+                            <b>Autor:</b> ${livro.a || '---'} | <b>Págs:</b> ${livro.p || '---'}<br>
+                            <b>Edição:</b> ${livro.e || '---'} | <b>ISBN:</b> ${livro.i || '---'}
                         </div>
                     `;
                     lista.appendChild(div);
@@ -115,6 +117,7 @@
             });
         }
 
+        // Rodar ao abrir
         renderizar();
     </script>
 </body>
