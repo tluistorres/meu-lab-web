@@ -13,20 +13,20 @@
         input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
         input:focus { border-color: #3b82f6; }
         
-        /* Contador de Livros */
-        .contador { width: 100%; max-width: 450px; text-align: right; font-size: 0.9rem; color: #93c5fd; margin-bottom: 5px; font-weight: bold; }
+        /* Contador em Destaque */
+        .contador-badge { background: #3b82f6; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: inline-block; }
 
         .search-box { width: 100%; max-width: 450px; margin-bottom: 15px; position: relative; }
         .search-box input { background: rgba(255, 255, 255, 0.9); color: #0f172a; font-weight: 600; padding-left: 40px; border-radius: 12px; }
         .search-box i { position: absolute; left: 15px; top: 18px; color: #64748b; }
 
         .btn-principal { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
-        .btn-principal.editando { background: #f59e0b; }
         
         #listaLivros { width: 100%; max-width: 450px; }
         .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.4s ease; }
         .book-info h4 { margin: 0 0 5px 0; color: #1e3a8a; text-transform: capitalize; }
         .book-info p { margin: 2px 0; font-size: 0.85rem; color: #475569; }
+        .isbn-tag { font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 5px; }
 
         .actions { display: flex; flex-direction: column; gap: 10px; }
         .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
@@ -48,13 +48,13 @@
             <input type="text" id="editora" placeholder="Editora">
             <input type="number" id="paginas" placeholder="Páginas">
             <input type="date" id="dataPub">
-            <input type="text" id="edicao" placeholder="Edição (ex: 6ª Ed)">
+            <input type="text" id="edicao" placeholder="Edição (ex: 2ª Ed)">
             <input type="text" id="isbn" placeholder="ISBN" class="full-width">
         </div>
         <button id="btnSalvar" class="btn-principal" onclick="adicionarOuSalvar()"><i class="fa-solid fa-plus"></i> Cadastrar Livro</button>
     </div>
 
-    <div class="contador" id="contadorLivros">Total: 0 livros</div>
+    <div class="contador-badge" id="contadorLivros">Total: 0 exemplares</div>
 
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
@@ -66,7 +66,7 @@
 
     <script>
         const CHAVE = 'biblioteca_luis_final';
-        function buscarLivrosDoStorage() { return JSON.parse(localStorage.getItem(CHAVE)) || []; }
+        function buscarLivros() { return JSON.parse(localStorage.getItem(CHAVE)) || []; }
         let indexEditando = -1;
 
         function adicionarOuSalvar() {
@@ -74,8 +74,8 @@
             const a = document.getElementById('autor').value;
             if(!t || !a) return alert("Título e Autor são obrigatórios!");
 
-            let listaAtual = buscarLivrosDoStorage();
-            const livroObj = {
+            let lista = buscarLivros();
+            const livro = {
                 title: t, author: a, 
                 editora: document.getElementById('editora').value,
                 pages: document.getElementById('paginas').value,
@@ -84,33 +84,35 @@
                 isbn: document.getElementById('isbn').value
             };
 
-            if (indexEditando === -1) { listaAtual.push(livroObj); } 
-            else { listaAtual[indexEditando] = livroObj; indexEditando = -1; resetarBotao(); }
+            if (indexEditando === -1) { lista.push(livro); } 
+            else { lista[indexEditando] = livro; indexEditando = -1; }
             
-            localStorage.setItem(CHAVE, JSON.stringify(listaAtual));
+            localStorage.setItem(CHAVE, JSON.stringify(lista));
             limparFormulario();
             renderizarLivros();
         }
 
         function renderizarLivros() {
             const listaDiv = document.getElementById('listaLivros');
-            const termoBusca = document.getElementById('busca').value.toLowerCase();
-            const livros = buscarLivrosDoStorage();
+            const termo = document.getElementById('busca').value.toLowerCase();
+            const livros = buscarLivros();
             
-            document.getElementById('contadorLivros').innerText = `Total: ${livros.length} livros`;
+            // Atualiza o contador
+            document.getElementById('contadorLivros').innerHTML = `<i class="fa-solid fa-book"></i> Total: ${livros.length} exemplares`;
+            
             listaDiv.innerHTML = '';
-
-            livros.forEach((livro, index) => {
-                if (livro.title.toLowerCase().includes(termoBusca) || livro.author.toLowerCase().includes(termoBusca)) {
-                    const dataF = livro.dataPub ? livro.dataPub.split('-').reverse().join('/') : 'n/a';
+            livros.forEach((l, index) => {
+                if (l.title.toLowerCase().includes(termo) || l.author.toLowerCase().includes(termo)) {
+                    const dataF = l.dataPub ? l.dataPub.split('-').reverse().join('/') : 'n/a';
                     const card = document.createElement('div');
                     card.className = 'book-card';
                     card.innerHTML = `
                         <div class="book-info">
-                            <h4>${livro.title}</h4>
-                            <p><strong>Autor:</strong> ${livro.author}</p>
-                            <p><strong>Editora:</strong> ${livro.editora} | <strong>Edição:</strong> ${livro.edicao}</p>
-                            <p><strong>Páginas:</strong> ${livro.pages} | <strong>Data:</strong> ${dataF}</p>
+                            <h4>${l.title}</h4>
+                            <p><strong>Autor:</strong> ${l.author}</p>
+                            <p><strong>Editora:</strong> ${l.editora} | <strong>Edição:</strong> ${l.edicao}</p>
+                            <p><strong>Páginas:</strong> ${l.pages} | <strong>Data:</strong> ${dataF}</p>
+                            <span class="isbn-tag">ISBN: ${l.isbn}</span>
                         </div>
                         <div class="actions">
                             <button class="btn-action btn-edit" onclick="prepararEdicao(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -122,10 +124,9 @@
             });
         }
 
-        function prepararEdicao(index) {
-            const lista = buscarLivrosDoStorage();
-            const l = lista[index];
-            indexEditando = index;
+        function prepararEdicao(idx) {
+            const l = buscarLivros()[idx];
+            indexEditando = idx;
             document.getElementById('titulo').value = l.title;
             document.getElementById('autor').value = l.author;
             document.getElementById('editora').value = l.editora;
@@ -133,29 +134,22 @@
             document.getElementById('dataPub').value = l.dataPub;
             document.getElementById('edicao').value = l.edicao;
             document.getElementById('isbn').value = l.isbn;
-            const btn = document.getElementById('btnSalvar');
-            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
-            btn.classList.add('editando');
+            document.getElementById('btnSalvar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function removerLivro(index) {
-            if(confirm("Deseja remover este livro?")) {
-                let lista = buscarLivrosDoStorage();
-                lista.splice(index, 1);
+        function removerLivro(idx) {
+            if(confirm("Remover livro?")) {
+                let lista = buscarLivros();
+                lista.splice(idx, 1);
                 localStorage.setItem(CHAVE, JSON.stringify(lista));
                 renderizarLivros();
             }
         }
 
-        function resetarBotao() {
-            const btn = document.getElementById('btnSalvar');
-            btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Livro';
-            btn.classList.remove('editando');
-        }
-
         function limparFormulario() {
-            document.querySelectorAll('input:not(#busca)').forEach(input => input.value = '');
+            document.querySelectorAll('.container input').forEach(i => i.value = '');
+            document.getElementById('btnSalvar').innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Livro';
         }
 
         window.onload = renderizarLivros;
