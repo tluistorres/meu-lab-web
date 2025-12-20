@@ -6,46 +6,26 @@
     <title>Minha Biblioteca Pro 📚</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
-            background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center;
-        }
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
         .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; backdrop-filter: blur(10px); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .full-width { grid-column: span 2; }
-        
-        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
         input:focus { border-color: #3b82f6; }
-        
-        /* Estilo da Barra de Pesquisa */
-        .search-box {
-            width: 100%; max-width: 450px; margin-bottom: 15px; position: relative;
-        }
-        .search-box input {
-            background: rgba(255, 255, 255, 0.9); color: #0f172a; font-weight: 500;
-            padding-left: 40px; border-radius: 12px;
-        }
-        .search-box i {
-            position: absolute; left: 15px; top: 18px; color: #64748b;
-        }
-
+        .search-box { width: 100%; max-width: 450px; margin-bottom: 15px; position: relative; }
+        .search-box input { background: rgba(255, 255, 255, 0.9); color: #0f172a; font-weight: 500; padding-left: 40px; border-radius: 12px; }
+        .search-box i { position: absolute; left: 15px; top: 18px; color: #64748b; }
         .btn-principal { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
         .btn-principal.editando { background: #f59e0b; }
-        .btn-principal:hover { transform: scale(1.01); filter: brightness(1.1); }
-        
         #listaLivros { width: 100%; max-width: 450px; }
         .book-card { background: white; color: #1e293b; padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; animation: fadeIn 0.4s ease; }
-        
         .book-info h4 { margin: 0 0 5px 0; color: #1e3a8a; text-transform: capitalize; }
         .book-info p { margin: 2px 0; font-size: 0.85rem; color: #475569; }
         .book-info span { color: #64748b; font-size: 0.75rem; font-style: italic; }
-
         .actions { display: flex; flex-direction: column; gap: 10px; }
         .btn-action { background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
         .btn-edit { color: #3b82f6; }
         .btn-del { color: #ef4444; }
-
         .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
         @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
@@ -87,9 +67,31 @@
             this.isbn = isbn || 'Sem ISBN';
         }
 
-        let meusLivros = JSON.parse(localStorage.getItem('biblioteca_luis_final')) || [];
-        let indexEditando = -1;
+        // --- LÓGICA DE MIGRAÇÃO ---
+        const CHAVE_NOVA = 'biblioteca_luis_final';
+        const CHAVE_ANTIGA = 'biblioteca_luis';
 
+        let meusLivros = JSON.parse(localStorage.getItem(CHAVE_NOVA)) || [];
+
+        // Se a nova estiver vazia, tenta resgatar da antiga
+        if (meusLivros.length === 0) {
+            const dadosAntigos = JSON.parse(localStorage.getItem(CHAVE_ANTIGA));
+            if (dadosAntigos && Array.isArray(dadosAntigos)) {
+                // Converte os dados antigos para o novo formato da classe Book
+                meusLivros = dadosAntigos.map(item => new Book(
+                    item.titulo || item.title,
+                    item.autor || item.author,
+                    item.editora,
+                    item.paginas || item.pages,
+                    item.dataPub,
+                    item.edicao,
+                    item.isbn
+                ));
+                localStorage.setItem(CHAVE_NOVA, JSON.stringify(meusLivros));
+            }
+        }
+
+        let indexEditando = -1;
         window.onload = renderizarLivros;
 
         function adicionarOuSalvar() {
@@ -123,20 +125,17 @@
             const termoBusca = document.getElementById('busca').value.toLowerCase();
             lista.innerHTML = '';
 
-            // FILTRAGEM INTELIGENTE
             const livrosFiltrados = meusLivros.filter(livro => 
-                livro.title.toLowerCase().includes(termoBusca) || 
-                livro.author.toLowerCase().includes(termoBusca)
+                (livro.title && livro.title.toLowerCase().includes(termoBusca)) || 
+                (livro.author && livro.author.toLowerCase().includes(termoBusca))
             );
 
-            livrosFiltrados.forEach((livro, index) => {
-                // Encontrar o index real no array original para edição/exclusão
+            livrosFiltrados.forEach((livro) => {
                 const indexReal = meusLivros.indexOf(livro);
-                
                 const card = document.createElement('div');
                 card.className = 'book-card';
                 
-                const dataFormatada = livro.dataPub !== 'Data n/a' 
+                const dataFormatada = (livro.dataPub && livro.dataPub !== 'Data n/a') 
                     ? livro.dataPub.split('-').reverse().join('/') 
                     : 'Data n/a';
 
@@ -145,16 +144,12 @@
                         <h4>${livro.title}</h4>
                         <p><strong>Autor:</strong> ${livro.author}</p>
                         <p><strong>Editora:</strong> ${livro.editora} | <strong>Edição:</strong> ${livro.edicao}</p>
-                        <p><strong>Páginas:</strong> ${livro.pages} | <strong>Publicado em:</strong> ${dataFormatada}</p>
+                        <p><strong>Páginas:</strong> ${livro.pages} | <strong>Publicado:</strong> ${dataFormatada}</p>
                         <span>ISBN: ${livro.isbn}</span>
                     </div>
                     <div class="actions">
-                        <button class="btn-action btn-edit" onclick="prepararEdicao(${indexReal})">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button class="btn-action btn-del" onclick="removerLivro(${indexReal})">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        <button class="btn-action btn-edit" onclick="prepararEdicao(${indexReal})"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="btn-action btn-del" onclick="removerLivro(${indexReal})"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 `;
                 lista.appendChild(card);
@@ -193,7 +188,7 @@
         }
 
         function atualizarStorage() {
-            localStorage.setItem('biblioteca_luis_final', JSON.stringify(meusLivros));
+            localStorage.setItem(CHAVE_NOVA, JSON.stringify(meusLivros));
         }
 
         function limparFormulario() {
