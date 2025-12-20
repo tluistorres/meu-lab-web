@@ -1,70 +1,29 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca Luis-Tech 📚</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 500px; }
-        .card-input { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        
-        .livro-item { background: white; color: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #3b82f6; position: relative; }
-        .livro-item h4 { margin: 0; color: #1e3a8a; }
-        .info-extra { font-size: 0.8rem; color: #64748b; margin-top: 5px; }
-        .tempo-tag { display: inline-block; margin-top: 8px; padding: 4px 8px; background: #dbeafe; color: #1e40af; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
-        
-        .back-link { margin-top: 20px; color: #93c5fd; text-decoration: none; font-size: 0.9rem; }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h2>Minha Biblioteca Técnica</h2>
-        
-        <div class="card-input">
-            <input type="text" id="titulo" placeholder="Título do Livro">
-            <input type="number" id="paginas" placeholder="Total de Páginas">
-            <input type="text" id="isbn" placeholder="ISBN (Ex: 978-85)">
-            <button onclick="adicionarLivro()">Adicionar à Estante</button>
-        </div>
-
-        <div id="listaLivros"></div>
-        <center><a href="index.html" class="back-link">← Voltar ao Lab</a></center>
-    </div>
-
-    <script>
-        // 1. A Classe que você testou no console
+<script>
         class Book {
             constructor(title, pages, isbn) {
                 this.title = title;
-                this.pages = Number(pages);
-                this.isbn = isbn;
+                // Se o livro antigo não tiver páginas, assume 100 para não quebrar o cálculo
+                this.pages = Number(pages) || 100; 
+                this.isbn = isbn || "N/A";
             }
 
-            // O método de cálculo que criamos
             calcularTempoLeitura() {
                 const paginasPorDia = 50;
                 return Math.ceil(this.pages / paginasPorDia);
             }
         }
 
-        // Banco de dados local
-        let minhaEstante = JSON.parse(localStorage.getItem('estante_luis')) || [];
+        // AGORA USANDO A SUA CHAVE CORRETA: biblioteca_luis
+        let minhaEstante = JSON.parse(localStorage.getItem('biblioteca_luis')) || [];
 
         const adicionarLivro = () => {
             const t = document.getElementById('titulo').value;
             const p = document.getElementById('paginas').value;
             const i = document.getElementById('isbn').value;
 
-            if (!t || !p) return alert("Preencha Título e Páginas!");
+            if (!t) return alert("Pelo menos o título é obrigatório!");
 
-            // Criando uma nova instância da classe Book
             const novoLivro = new Book(t, p, i);
-            
             minhaEstante.unshift(novoLivro);
             salvar();
             limparCampos();
@@ -75,7 +34,6 @@
             lista.innerHTML = '';
 
             minhaEstante.forEach(dados => {
-                // Re-instanciando para recuperar os métodos da classe
                 const livro = new Book(dados.title, dados.pages, dados.isbn);
                 const dias = livro.calcularTempoLeitura();
 
@@ -83,7 +41,7 @@
                 div.className = 'livro-item';
                 div.innerHTML = `
                     <h4>${livro.title}</h4>
-                    <div class="info-extra">Páginas: ${livro.pages} | ISBN: ${livro.isbn || 'N/A'}</div>
+                    <div class="info-extra">Páginas: ${livro.pages} | ISBN: ${livro.isbn}</div>
                     <div class="tempo-tag">
                         <i class="fa-solid fa-hourglass-half"></i> Estimativa: ${dias} dias de leitura
                     </div>
@@ -93,7 +51,8 @@
         };
 
         const salvar = () => {
-            localStorage.setItem('estante_luis', JSON.stringify(minhaEstante));
+            // SALVANDO NA CHAVE CORRETA
+            localStorage.setItem('biblioteca_luis', JSON.stringify(minhaEstante));
             renderizar();
         };
 
@@ -105,7 +64,5 @@
 
         window.onload = renderizar;
     </script>
-</body>
-</html>
 
 
