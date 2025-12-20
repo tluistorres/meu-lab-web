@@ -10,7 +10,7 @@
         .container { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; backdrop-filter: blur(10px); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .full-width { grid-column: span 2; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
+        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; outline: none; border: 1px solid transparent; }
         input:focus { border-color: #3b82f6; }
         .search-box { width: 100%; max-width: 450px; margin-bottom: 15px; position: relative; }
         .search-box input { background: rgba(255, 255, 255, 0.9); color: #0f172a; font-weight: 500; padding-left: 40px; border-radius: 12px; }
@@ -57,41 +57,12 @@
     <a href="index.html" class="back-link">⬅ Voltar ao Laboratório</a>
 
     <script>
-        function Book(title, author, editora, pages, dataPub, edicao, isbn) {
-            this.title = title;
-            this.author = author || 'Autor desconhecido';
-            this.editora = editora || 'Não informada';
-            this.pages = pages || '0';
-            this.dataPub = dataPub || 'Data n/a';
-            this.edicao = edicao || '1ª Ed';
-            this.isbn = isbn || 'Sem ISBN';
-        }
+        // Nome da chave única para o recomeço limpo
+        const CHAVE = 'biblioteca_luis_v3';
 
-        // --- LÓGICA DE MIGRAÇÃO ---
-        const CHAVE_NOVA = 'biblioteca_luis_final';
-        const CHAVE_ANTIGA = 'biblioteca_luis';
-
-        let meusLivros = JSON.parse(localStorage.getItem(CHAVE_NOVA)) || [];
-
-        // Se a nova estiver vazia, tenta resgatar da antiga
-        if (meusLivros.length === 0) {
-            const dadosAntigos = JSON.parse(localStorage.getItem(CHAVE_ANTIGA));
-            if (dadosAntigos && Array.isArray(dadosAntigos)) {
-                // Converte os dados antigos para o novo formato da classe Book
-                meusLivros = dadosAntigos.map(item => new Book(
-                    item.titulo || item.title,
-                    item.autor || item.author,
-                    item.editora,
-                    item.paginas || item.pages,
-                    item.dataPub,
-                    item.edicao,
-                    item.isbn
-                ));
-                localStorage.setItem(CHAVE_NOVA, JSON.stringify(meusLivros));
-            }
-        }
-
+        let meusLivros = JSON.parse(localStorage.getItem(CHAVE)) || [];
         let indexEditando = -1;
+
         window.onload = renderizarLivros;
 
         function adicionarOuSalvar() {
@@ -105,7 +76,10 @@
 
             if(!t || !a) return alert("Título e Autor são obrigatórios!");
 
-            const novoLivro = new Book(t, a, ed, p, d, edi, i);
+            const novoLivro = { 
+                title: t, author: a, editora: ed, pages: p, 
+                dataPub: d, edicao: edi, isbn: i 
+            };
 
             if (indexEditando === -1) {
                 meusLivros.push(novoLivro);
@@ -115,7 +89,7 @@
                 resetarBotao();
             }
             
-            atualizarStorage();
+            salvarDados();
             renderizarLivros();
             limparFormulario();
         }
@@ -125,31 +99,29 @@
             const termoBusca = document.getElementById('busca').value.toLowerCase();
             lista.innerHTML = '';
 
-            const livrosFiltrados = meusLivros.filter(livro => 
-                (livro.title && livro.title.toLowerCase().includes(termoBusca)) || 
-                (livro.author && livro.author.toLowerCase().includes(termoBusca))
+            const filtrados = meusLivros.filter(l => 
+                l.title.toLowerCase().includes(termoBusca) || 
+                l.author.toLowerCase().includes(termoBusca)
             );
 
-            livrosFiltrados.forEach((livro) => {
-                const indexReal = meusLivros.indexOf(livro);
+            filtrados.forEach((livro) => {
+                const realIndex = meusLivros.indexOf(livro);
                 const card = document.createElement('div');
                 card.className = 'book-card';
                 
-                const dataFormatada = (livro.dataPub && livro.dataPub !== 'Data n/a') 
-                    ? livro.dataPub.split('-').reverse().join('/') 
-                    : 'Data n/a';
+                const dataF = livro.dataPub ? livro.dataPub.split('-').reverse().join('/') : 'n/a';
 
                 card.innerHTML = `
                     <div class="book-info">
                         <h4>${livro.title}</h4>
                         <p><strong>Autor:</strong> ${livro.author}</p>
                         <p><strong>Editora:</strong> ${livro.editora} | <strong>Edição:</strong> ${livro.edicao}</p>
-                        <p><strong>Páginas:</strong> ${livro.pages} | <strong>Publicado:</strong> ${dataFormatada}</p>
+                        <p><strong>Páginas:</strong> ${livro.pages} | <strong>Data:</strong> ${dataF}</p>
                         <span>ISBN: ${livro.isbn}</span>
                     </div>
                     <div class="actions">
-                        <button class="btn-action btn-edit" onclick="prepararEdicao(${indexReal})"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button class="btn-action btn-del" onclick="removerLivro(${indexReal})"><i class="fa-solid fa-trash-can"></i></button>
+                        <button class="btn-action btn-edit" onclick="prepararEdicao(${realIndex})"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="btn-action btn-del" onclick="removerLivro(${realIndex})"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 `;
                 lista.appendChild(card);
@@ -173,22 +145,22 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function resetarBotao() {
-            const btn = document.getElementById('btnSalvar');
-            btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Livro';
-            btn.classList.remove('editando');
-        }
-
         function removerLivro(index) {
-            if(confirm("Deseja remover este livro?")) {
+            if(confirm("Remover este livro?")) {
                 meusLivros.splice(index, 1);
-                atualizarStorage();
+                salvarDados();
                 renderizarLivros();
             }
         }
 
-        function atualizarStorage() {
-            localStorage.setItem(CHAVE_NOVA, JSON.stringify(meusLivros));
+        function salvarDados() {
+            localStorage.setItem(CHAVE, JSON.stringify(meusLivros));
+        }
+
+        function resetarBotao() {
+            const btn = document.getElementById('btnSalvar');
+            btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Livro';
+            btn.classList.remove('editando');
         }
 
         function limparFormulario() {
