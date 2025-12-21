@@ -238,4 +238,374 @@ Teste 2: Demonstra o Efeito Cascata. O Ebook é, ao mesmo tempo, um ITBook e um 
 
 Com este teste a passar, o Capítulo 1 está oficialmente concluído e blindado! Estás pronto para enviar para o GitHub e começar o Capítulo 2?
 
+## Capítulo 2: Gestão de Coleções e Manipulação de Arrays
+
+Neste capítulo, vamos criar uma classe Library (Livraria) que funcionará como um banco de dados em memória para gerenciar nossos livros.
+
+1. O Conceito de "Container"
+
+Uma classe não precisa sempre representar um objeto físico; ela pode ser uma ferramenta de gestão. A nossa Library terá um Array interno para guardar os livros.
+
+2. Mão na Massa: Criando o 18-Library.js
+
+Crie um novo arquivo para gerenciar seu acervo:
+
+JavaScript
+
+export default class Library {
+    constructor() {
+        this.books = []; // Nossa "estante" de livros
+    }
+
+    // Adiciona um livro à coleção
+    addBook(book) {
+        this.books.push(book);
+        console.log(`Adicionado: ${book.title}`);
+    }
+
+    // LISTAR (Map): Transforma o array de objetos em um array de strings (títulos)
+    getInventory() {
+        return this.books.map(book => book.title);
+    }
+
+    // BUSCAR (Find): Localiza o primeiro livro de uma determinada tecnologia
+    findTechBook(tech) {
+        return this.books.find(book => book.technology === tech);
+    }
+
+    // FILTRAR (Filter): Retorna todos os livros com mais de X páginas
+    findLargeBooks(minPages) {
+        return this.books.filter(book => book.pages > minPages);
+    }
+
+    // TOTALIZAR (Reduce): Soma o total de páginas de todo o acervo
+    getTotalPages() {
+        return this.books.reduce((total, book) => total + book.pages, 0);
+    }
+}
+3. Por que usar esses métodos (Map, Filter, Reduce)?
+
+Antigamente, usávamos o laço for para tudo. Hoje, esses métodos são o padrão da indústria porque:
+
+São Declarativos: Você diz o que quer, não como fazer.
+
+Menos Bugs: Evitam erros comuns de contagem em índices de arrays.
+
+Imutabilidade: Eles geralmente retornam um novo array em vez de modificar o original (o que é ótimo para segurança de dados).
+
+4. Preparando o Teste Prático
+
+Vamos ver essa livraria funcionando com diferentes tipos de livros que criamos no Capítulo 1.
+
+Atualize o seu package.json para o teste do Capítulo 2:
+
+JSON
+
+"test-cap2": "npm run build && node -e \"const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); lib.addBook(new ITBook('Node', 450, 'Backend')); lib.addBook(new ITBook('Python', 150, 'Data Science')); console.log('\\nInventário:', lib.getInventory()); console.log('Total de páginas no acervo:', lib.getTotalPages());\""
+(Não esqueça de adicionar 18-Library.js ao comando de build no package.json!)
+
+O que vamos praticar agora:
+
+Composição: Uma classe (Library) que contém instâncias de outra classe (Book).
+
+Lógica de Negócio: Como extrair relatórios (Total de páginas, lista de títulos) de um conjunto de dados.
+
+Podemos seguir com a criação do arquivo 18-Library.js e rodar esse teste? Se estiver pronto, me avise para refinarmos a lógica de busca!
+
+## Vamos colocar a mão na massa. O segredo aqui é entender que a Library é o cérebro que organiza todos os objetos que criamos no Capítulo 1.
+
+1. Criar o arquivo 18-Library.js
+
+Crie o arquivo e cole o código abaixo. Note que aqui usamos métodos funcionais, que são a base do JavaScript moderno:
+
+JavaScript
+
+export default class Library {
+    constructor() {
+        this.books = [];
+    }
+
+    addBook(book) {
+        this.books.push(book);
+        console.log(`> Sucesso: "${book.title}" guardado na estante.`);
+    }
+
+    // MAP: Retorna apenas os nomes dos livros (uma lista de strings)
+    getInventory() {
+        return this.books.map(book => book.title);
+    }
+
+    // FILTER: Retorna um sub-array apenas com livros de uma certa tecnologia
+    filterByTech(tech) {
+        return this.books.filter(book => book.technology === tech);
+    }
+
+    // REDUCE: Transforma o array inteiro em um único número (a soma das páginas)
+    calculateTotalPages() {
+        return this.books.reduce((total, book) => total + book.pages, 0);
+    }
+}
+
+2. Atualizar o package.json para o Capítulo 2
+
+Precisamos ajustar o comando de build para incluir o novo arquivo e o comando test-cap2 para executar a lógica da livraria.
+
+Substitua a seção de scripts:
+
+JSON
+
+"scripts": {
+  "build": "babel 17-Book.js 17-ITBook.js 17-Ebook.js 18-Library.js --out-dir lib && cp lib/*.js lib/*.cjs",
+  "test-cap2": "npm run build && node -e \"const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); lib.addBook(new ITBook('Node.js', 450, 'Backend')); lib.addBook(new ITBook('Docker', 200, 'DevOps')); console.log('\\n--- RELATÓRIO DA BIBLIOTECA ---'); console.log('Livros disponíveis:', lib.getInventory()); console.log('Total de páginas no acervo:', lib.calculateTotalPages()); const devops = lib.filterByTech('DevOps'); console.log('Livros de DevOps encontrados:', devops.length);\""
+}
+
+3. Executar o Teste
+
+No terminal:
+
+Bash
+
+npm run test-cap2
+
+Por que este passo é crucial para o seu Ebook?
+Nesta fase, o leitor aprende que objetos não vivem sozinhos. No Capítulo 1, focamos na "anatomia" do livro (a classe). No Capítulo 2, focamos no "ecossistema" (a livraria).
+
+# O que observar na saída:
+
+ - Iteração: Como o map percorreu cada livro e extraiu apenas o título.
+
+ - Acumulação: Como o reduce começou em 0 e foi somando as páginas de cada objeto.
+
+ - Estado: A instância lib mantém todos os livros salvos na memória enquanto o programa rodar.
+
+ - Conseguiu rodar? Se o relatório aparecer corretamente no terminal, podemos adicionar uma funcionalidade de Busca por Nome usando o método .find(), que é essencial para qualquer sistema de busca. Quer tentar?
+
+ ## Agora que a nossa Library já consegue listar e somar páginas, vamos adicionar a "cereja do bolo" da manipulação de dados: a Busca Refinada e a Ordenação.
+
+No mundo real, os dados raramente chegam organizados. O seu sistema precisa saber encontrar um agulha no palheiro e entregar os resultados em ordem.
+
+1. Evoluindo a 18-Library.js
+
+Vamos adicionar dois métodos fundamentais:
+
+.find(): Para localizar um livro específico pelo título (retorna o objeto inteiro).
+
+.sort(): Para organizar os livros por número de páginas (do menor para o maior).
+
+Atualize seu arquivo 18-Library.js:
+
+JavaScript
+
+export default class Library {
+    constructor() {
+        this.books = [];
+    }
+
+    addBook(book) {
+        this.books.push(book);
+        console.log(`> Sucesso: "${book.title}" guardado.`);
+    }
+
+    getInventory() {
+        return this.books.map(book => book.title);
+    }
+
+    // FIND: Retorna o primeiro objeto que encontrar com esse título exato
+    findBookByTitle(title) {
+        const found = this.books.find(book => book.title === title);
+        return found ? found : "Livro não encontrado.";
+    }
+
+    // SORT: Organiza os livros. 
+    // (a, b) => a.pages - b.pages ordena do menor para o maior
+    sortByPages() {
+        return [...this.books].sort((a, b) => a.pages - b.pages);
+    }
+
+    calculateTotalPages() {
+        return this.books.reduce((total, book) => total + book.pages, 0);
+    }
+}
+
+2. Dica de Ouro: O "Spread Operator" ([...])
+
+Repare que no sortByPages usei [...this.books].
+
+Por que? O método .sort() do JavaScript é "destrutivo", ou seja, ele altera a ordem do array original.
+
+A Boa Prática: Usamos os três pontos ... para criar uma cópia rápida do array antes de ordenar. Assim, a nossa estante original permanece na ordem em que os livros foram comprados/adicionados.
+
+3. Teste de Busca e Ordenação no package.json
+
+Vamos atualizar o script de teste para validar se a busca funciona e se a ordenação está correta:
+
+JSON
+
+"test-cap2": "npm run build && node -e \"const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); lib.addBook(new ITBook('Node.js', 450, 'Backend')); lib.addBook(new ITBook('Docker', 100, 'DevOps')); console.log('\\n--- BUSCA ---'); console.log('Buscando Node.js:', lib.findBookByTitle('Node.js').title); console.log('\\n--- ORDENAÇÃO (Menos páginas primeiro) ---'); lib.sortByPages().forEach(b => console.log(` + b.title + ': ' + b.pages + ' pags'));\""
+4. Executar e Observar
+Rode no terminal:
+
+Bash
+
+npm run test-cap2
+
+O que você verá:
+
+ - A busca retornará o objeto "Node.js".
+
+ - A lista final mostrará Docker (100) antes de React (300), provando que o motor de ordenação funcionou.
+
+ - O que acha de finalizarmos o Capítulo 2 com um pequeno desafio de "Remoção de Livros"? (Usando o método .filter() para excluir um livro da estante).
+
+ ## Vamos fechar o Capítulo 2 com a funcionalidade de Remoção, que é o teste definitivo para o seu controle de "estado" da livraria.
+
+Na programação, remover um item de uma lista quase nunca significa "apagar" fisicamente, mas sim gerar uma nova lista que não contenha aquele item específico.
+
+1. Implementando a Remoção no 18-Library.js
+
+Para remover, usaremos o método .filter(). A lógica é: "Quero todos os livros, exceto aquele que tem o título X".
+
+Adicione este método ao seu arquivo:
+
+JavaScript
+
+    // DELETE: Remove um livro pelo título
+    removeBook(title) {
+        const initialCount = this.books.length;
+        // Filtramos a lista mantendo apenas quem NÃO tem o título informado
+        this.books = this.books.filter(book => book.title !== title);
+        
+        if (this.books.length < initialCount) {
+            console.log(`> Sucesso: "${title}" foi removido do acervo.`);
+        } else {
+            console.log(`> Aviso: "${title}" não foi encontrado para remoção.`);
+        }
+    }
+2. Script de Teste Completo (O Gran Finale do Cap. 2)
+
+Vamos atualizar o seu package.json para fazer o ciclo completo: Adicionar, Listar, Ordenar e Remover.
+
+JSON
+
+"test-cap2": "npm run build && node -e \"const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); lib.addBook(new ITBook('Node', 450, 'Backend')); lib.addBook(new ITBook('Docker', 100, 'DevOps')); console.log('\\n--- ESTADO INICIAL ---'); console.log(lib.getInventory()); console.log('\\n--- REMOVENDO NODE ---'); lib.removeBook('Node'); console.log('\\n--- ESTADO FINAL ---'); console.log(lib.getInventory());\""
+
+3. Por que isso encerra o Capítulo 2?
+Com essa última peça, você ensinou ao leitor as 4 operações básicas de qualquer sistema de dados (CRUD - Create, Read, Update, Delete), mas usando Programação Funcional dentro de Classes.
+
+ - Create: addBook (Array.push)
+
+ - Read: getInventory (Array.map) e findBookByTitle (Array.find)
+
+ - Delete: removeBook (Array.filter)
+
+4. Resumo para o seu Ebook (Capítulo 2)
+
+# Atividades Práticas Sugeridas:
+
+ - A Estante Inteligente: Adicione 5 livros e use o filter para mostrar apenas os que têm mais de 200 páginas.
+
+ - O Inventário de Valor: Use o reduce para calcular quanto custaria o acervo se cada página custasse R$ 0,50.
+
+ ## Capítulo 2: Gestão de Coleções e Manipulação de Dados
+
+Neste capítulo, elevamos o nível da aplicação. Saímos da criação de objetos isolados para a construção de um sistema de gestão (Library), utilizando o poder dos métodos funcionais de Array do JavaScript moderno.
+
+1. O Conceito de Gerenciamento de Estado
+
+Uma classe de gerenciamento (como a Library) serve para agrupar instâncias de outras classes e oferecer ferramentas para manipular esse conjunto de dados de forma segura e eficiente.
+
+2. Métodos de Array: O Coração do JavaScript Moderno
+
+ - Abandonamos os laços for tradicionais em favor de métodos declarativos que tornam o código mais limpo e menos propenso a erros:
+
+ - map(): Transforma dados. Usado para extrair apenas os títulos dos livros.
+
+ - filter(): Filtra dados. Essencial para buscas por critérios (ex: tecnologia) ou para remover itens do acervo.
+
+ - find(): Localização precisa. Retorna o primeiro objeto que satisfaz uma condição.
+
+ - reduce(): Agregação. Transforma um array inteiro em um único valor (ex: soma total de páginas).
+
+ - sort(): Ordenação. Organiza o acervo por critérios numéricos ou alfabéticos.
+
+3. Exemplo Prático: A Classe Library
+
+JavaScript
+
+// 18-Library.js
+export default class Library {
+    constructor() {
+        this.books = [];
+    }
+
+    addBook(book) {
+        this.books.push(book);
+    }
+
+    getInventory() {
+        return this.books.map(b => b.title);
+    }
+
+    removeBook(title) {
+        this.books = this.books.filter(b => b.title !== title);
+    }
+
+    calculateTotalPages() {
+        return this.books.reduce((total, b) => total + b.pages, 0);
+    }
+}
+
+4. Exercícios de Encerramento (Capítulo 2)
+
+Exercício 1: O Relatório de "Livros Densos" (Filtro e Mapeamento)
+
+Objetivo: Criar um método que retorne apenas os títulos dos livros que possuem mais de 250 páginas.
+
+# Passo a Passo:
+
+ - No arquivo 18-Library.js, crie um método chamado getLargeBookTitles(minPages).
+
+ - Use o .filter() para selecionar os livros que têm pages > minPages.
+
+ - Encadeie um .map() logo em seguida para retornar apenas o title desses livros.
+
+Teste no Terminal:
+
+Bash
+
+node -e "const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('A', 100, 'X')); lib.addBook(new ITBook('B', 500, 'Y')); console.log(lib.getLargeBookTitles(250));"
+
+Exercício 2: Calculadora de Investimento (Transformação de Dados)
+
+Objetivo: Criar um método que calcule o valor total de mercado da livraria, considerando que cada página de um livro de TI custa R$ 0,50.
+
+Passo a Passo:
+
+ - Crie um método chamado calculateMarketValue(pricePerPage).
+
+ - Use o método calculateTotalPages() que já criamos para obter o total de páginas.
+
+ - Multiplique esse total pelo parâmetro pricePerPage.
+
+ - Retorne o valor formatado.
+
+ - Teste no Terminal:
+
+Bash
+
+node -e "const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); console.log('Valor Total: R$', lib.calculateMarketValue(0.50));"
+Checkpoint Final do Capítulo 2:
+
+# Ao concluir este capítulo e os exercícios, você dominou o CRUD (Create, Read, Update, Delete) de forma funcional e entendeu como classes interagem entre si para formar sistemas complexos.
+
+## Como enviar para o GitHub:
+
+Bash
+
+git add 18-Library.js ebook_js.md package.json
+git commit -m "docs: finaliza capítulo 2 - Gestão de Coleções e Arrays"
+git push origin main
+
+# Pronto para o Capítulo 3? Nele, vamos aprender sobre Programação Assíncrona (Promises e Async/Await) para simular o carregamento de livros de uma API externa!
+
 ## 
