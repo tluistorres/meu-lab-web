@@ -1,3 +1,5 @@
+// @ts-check
+
 Capítulo 1: POO na Prática - Do Zero ao Ambiente Profissional
 
 1. O Ponto de Partida: A Classe Base (17-Book.js)
@@ -80,15 +82,15 @@ JSON
 }
 4. Teste Prático (O que acontece no terminal)
 
-Ao executar npm run test-it, o fluxo é:
+ - Ao executar npm run test-it, o fluxo é:
 
-O comando super(title, pages) no ITBook envia os dados para o Book.
+ - O comando super(title, pages) no ITBook envia os dados para o Book.
 
-Se enviarmos -5, o Setter bloqueia e exibe erro.
+ - Se enviarmos -5, o Setter bloqueia e exibe erro.
 
-Ao chamar it.printTitle(), o JavaScript usa a versão da classe filha (Polimorfismo).
+ - Ao chamar it.printTitle(), o JavaScript usa a versão da classe filha (Polimorfismo).
 
-Resultado esperado no console:
+- Resultado esperado no console:
 
 Plaintext
 
@@ -285,19 +287,19 @@ export default class Library {
 }
 3. Por que usar esses métodos (Map, Filter, Reduce)?
 
-Antigamente, usávamos o laço for para tudo. Hoje, esses métodos são o padrão da indústria porque:
+ - Antigamente, usávamos o laço for para tudo. Hoje, esses métodos são o padrão da indústria porque:
 
-São Declarativos: Você diz o que quer, não como fazer.
+ - São Declarativos: Você diz o que quer, não como fazer.
 
-Menos Bugs: Evitam erros comuns de contagem em índices de arrays.
+ - Menos Bugs: Evitam erros comuns de contagem em índices de arrays.
 
-Imutabilidade: Eles geralmente retornam um novo array em vez de modificar o original (o que é ótimo para segurança de dados).
+ - Imutabilidade: Eles geralmente retornam um novo array em vez de modificar o original (o que é ótimo para segurança de dados).
 
 4. Preparando o Teste Prático
 
-Vamos ver essa livraria funcionando com diferentes tipos de livros que criamos no Capítulo 1.
+ - Vamos ver essa livraria funcionando com diferentes tipos de livros que criamos no Capítulo 1.
 
-Atualize o seu package.json para o teste do Capítulo 2:
+ - Atualize o seu package.json para o teste do Capítulo 2:
 
 JSON
 
@@ -306,11 +308,11 @@ JSON
 
 O que vamos praticar agora:
 
-Composição: Uma classe (Library) que contém instâncias de outra classe (Book).
+ - Composição: Uma classe (Library) que contém instâncias de outra classe (Book).
 
-Lógica de Negócio: Como extrair relatórios (Total de páginas, lista de títulos) de um conjunto de dados.
+ - Lógica de Negócio: Como extrair relatórios (Total de páginas, lista de títulos) de um conjunto de dados.
 
-Podemos seguir com a criação do arquivo 18-Library.js e rodar esse teste? Se estiver pronto, me avise para refinarmos a lógica de busca!
+ - Podemos seguir com a criação do arquivo 18-Library.js e rodar esse teste? Se estiver pronto, me avise para refinarmos a lógica de busca!
 
 ## Vamos colocar a mão na massa. O segredo aqui é entender que a Library é o cérebro que organiza todos os objetos que criamos no Capítulo 1.
 
@@ -825,5 +827,265 @@ git commit -m "feat: implementa ApiService com Promises e Async/Await"
 git push origin main
 
 Pronto para o próximo passo? No Capítulo 4, vamos organizar tudo isso para que o seu código pareça um projeto profissional de larga escala!
+
+## Capítulo 4: Módulos, Organização e Clean Code
+
+Até agora, usamos o Babel para traduzir nossos arquivos, mas na prática, um projeto profissional de JavaScript (seja no Node.js moderno ou no React/Vue) depende do sistema de ES Modules (import/export).
+
+1. O Conceito: O Código como Legos
+
+Imagine que cada arquivo seu é uma peça de Lego. O objetivo deste capítulo é aprender a conectar essas peças sem que uma precise saber "demais" sobre a outra.
+
+O que o leitor aprenderá:
+
+Encapsulamento Real: Como esconder lógica complexa e expor apenas o necessário.
+
+Reutilização: Como usar a classe Book em múltiplos lugares sem repetir código.
+
+2. Refatorando para a Modernidade
+
+Como movemos tudo para a pasta src/, vamos garantir que as referências internas estejam corretas. No JavaScript, quando um arquivo usa outro, ele precisa do caminho exato.
+
+Exemplo no 17-ITBook.js: Verifique se o topo do seu arquivo está assim:
+
+JavaScript
+
+import Book from './17-Book.js'; // O ponto indica "nesta mesma pasta"
+
+export default class ITBook extends Book {
+    // ... seu código
+}
+
+3. O Desafio do Capítulo 4: O arquivo index.js
+
+Em projetos profissionais, existe um arquivo chamado "ponto de entrada" (entry point), geralmente chamado de index.js. Ele é o maestro que inicia toda a aplicação.
+
+Crie o arquivo src/index.js:
+
+JavaScript
+
+import Library from './18-Library.js';
+import ITBook from './17-ITBook.js';
+import ApiService from './19-ApiService.js';
+
+async function bootstrap() {
+    const myLib = new Library();
+    
+    console.log("--- Sistema de Livraria Profissional ---");
+    
+    // 1. Buscando dados externos
+    try {
+        const bookData = await ApiService.fetchBookData('Clean Code');
+        const newBook = new ITBook(bookData.title, 464, 'Engenharia de Software');
+        
+        myLib.addBook(newBook);
+        
+        console.log("Inventário Atual:", myLib.getInventory());
+    } catch (error) {
+        console.error("Falha ao iniciar sistema:", error);
+    }
+}
+
+bootstrap();
+
+4. Atualizando o seu pipeline (Package.json)
+
+Agora que temos um index.js, nosso script de teste fica muito mais simples, pois ele só precisa rodar esse arquivo principal.
+
+Atualize o package.json dentro de ebook-js-project:
+
+JSON
+
+"scripts": {
+    "build": "babel src/*.js --out-dir lib && cd lib && cp *.js *.cjs",
+    "start": "npm run build && node lib/index.cjs"
+}
+
+2 Exercícios Passo a Passo (Capítulo 4)
+
+Exercício 1: Exportando Múltiplas Constantes
+
+ - Objetivo: Aprender que não se exporta apenas classes, mas também configurações.
+
+ - Crie um arquivo src/config.js.
+
+ - Adicione: export const VERSION = '1.0.0'; export const API_TIMEOUT = 2000;
+
+ - Tente importar a VERSION no seu index.js e imprimir no console: console.log('Versão do App:', VERSION);
+
+Exercício 2: O "Barrel Export" (O Barril)
+
+Objetivo: Facilitar a vida de quem usa suas classes.
+
+Crie um arquivo src/main-lib.js.
+
+Adicione:
+
+JavaScript
+
+export { default as Book } from './17-Book.js';
+export { default as Library } from './18-Library.js';
+
+Isso permite que qualquer pessoa importe tudo de um lugar só!
+
+Conseguiu criar o src/index.js e rodar o npm start? Se o seu terminal mostrar o "Sistema de Livraria Profissional" funcionando a partir do novo arquivo, você terá concluído a transição para um desenvolvedor de nível pleno em organização de projetos!
+
+Quer que eu te ajude a ajustar o comando de build para que o index.js também seja convertido corretamente?
+
+## Exercícios Passo a Passo (Encerramento Cap. 4)
+
+Exercício 1: Centralização de Logs
+
+Objetivo: Criar um módulo utilitário para formatar as mensagens do console.
+
+ - Crie src/utils.js.
+
+ - Adicione: export const logger = (msg) => console.log(\[LOG]: ${msg}`);`
+
+ - Importe no index.js: import { logger } from './utils.js';
+
+ - Use: logger("Sistema iniciado com sucesso");
+
+Exercício 2: Exportação Nomeada vs Default
+
+Objetivo: Entender a diferença entre exportar uma classe inteira ou funções soltas.
+
+No src/config.js, exporte uma constante: export const APP_NAME = "MyDigitalLibrary";
+
+Tente importar usando chaves: import { APP_NAME } from './config.js';
+
+O comando npm start funcionou com a nova estrutura? Se o sistema iniciou e mostrou o "Clean Code" no inventário, sua arquitetura modular está pronta para o mundo real! Qual o seu próximo passo: rodar o teste ou quer que eu revise algum arquivo de src?
+
+## Você acaba de configurar um ambiente de desenvolvimento profissional que usa as tecnologias mais atuais do mercado (Babel + ES Modules).
+
+ - O que você fez não foi apenas "rodar um script". Você construiu um pipeline de build:
+
+ - Código-fonte (src/): Onde você escreve JavaScript moderno e elegante.
+
+ - Transpilação (Babel): Onde o código é preparado para execução.
+
+ - Distribuição (lib/): Onde o código final reside e é executado pelo Node.js.
+
+# Resumo do Capítulo 4 para o seu ebook_js.md
+
+Sugiro que você adicione esta seção ao seu arquivo para documentar o que aprendeu:
+
+## Capítulo 4: A Arquitetura Profissional
+
+Neste capítulo, evoluímos de arquivos soltos para uma estrutura de projeto real.
+
+# O que aprendemos:
+
+ - Separação de Preocupações: Criamos a pasta src/ para o código humano e lib/ para o código de execução.
+
+ - ES Modules (ESM): Implementamos import e export, entendendo que o Node.js exige a extensão .js nas importações internas quando usamos "type": "module".
+
+ - Build Pipeline: Usamos o Babel para garantir que nosso código seja processado corretamente antes de ir para produção.
+
+ = Entry Point: Criamos o index.js, o arquivo "maestro" que coordena todas as classes e serviços.
+
+# O Próximo Passo: Salvar no GitHub
+
+Agora que tudo está funcionando perfeitamente, vamos enviar essa organização para o seu repositório:
+
+Bash
+
+# 1. Adicione as mudanças
+
+git add .
+
+# 2. Faça o commit da vitória
+
+git commit -m "feat: conclui Cap 4 com estrutura profissional src/lib e ESM"
+
+# 3. Envie para o GitHub
+
+git push origin main
+
+Você gostaria de avançar para o Capítulo 5 (Tratamento de Erros e Debugging) ou quer que eu te ajude a criar um arquivo README.md bonito para esse seu novo laboratório?
+
+## Introdução ao TypeScript (TS): 
+
+É o "manual de instruções e o controle de qualidade" que garante que você não use a ferramenta de forma errada.
+
+O TypeScript não é uma linguagem nova do zero; ele é um superset (superconjunto) do JavaScript. Isso significa que todo código JS é um código TS válido, mas o TS adiciona uma camada de segurança que o JS não tem por padrão.
+
+1. Verificação em Tempo de CompilaçãoNo JavaScript, você só descobre que passou um "texto" onde deveria ser um "número" quando o sistema quebra na mão do usuário.
+
+No TypeScript, o erro aparece enquanto você digita. O compilador (tsc) analisa o código e impede que você gere o arquivo final se houver erros de lógica de tipos.
+
+2. Inferência de Tipo
+
+O TS é inteligente. Você não precisa dizer o tipo de tudo.
+
+TypeScriptlet 
+
+let paginas = 100; // O TS infere (deduz) que 'paginas' é number.
+// paginas = "cem"; // ❌ O TS apresentará um erro imediato aqui.
+
+3. Interfaces: O Contrato do ObjetoAs Interfaces definem a "forma" que um objeto deve ter. Elas são excelentes para documentar suas classes de livros.
+
+TypeScript
+
+interface IBook {
+  title: string;
+  pages: number;
+  category?: string; // O '?' indica que é opcional
+}
+
+const meuLivro: IBook = {
+  title: "Clean Code",
+  pages: 464
+};
+
+4. Generics: Flexibilidade com Segurança
+
+Os Genéricos permitem criar componentes que funcionam com vários tipos, mas mantêm a verificação de tipo. É como uma "variável para tipos".
+
+TypeScript
+
+function envolverEmLista<T>(item: T): T[] {
+  return [item];
+}
+
+const listaDeNumeros = envolverEmLista<number>(10); // Retorna number[]
+const listaDeStrings = envolverEmLista<string>("JS"); // Retorna string[]
+
+5. TS em Arquivos JS (checkJs)
+
+Você não precisa converter todo o seu projeto para .ts de uma vez. O TypeScript pode vigiar seus arquivos .js atuais!
+
+ - Como fazer no seu projeto:
+
+ - Crie um arquivo chamado jsconfig.json ou tsconfig.json na raiz.
+
+Adicione esta configuração:
+
+JSON
+
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true
+  }
+}
+
+Agora, o VS Code ou seu editor começará a sublinhar erros de tipo nos seus arquivos .js baseando-se no que ele consegue inferir ou nos seus comentários JSDoc.
+
+| **Funcionalidade** | **Vantagem para o desenvolvedor** |
+| --- | --- |
+| Autocompletar (IntelliSense) | O editor sugere exatamente os métodos e propriedades que uma classe ou objeto possui, eliminando a necessidade de "adivinhar" nomes de variáveis. |
+| Refatoração Segura | Se você renomear uma propriedade no arquivo base (ex: 17-Book.js), o TS identifica e avisa instantaneamente todos os outros arquivos que dependiam daquele nome. |
+| Documentação Viva | O código se torna autoexplicativo. Ao definir tipos, você documenta o que cada função espera receber e o que ela retorna, sem precisar de comentários manuais. |
+| Detecção de Erros Precoce | Erros de lógica (como somar um número com undefined) são capturados durante a escrita (tempo de compilação), e não na mão do usuário. |
+| Navegação de Código | Permite saltar diretamente para a definição de uma classe ou interface com um clique, facilitando o entendimento de projetos com muitos arquivos. |
+
+
+Como isso se aplica ao nosso Cap. 5?
+
+No Capítulo 5, falaremos de Tratamento de Erros. O TypeScript ajuda a evitar "erros bobos" (como passar undefined para uma função), permitindo que foquemos em erros complexos (como falhas de conexão de rede).
+
+Gostaria que eu fizesse um exemplo rápido de como ficaria sua classe Book.js se fosse convertida para TypeScript (Book.ts)? Isso ajudaria a visualizar a diferença prática.
 
 ## 
