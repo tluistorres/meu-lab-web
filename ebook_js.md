@@ -608,4 +608,104 @@ git push origin main
 
 # Pronto para o Capítulo 3? Nele, vamos aprender sobre Programação Assíncrona (Promises e Async/Await) para simular o carregamento de livros de uma API externa!
 
-## 
+## Vamos validar se a sua "estante digital" está funcionando com todos os métodos de array que implementamos.
+
+1. Preparação do Teste
+
+Certifique-se de que o seu package.json está configurado para o teste do Capítulo 2. O comando deve ser este:
+
+JSON
+
+"test-cap2": "npm run build && node -e \"const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); lib.addBook(new ITBook('Node.js', 450, 'Backend')); lib.addBook(new ITBook('Docker', 100, 'DevOps')); console.log('\\n--- RELATÓRIO DA BIBLIOTECA ---'); console.log('Livros no Inventário:', lib.getInventory()); console.log('Total de páginas no acervo:', lib.calculateTotalPages()); const devops = lib.filterByTech('DevOps'); console.log('Livros de DevOps encontrados:', devops.length);\""
+
+2. Rodando o Comando
+No seu terminal, digite:
+
+Bash
+
+npm run test-cap2
+
+O que observar no resultado:
+
+ - Se tudo estiver correto, o terminal deve mostrar:
+
+ - A Compilação: O Babel confirmando que compilou os arquivos (incluindo o novo 18-Library.js).
+
+ - O Inventário: Uma lista (Array) apenas com os nomes: ['React', 'Node.js', 'Docker'].
+
+ - A Soma: O valor 850 (300 + 450 + 100).
+
+ - O Filtro: A confirmação de que encontrou 1 livro de DevOps.
+
+Se algo der errado (Dicas de Debug):
+
+Erro de "Cannot find module": Verifique se o seu comando de build no package.json inclui o 18-Library.js.
+
+Erro "is not a constructor": Verifique se você colocou o .default no final do require dentro do comando de teste.
+
+Assim que o resultado aparecer no seu terminal, me envie o que apareceu! Se estiver tudo certinho, daremos o "visto" no Capítulo 2 e abriremos as portas para o Capítulo 3: Assincronismo e APIs.
+
+## O Capítulo 2 está oficialmente concluído e funcionando perfeitamente.
+
+ - O log mostra que a sua classe Library foi capaz de:
+
+ - Instanciar objetos de diferentes tipos.
+
+ - Armazenar esses objetos em um array interno.
+
+ - Processar o array para extrair os títulos (map).
+
+ - Acumular valores para somar as páginas (reduce).
+
+# Exercícios Finais do Capítulo 2 (Passo a Passo)
+
+Como prometido, aqui estão dois exercícios para você consolidar a lógica de manipulação de dados antes de subirmos tudo para o GitHub.
+
+Exercício 1: Criando um Filtro de Segurança
+
+Objetivo: Adicionar um método que retorne apenas livros de uma categoria específica, para evitar que o usuário veja o acervo inteiro se não precisar.
+
+No arquivo 18-Library.js, adicione este método antes da última chave }:
+
+JavaScript
+
+getBooksByTechnology(tech) {
+    return this.books.filter(book => book.technology === tech);
+}
+O teste: No terminal, execute este comando rápido:
+
+Bash
+
+node -e "const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); console.log('Resultado do Filtro:', lib.getBooksByTechnology('Web'));"
+
+Exercício 2: Calculadora de Valor do Acervo
+
+Objetivo: Praticar o uso de parâmetros em métodos que processam coleções. Vamos calcular o valor da biblioteca baseado em um preço por página.
+
+No arquivo 18-Library.js, adicione:
+
+JavaScript
+
+calculateMarketValue(pricePerPage) {
+    const totalPages = this.calculateTotalPages();
+    return (totalPages * pricePerPage).toFixed(2);
+}
+O teste: No terminal, execute:
+
+Bash
+
+node -e "const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('JS', 200, 'TI')); console.log('Valor de Mercado: R$', lib.calculateMarketValue(0.50));"
+
+# Próximo Passo: GitHub e Capítulo 3
+
+Agora que o código está estável e testado, vamos registrar esse progresso:
+
+Envie para o GitHub:
+
+Bash
+
+git add .
+git commit -m "feat: implementa Library com métodos funcionais e conclui Cap 2"
+git push origin main
+
+##  

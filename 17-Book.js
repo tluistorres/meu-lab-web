@@ -1,30 +1,27 @@
 export default class Book {
-    // Declaramos que o campo é privado antes de usar
     #pages; 
 
     constructor(title, pages) {
         this.title = title;
-        this.pages = pages; 
+        this.pages = pages;
     }
 
-    get pages() {
-        return this.#pages;
-    }
+    get pages() { return this.#pages; }
 
     set pages(value) {
         if (value > 0) {
             this.#pages = value;
         } else {
-            console.error("Erro: Valor inválido para #pages!");
+            console.error("Erro: O número de páginas deve ser positivo!");
         }
     }
 
     printTitle() {
-        console.log("Título: " + this.title);
+        console.log(`Título: ${this.title}`);
     }
-}
 
-// Dentro da classe Book em 17-Book.js
-static isValid(bookObj) {
-    return typeof bookObj.title === 'string' && bookObj.pages > 0;
-}
+    // O método static DEVE estar antes da última chave da classe
+    static isValid(bookObj) {
+        return typeof bookObj.title === 'string' && bookObj.pages > 0;
+    }
+} // <--- ESTA CHAVE FECHA A CLASSE INTEIRA

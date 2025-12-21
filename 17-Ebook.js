@@ -1,14 +1,27 @@
-// 17-Ebook.js
-import ITBook from './17-ITBook.cjs';
+export default class Book {
+    #pages; 
 
-export default class Ebook extends ITBook {
-    constructor(title, pages, technology, fileSize) {
-        super(title, pages, technology); // Passa os dados para o ITBook -> que passa para o Book
-        this.fileSize = fileSize;
+    constructor(title, pages) {
+        this.title = title;
+        this.pages = pages;
+    }
+
+    get pages() { return this.#pages; }
+
+    set pages(value) {
+        if (value > 0) {
+            this.#pages = value;
+        } else {
+            console.error("Erro: O número de páginas deve ser positivo!");
+        }
     }
 
     printTitle() {
-        super.printTitle(); // Chama o print do ITBook
-        console.log(`[Digital] Tamanho: ${this.fileSize}MB`);
+        console.log(`Título: ${this.title}`);
     }
-}
+
+    // O MÉTODO ABAIXO PRECISA ESTAR ANTES DESTE ÚLTIMO FECHAMENTO "}"
+    static isValid(bookObj) {
+        return typeof bookObj.title === 'string' && bookObj.pages > 0;
+    }
+} // <--- Este é o fim da classe. O static tem que estar ACIMA disso.
