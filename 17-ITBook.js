@@ -1,4 +1,4 @@
-import Book from './17-Book.js';
+import Book from './17-Book.cjs';
 
 export default class ITBook extends Book {
     constructor(title, pages, technology) {
@@ -6,12 +6,10 @@ export default class ITBook extends Book {
         this.technology = technology;
     }
 
-    printTechnology() {
-        console.log(`Tecnologia: ${this.technology}`);
-    }
-
-    // Adicione este aqui:
-    printFullSummary() {
-        console.log(`${this.title} (${this.technology}) - ${this.pages} páginas.`);
+    // Sobrescrita (Override)
+    printTitle() {
+        // Podemos chamar o método do pai usando super.printTitle() 
+        // ou criar um totalmente novo:
+        console.log(`[TI] Título: ${this.title} - Tech: ${this.technology}`);
     }
 }

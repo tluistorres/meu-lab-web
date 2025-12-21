@@ -1,0 +1,4 @@
+usuario ana,salario 5000,status ativo
+usuario pedro,salario 3200,status ativo
+usuario rita,salario 8000,status inativo
+usuario luis,salario 9500,status ativo

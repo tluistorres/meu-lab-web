@@ -1,8 +1,2 @@
-a.out
-*.sh
-*.txt
-*.save
-*.err:
-*.ok:
-arq*
-arquivo*
+node_modules/
+lib/

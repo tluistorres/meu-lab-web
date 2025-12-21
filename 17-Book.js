@@ -23,3 +23,8 @@ export default class Book {
         console.log("Título: " + this.title);
     }
 }
+
+// Dentro da classe Book em 17-Book.js
+static isValid(bookObj) {
+    return typeof bookObj.title === 'string' && bookObj.pages > 0;
+}

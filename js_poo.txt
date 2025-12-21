@@ -1,0 +1,302 @@
+## Programação Orientada a Objeto:
+
+##  Vamos definir a base, a herança e criar o objeto:
+
+JavaScript
+
+{
+  // 1. Definimos a classe base
+
+  class Book {
+    constructor(title, pages, isbn) {
+      this.title = title;
+      this.pages = pages;
+      this.isbn = isbn;
+    }
+    printTitle() {
+      console.log(this.title);
+    }
+  }
+
+  // 2. Definimos a classe filha (Herança)
+
+  class ITBook extends Book {
+    constructor(title, pages, isbn, technology) {
+      super(title, pages, isbn); // Chama o construtor do Book
+      this.technology = technology;
+    }
+    printTechnology() {
+      console.log(this.technology);
+    }
+  }
+
+  // 3. Criamos a instância
+
+  let jsBook = new ITBook('Learning JS Algorithms', '200', '12456318', 'JavaScript');
+
+  // 4. Testamos
+
+  console.log("Título do Livro:");
+  jsBook.printTitle(); // Funciona porque herdou de Book
+  
+  console.log("Tecnologia:");
+  jsBook.printTechnology(); // Método próprio da ITBook
+}
+
+## O que o super() faz?
+
+O super é como um "telefone" para o pai. Ele diz: "Ei, classe Book, pegue esses três valores (title, pages, isbn) e configure-os para mim usando a sua lógica, que eu cuido apenas da parte da tecnologia aqui na ITBook".
+
+Uma pequena correção ortográfica
+
+Note que eu mudei de tecnology para technology (com h), que é o padrão em inglês, mas o seu código funcionaria mesmo com o erro de grafia, desde que fosse consistente!
+
+## Trabalhando com getters e setters:
+
+> class Person {
+
+... constructor(name) {
+
+... this._name = name;
+
+... }
+
+... get name() {
+
+... return this._name;
+
+... }
+
+... set name(value) {
+
+... this._name = value;
+
+... }
+
+... }
+
+undefined
+
+> let lotrChar = new Person('Frodo');
+
+undefined
+
+> console.log(lotrChar.name);
+
+Frodo
+
+undefined
+
+> lotrChar.name = 'Gandalf';
+
+'Gandalf'
+
+> console.log(lotrChar.name);
+
+Gandalf
+
+undefined
+
+> lotrChar._name = 'Sam';
+
+'Sam'
+
+> console.log(lotrChar.name);
+
+Sam
+
+undefined
+
+## No seu código, o uso do underline (_name) é uma convenção entre programadores chamada "Private by Convention".
+
+A intenção: O underline avisa a outros desenvolvedores: "Ei, esta propriedade é interna, por favor, use apenas o getter e o setter para falar com ela".
+
+A realidade: O JavaScript trata _name como uma propriedade comum. Por isso, quando você fez lotrChar._name = 'Sam', você alterou o valor diretamente, "pulando" o seu método set name.
+
+## Como tornar isso REALMENTE privado?
+
+Se você quiser impedir que alguém faça lotrChar._name = 'Sam', o JavaScript moderno (ES2020+) introduziu as Private Class Fields usando o símbolo #.
+
+Veja a diferença:
+
+JavaScript
+
+class Person {
+ 
+ #name; // Declarando uma variável privada real
+
+  constructor(name) {
+    this.#name = name;
+  }
+
+  get name() {
+    return this.#name;
+  }
+
+  set name(value) {
+    if (value.length < 3) {
+      console.log("Nome muito curto!");
+      return;
+    }
+    this.#name = value;
+  }
+}
+
+let lotrChar = new Person('Frodo');
+console.log(lotrChar.name); // 'Frodo'
+
+// Tentar acessar o #name por fora causa um Erro de Sintaxe!
+// lotrChar.#name = 'Sam'; // Uncaught SyntaxError
+
+## O poder do Setter
+
+A grande vantagem do set name(value) que você criou é a capacidade de validar ou transformar o dado.
+
+Por exemplo, você poderia fazer com que o nome sempre fosse salvo em letras maiúsculas: set name(value) { this._name = value.toUpperCase(); }
+
+Dessa forma, mesmo que o usuário digite "gandalf", o sistema guardaria "GANDALF".
+
+
+## Como resolver e entender o fluxo
+
+1. No arquivo físico (.js)
+Para que o export funcione, você deve escrever esse código em um arquivo (ex: 17-CalArea.js). Para que o navegador aceite, o seu HTML deve chamá-lo assim:
+
+HTML
+
+
+<script type="module" src="17-CalArea.js"></script>
+
+2. Por que o console rejeita o export?
+
+O export serve para disponibilizar código para outros arquivos. Como o console é o "ponto final" da execução (você está interagindo com ele), não faz sentido "exportar" algo de lá, pois não há outro arquivo que vá importar o que você digitou manualmente.
+
+Formas de Exportar (Named vs Default)
+No seu exemplo, você usou o Named Export (Exportação Nomeada). Veja as duas formas principais de organizar seu arquivo 17-CalArea.js:
+
+## Opção A: Exportação Nomeada (O que você tentou)
+
+Ideal para quando seu arquivo tem várias funções utilitárias.
+
+JavaScript
+
+const circleArea = r => 3.14 * (r ** 2);
+const squareArea = s => s * s;
+
+export { circleArea, squareArea };
+Como importar: import { circleArea } from './17-CalArea.js';
+
+## Opção B: Exportação Padrão (Default Export)
+
+Ideal para quando o arquivo foca em uma coisa principal.
+
+JavaScript
+
+export default class Calculator {
+  // ... métodos
+}
+Como importar: import MeuCalculador from './17-CalArea.js'; (você pode escolher o nome na importação).
+
+## O que você pode testar agora?
+
+Se você quer simular o comportamento de um módulo no console para ver se suas funções funcionam, você pode simplesmente criar um objeto que "agrupa" elas, simulando o que o export faria:
+
+JavaScript
+
+const AreaCalculations = {
+  circle: r => Math.PI * (r ** 2),
+  square: s => s * s
+};
+
+console.log(AreaCalculations.circle(5));
+console.log(AreaCalculations.square(4)); 
+
+##  Um toque de "Açúcar Sintático" (ES6)
+
+Se você estivesse dentro de uma classe ou objeto moderno, e o nome da propriedade fosse igual ao nome da função, você poderia escrever de forma ainda mais curta.
+
+Veja como ficaria se você já tivesse as funções criadas:
+
+JavaScript
+
+const circle = r => Math.PI * (r ** 2);
+const square = s => s * s;
+
+// Em vez de { circle: circle, square: square }
+const Areas = { circle, square }; 
+
+console.log(Areas.circle(10));
+
+## Próximo Passo sugerido
+
+Agora que você domina objetos e funções básicas, que tal tentar usar o método de arredondamento para que esse 78.53981633974483 fique mais amigável, como 78.54?
+
+Você pode tentar usar o .toFixed(2) no seu próximo console.log:
+
+JavaScript
+
+console.log(AreasCalculations.circle(5).toFixed(2));
+
+## console.log(Areas.circle(5).toFixed(2));
+ 
+// Saída: "78.54"
+
+
+## Para que esse novo método funcione, precisamos seguir dois pequenos passos:
+
+1. Atualizar o arquivo no VS Code
+
+Abra o 17-ITBook.js e adicione o método printFullSummary dentro da classe:
+
+JavaScript
+
+import Book from './17-Book.js';
+
+export default class ITBook extends Book {
+    constructor(title, pages, technology) {
+        super(title, pages);
+        this.technology = technology;
+    }
+
+    printTechnology() {
+        console.log(`Tecnologia: ${this.technology}`);
+    }
+
+    // Adicione este aqui:
+
+    printFullSummary() {
+        console.log(`${this.title} (${this.technology}) - ${this.pages} páginas.`);
+    }
+}
+
+## 2. Recriar o objeto no Node
+
+Como a memória foi limpa, você precisa importar e instanciar novamente. No terminal do Node:
+
+JavaScript
+
+// 1. Importa (Se você acabou de abrir o Node)
+
+const { default: ITBook } = await import("./17-ITBook.js");
+
+// 2. Cria o objeto novamente
+
+const jsBook = new ITBook("Algoritmos em JS", 200, "JavaScript");
+
+// 3. Agora o método vai funcionar!
+
+jsBook.printFullSummary();
+
+## Dica sobre "Sobrescrita" (Override)
+
+Se você quisesse que o printTitle() do ITBook fosse diferente do original, você poderia simplesmente criá-lo dentro da classe ITBook com o mesmo nome. O JavaScript sempre prioriza o método que está na classe "mais próxima" (a filha).
+
+Exemplo:
+
+JavaScript
+
+printTitle() {
+    console.log(`LIVRO TÉCNICO: ${this.title.toUpperCase()}`);
+}
+
+## Isso é o que chamamos de Polimorfismo: o mesmo nome de método (printTitle) se comporta de formas diferentes dependendo do objeto.
