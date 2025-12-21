@@ -1,4 +1,4 @@
-import Book from './17-Book.cjs';
+import Book from './17-Book.js';
 
 export default class ITBook extends Book {
     constructor(title, pages, technology) {
