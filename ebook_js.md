@@ -708,4 +708,122 @@ git add .
 git commit -m "feat: implementa Library com métodos funcionais e conclui Cap 2"
 git push origin main
 
-##  
+##  Capítulo 3: Assincronismo - Promises e Async/Await
+
+Na vida real, os dados não aparecem instantaneamente. Eles vêm de APIs, bancos de dados ou arquivos externos que levam tempo para responder. Se o JavaScript ficasse parado esperando, a aplicação travaria.
+
+1. O Conceito: A "Promessa" (Promise)
+
+Imagine que você pede um livro raro. A livraria não o tem na hora, mas te dá um "pager":
+
+ - Pendente: O livro está sendo buscado.
+
+ - Resolvida: O livro chegou (Sucesso).
+
+ - Rejeitada: O livro está esgotado (Erro).
+
+2. Mão na Massa: Simulando uma API
+
+Vamos criar o arquivo 19-ApiService.js. Ele vai simular um servidor que demora 2 segundos para nos entregar os dados de um livro.
+
+Crie o arquivo 19-ApiService.js:
+
+JavaScript
+
+export default class ApiService {
+    // Simulamos uma busca externa usando Promise e setTimeout
+    static fetchBookData(title) {
+        console.log(`[API] Buscando dados de "${title}" nos servidores...`);
+        
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const found = true; // Simulação de busca positiva
+
+                if (found) {
+                    resolve({
+                        title: title,
+                        isbn: "978-3-16-148410-0",
+                        available: true,
+                        serverTime: new Date().toLocaleTimeString()
+                    });
+                } else {
+                    reject("Erro: Livro não encontrado no servidor.");
+                }
+            }, 2000); // Espera 2 segundos
+        });
+    }
+}
+3. Consumindo com Async/Await
+
+O Async/Await é a forma mais elegante de lidar com Promises. Ele faz o código parecer sequencial, mesmo sendo assíncrono.
+
+Atualize o seu package.json para o teste do Capítulo 3:
+
+JSON
+
+"test-cap3": "npm run build && node -e \"const Api = require('./lib/19-ApiService.cjs').default; async function run() { console.log('--- INÍCIO DA REQUISIÇÃO ---'); try { const data = await Api.fetchBookData('JavaScript Moderno'); console.log('Dados Recebidos:', data); } catch (err) { console.error(err); } console.log('--- FIM (O código não travou!) ---'); } run();\""
+(Lembre-se de adicionar o 19-ApiService.js ao comando de build no seu package.json!)
+
+4. Por que isso é vital para o seu Ebook?
+
+Nesta seção, o leitor aprenderá que:
+
+Não bloqueamos a Thread principal: Enquanto o setTimeout espera, o computador poderia fazer outras coisas.
+
+Tratamento de Erros: O bloco try/catch é essencial para quando a internet cai ou a API falha.
+
+# Próximo Passo:
+
+Adicione o 19-ApiService.js ao seu comando de build no package.json.
+
+Crie o arquivo 19-ApiService.js com o código acima.
+
+Execute: npm run test-cap3
+
+Quando você rodar, notará uma pausa de 2 segundos antes de os dados aparecerem. Esse "silêncio" é o assincronismo em ação! Conseguiu configurar? Se sim, me envie o resultado do terminal para avançarmos para o próximo nível: Múltiplas requisições simultâneas!
+
+## Exercício 1: Tratamento de Erros (Simulando uma Falha)
+
+Objetivo: Mostrar ao leitor que o seu código é resiliente e não "quebra" quando algo dá errado (ex: servidor fora do ar).
+
+Abra o arquivo 19-ApiService.js.
+
+Mude a linha const found = true; para const found = false;.
+
+Salve o arquivo e rode: npm run test-cap3.
+
+O que observar: O terminal não mostrará os dados, mas sim a mensagem de erro que definimos no reject. O mais importante é que a frase --- FIM (O código não travou!) --- continuará aparecendo, provando que o try/catch protegeu sua aplicação.
+
+Exercício 2: Alta Performance com Promise.all
+
+Objetivo: Aprender a buscar múltiplos dados simultaneamente. Em vez de esperar 2s para um livro e +2s para outro (total 4s), vamos buscar ambos nos mesmos 2 segundos.
+
+No terminal, execute este comando especial (copie e cole todo ele):
+
+Bash
+
+node -e "const Api = require('./lib/19-ApiService.cjs').default; async function multi() { console.log('--- BUSCA DUPLA INICIADA ---'); const t1 = Date.now(); try { const [livro1, livro2] = await Promise.all([ Api.fetchBookData('React Avançado'), Api.fetchBookData('Node Expert') ]); console.log('Recebidos:', livro1.title, 'e', livro2.title); const total = (Date.now() - t1) / 1000; console.log('Tempo total:', total, 'segundos'); } catch (e) { console.error(e); } } multi();"
+
+O que observar: O terminal buscará dois livros, mas o tempo total será próximo de 2 segundos e não 4. Isso é o que chamamos de paralelismo assíncrono.
+
+Conclusão do Capítulo 3
+
+# Agora você domina:
+
+ - Promises: O contrato de que algo será entregue no futuro.
+
+ - Async/Await: A sintaxe moderna e limpa para ler código assíncrono.
+
+ - Promise.all: Como otimizar o tempo de resposta da sua aplicação.
+
+Gostaria de subir esse progresso para o GitHub antes de passarmos para o Capítulo 4 (Onde vamos aprender sobre Módulos e Organização de Pastas)? Se sim, aqui estão os comandos:
+
+Bash
+
+git add 19-ApiService.js ebook_js.md package.json
+git commit -m "feat: implementa ApiService com Promises e Async/Await"
+git push origin main
+
+Pronto para o próximo passo? No Capítulo 4, vamos organizar tudo isso para que o seu código pareça um projeto profissional de larga escala!
+
+## 

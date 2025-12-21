@@ -6,9 +6,10 @@
     "@babel/preset-env": "^7.23.0"
   },
   "scripts": {
-   "build": "babel 17-Book.js 17-ITBook.js 17-Ebook.js 18-Library.js --out-dir lib && cd lib && cp 17-Book.js 17-Book.cjs && cp 17-ITBook.js 17-ITBook.cjs && cp 17-Ebook.js 17-Ebook.cjs && cp 18-Library.js 18-Library.cjs",
+    "build": "babel 17-Book.js 17-ITBook.js 17-Ebook.js 18-Library.js 19-ApiService.js --out-dir lib && cd lib && cp 17-Book.js 17-Book.cjs && cp 17-ITBook.js 17-ITBook.cjs && cp 17-Ebook.js 17-Ebook.cjs && cp 18-Library.js 18-Library.cjs && cp 19-ApiService.js 19-ApiService.cjs",
     "start": "npm run build && node -e \"const Book = require('./lib/17-Book.cjs').default; const b1 = new Book('Pequeno', 100); b1.pages = -50; console.log('Páginas de b1:', b1.pages);\"",
     "test-it": "npm run build && node -e \"const ITBook = require('./lib/17-ITBook.cjs').default; const it = new ITBook('React', 300, 'Web'); it.printTitle(); console.log('Páginas:', it.pages);\"",
-    "test-cap2": "npm run build && node -e \"const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); lib.addBook(new ITBook('Node', 450, 'Backend')); lib.addBook(new ITBook('Python', 150, 'Data Science')); console.log('\\nInventário:', lib.getInventory()); console.log('Total de páginas no acervo:', lib.calculateTotalPages());\""
+    "test-cap2": "npm run build && node -e \"const Library = require('./lib/18-Library.cjs').default; const ITBook = require('./lib/17-ITBook.cjs').default; const lib = new Library(); lib.addBook(new ITBook('React', 300, 'Web')); lib.addBook(new ITBook('Node', 450, 'Backend')); lib.addBook(new ITBook('Python', 150, 'Data Science')); console.log('\\nInventário:', lib.getInventory()); console.log('Total de páginas no acervo:', lib.calculateTotalPages());\"",
+    "test-cap3": "npm run build && node -e \"const Api = require('./lib/19-ApiService.cjs').default; async function run() { console.log('--- INÍCIO DA REQUISIÇÃO ---'); try { const data = await Api.fetchBookData('JavaScript Moderno'); console.log('Dados Recebidos:', data); } catch (err) { console.error(err); } console.log('--- FIM (O código não travou!) ---'); } run();\""
   }
 }
