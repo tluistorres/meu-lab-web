@@ -3,7 +3,9 @@
   "devDependencies": {
     "@babel/cli": "^7.23.0",
     "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.23.0"
+    "@babel/preset-env": "^7.23.0",
+    "@types/node": "^25.0.3",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "build": "babel 17-Book.js 17-ITBook.js 17-Ebook.js 18-Library.js 19-ApiService.js --out-dir lib && cd lib && cp 17-Book.js 17-Book.cjs && cp 17-ITBook.js 17-ITBook.cjs && cp 17-Ebook.js 17-Ebook.cjs && cp 18-Library.js 18-Library.cjs && cp 19-ApiService.js 19-ApiService.cjs",
