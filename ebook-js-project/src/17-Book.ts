@@ -1,43 +1,36 @@
 // src/17-Book.ts
+import { IAuthor } from './IAuthor.js';
 
 export default class Book {
-    // 1. No TypeScript, declaramos as propriedades antes do constructor
     public title: string;
-    private _pages: number;
+    public author: IAuthor; // Agora usa a Interface IAuthor
+    private _pages: number = 0;
 
-    constructor(title: string, pages: number) {
+    constructor(title: string, author: IAuthor, pages: number) {
         this.title = title;
-        // Inicializamos com um valor padrão antes de passar pelo setter
-        this._pages = 0; 
-        // Aqui chamamos o setter 'pages' abaixo para validar o valor
+        this.author = author;
+        // O setter 'pages' será chamado aqui para validar o valor
         this.pages = pages;
     }
 
-    // Getter para ler o número de páginas
+    // Getter para acessar o número de páginas com segurança
     get pages(): number {
         return this._pages;
     }
 
-    // Setter para validar e gravar o número de páginas
+    // Setter para validar se o número de páginas é positivo
     set pages(value: number) {
         if (value > 0) {
             this._pages = value;
         } else {
-            // No TS, o 'throw' é a forma correta de interromper o fluxo
-            throw new Error("O número de páginas deve ser positivo!");
+            throw new Error("O número de páginas deve ser um valor positivo!");
         }
     }
 
-    // Método comum
-    public printTitle(): void {
-        console.log(`Título: ${this.title}`);
-    }
-
     /**
-     * Método estático para validar se um objeto tem o formato de um livro.
-     * @param bookObj Objeto com título (string) e páginas (number)
+     * Exibe informações básicas do livro no console.
      */
-    static isValid(bookObj: { title: string; pages: number }): boolean {
-        return typeof bookObj.title === 'string' && bookObj.pages > 0;
+    public printTitle(): void {
+        console.log(`Título: ${this.title} | Escrito por: ${this.author.name}`);
     }
 }

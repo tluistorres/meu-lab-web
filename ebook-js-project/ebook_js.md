@@ -826,4 +826,58 @@ git push origin main
 
 Pronto para o próximo passo? No Capítulo 4, vamos organizar tudo isso para que o seu código pareça um projeto profissional de larga escala!
 
+## 🧐 O que aconteceu nos bastidores?
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+luis@luis-torres:~/testa_aplicativos/ebook-js-project$ ls lib
+17-Book.d.ts  17-Book.js  17-ITBook.d.ts  17-ITBook.js  18-Library.d.ts  18-Library.js  19-ApiService.d.ts  19-ApiService.js  index.d.ts  index.js
+
+luis@luis-torres:~/testa_aplicativos/ebook-js-project$ node lib/index.js
+=== SISTEMA EBOOK (MIGRAÇÃO TYPESCRIPT CONCLUÍDA) ===
+
+[API TS] Buscando dados de "TypeScript Avançado"...
+[TS] Adicionado ao inventário: TypeScript Avançado
+
+✅ Execução bem-sucedida!
+Inventário Atual: [ 'TypeScript Avançado' ]
+
+[Sistema] Sessão encerrada.
+
+++++++++++++++++++++++++++++=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Agora que o sistema rodou, repare nos arquivos .d.ts que o ls lib mostrou. Eles são o "mapa" do seu código. Se você decidir criar um segundo projeto e importar sua biblioteca de livros, o VS Code lerá esses arquivos .d.ts para te dar o autocompletar exato, sem você precisar abrir o código-fonte.
+
+💡 Dicas para o seu novo fluxo de trabalho
+A partir de agora, sempre que você alterar algo no código (src/*.ts), o fluxo será:
+
+Codar na pasta src.
+
+Compilar: npx tsc (isso valida se você cometeu algum erro de lógica ou tipo).
+
+Executar: node lib/index.js.
+
+🏆 Desafio de "Batismo" no TypeScript
+
+ - Para testar se o TypeScript está realmente te protegendo, tente fazer um pequeno teste de erro:
+
+ - Abra o src/index.ts.
+
+ - No comando new ITBook(...), tente mudar o número de páginas para uma string, por exemplo: "500" (com aspas).
+
+ - Salve e rode npx tsc.
+
+Você verá que o TypeScript recusará a compilar, avisando que você está tentando colocar um texto onde o sistema espera um número. Isso evita que erros bobos cheguem ao usuário final!
+
+💾 Salvando o Progresso
+Como essa foi uma grande mudança de arquitetura, não esqueça de registrar:
+
+Bash
+
+git add .
+git commit -m "chore: migração completa para TypeScript concluída com sucesso"
+git push origin main
+
+Parabéns pela persistência, Luís! O ambiente está pronto. Qual o próximo passo? Queremos explorar o Capítulo 6 (Testes com Jest) ou quer que eu te mostre como usar Interfaces para deixar sua API ainda mais robusta?
+
 ## 
