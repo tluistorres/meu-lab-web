@@ -1,24 +1,35 @@
-// src/index.js
-import Library from './18-Library.js'; // PRECISA do .js
-import ITBook from './17-ITBook.js';   // PRECISA do .js
-import ApiService from './19-ApiService.js'; // PRECISA do .js
+import Library from './18-Library.js';
+import ITBook from './17-ITBook.js';
+import ApiService from './19-ApiService.js';
 
-// ... resto do código
+async function main() {
+    console.log("=== INICIANDO SISTEMA (CAP 5: TRATAMENTO DE ERROS) ===\n");
 
-async function runSystem() {
-    console.log("=== INICIANDO SISTEMA (CAP 4) ===\n");
-    const lib = new Library();
+    const myLibrary = new Library();
 
     try {
-        const data = await ApiService.fetchBookData('JavaScript Moderno');
-        const book = new ITBook(data.title, 500, 'Programação');
-        lib.addBook(book);
+        const bookData = await ApiService.fetchBookData("JavaScript Moderno");
         
-        console.log("\nInventário:", lib.getInventory());
-        console.log("Total de páginas:", lib.calculateTotalPages());
-    } catch (err) {
-        console.error("Erro no carregamento:", err);
+        // Se bookData.pages for <= 0, o construtor do ITBook deve lançar um THROW
+        const newBook = new ITBook(bookData.title, "Luís Torres", bookData.pages, "Tecnologia");
+        
+        myLibrary.addBook(newBook);
+
+        console.log("\n✅ Processo finalizado com sucesso!");
+        console.log(`Inventário:`, myLibrary.inventory);
+
+    } catch (error) {
+        // Unificamos os dois blocos catch em um só
+        console.error("\n❌ ERRO CAPTURADO NO SISTEMA:");
+        console.error(`> Motivo: ${error.message}`);
+        
+        // Verificação específica para erros de rede
+        if (error.message.includes("conexão")) {
+            console.log("> Dica: Verifique sua internet ou o status do servidor e tente novamente.");
+        }
+    } finally {
+        console.log("\n[Log de Auditoria] Sessão encerrada.");
     }
 }
 
-runSystem();
+main();

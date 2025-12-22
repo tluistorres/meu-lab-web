@@ -3,7 +3,8 @@ export default class Book {
 
     constructor(title, pages) {
         this.title = title;
-        this.pages = pages;
+        // Ao atribuir aqui, o JS chama o 'set pages(value)' abaixo automaticamente
+        this.pages = pages; 
     }
 
     get pages() { return this.#pages; }
@@ -12,7 +13,9 @@ export default class Book {
         if (value > 0) {
             this.#pages = value;
         } else {
-            console.error("Erro: O número de páginas deve ser positivo!");
+            // 🚨 A MUDANÇA É AQUI:
+            // O 'throw' interrompe a execução e pula direto para o 'catch' do index.js
+            throw new Error("O número de páginas deve ser positivo!");
         }
     }
 
@@ -20,8 +23,7 @@ export default class Book {
         console.log(`Título: ${this.title}`);
     }
 
-    // O método static DEVE estar antes da última chave da classe
     static isValid(bookObj) {
         return typeof bookObj.title === 'string' && bookObj.pages > 0;
     }
-} // <--- ESTA CHAVE FECHA A CLASSE INTEIRA
+}
