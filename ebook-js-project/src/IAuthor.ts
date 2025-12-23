@@ -1,6 +1,5 @@
-// src/IAuthor.ts
 export interface IAuthor {
     name: string;
-    email: string;
-    bio?: string; // O '?' indica que a bio é opcional
+    bio: string;
+    email?: string; // O '?' torna o email opcional, ou remova o '?' se for obrigatório
 }

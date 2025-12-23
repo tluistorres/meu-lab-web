@@ -1,15 +1,29 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
+    /* 1. Alvos da Compilação */
+    "target": "ESNext",                                  /* Versão moderna do JS */
+    "module": "NodeNext",                                /* Suporte para módulos modernos no Node */
     "moduleResolution": "NodeNext",
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true
+    
+    /* 2. Organização de Pastas */
+    "outDir": "./lib",                                   /* Onde os arquivos .js serão gerados */
+    "rootDir": "./src",                                  /* Onde estão seus arquivos .ts originais */
+    "removeComments": true,                              /* Deixa o JS na 'lib' mais limpo (sem comentários) */
+    
+    /* 3. Rigor e Segurança (Boas Práticas) */
+    "strict": true,                                      /* Ativa todas as verificações de erro */
+    "noImplicitAny": true,                               /* Impede variáveis sem tipo definido */
+    "esModuleInterop": true,                             /* Melhora compatibilidade com bibliotecas antigas */
+    "skipLibCheck": true,                                /* Pula checagem de tipos de bibliotecas (mais rápido) */
+    "forceConsistentCasingInFileNames": true             /* Evita problemas entre Windows e Linux (letras maiúsculas) */
   },
-  "include": ["src/**/*"]
+  
+  /* 4. O que o TypeScript deve olhar */
+  "include": [
+    "src/**/*"                                           /* Compila tudo dentro da pasta src */
+  ],
+  "exclude": [
+    "node_modules",                                      /* Ignora as bibliotecas instaladas */
+    "**/*.spec.ts"                                       /* Ignora arquivos de teste, se houver */
+  ]
 }
