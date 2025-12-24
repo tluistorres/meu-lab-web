@@ -2046,4 +2046,411 @@ Sets (Conjuntos): Útil para explicar como garantir que não existam elementos d
 
 Dictionaries (Dicionários): Como funciona o armazenamento de Chave-Valor (a base dos Objetos em JS).
 
-Qual desses você gostaria de começar a codar agora? Ou prefere que eu prepare um "Desafio de Revisão" misturando Pilhas e Listas?
+# Variações Avançadas de Listas Ligadas
+
+Para encerrar nosso estudo sobre listas, exploramos duas especializações que resolvem problemas clássicos de engenharia de software.
+
+## 1. Lista Ligada Circular (`CircularLinkedList`)
+Na lista circular, o último nó não aponta para o vazio (`null`), mas sim de volta para o primeiro elemento (`head`).
+
+
+
+### Casos de Uso:
+* **Escalonamento de Processos:** Sistemas operacionais usam listas circulares para dar "fatias de tempo" a cada programa aberto. Quando o último programa recebe sua fatia, o ciclo volta ao primeiro.
+* **Jogos Multijogador:** Jogos de cartas ou turnos, onde após o último jogador, a vez volta automaticamente para o primeiro.
+
+## 2. Lista Ligada Ordenada (`SortedLinkedList`)
+Nesta variação, abandonamos a inserção em índices aleatórios. A lista garante que todos os elementos estejam sempre em ordem (ascendente ou descendente).
+
+
+
+### Vantagens:
+* **Busca Eficiente:** Saber que a lista está ordenada permite otimizar algoritmos de busca.
+* **Organização Nativa:** Os dados já estão prontos para exibição ou processamento sem necessidade de um `sort()` manual posterior.
+
+---
+
+## 🏁 Checkpoint Final de Listas Ligadas
+
+| Estrutura | Diferencial Chave | Operação Crítica |
+| :--- | :--- | :--- |
+| **Simples** | Unidirecional e leve. | `insert`/`remove` |
+| **Dupla** | Bidirecional (tem `prev`). | Navegação inversa e `tail`. |
+| **Circular** | Ciclo infinito (`last -> head`). | Gestão do elo de fechamento. |
+| **Ordenada** | Autogestão de posição. | Comparação de valores na inserção. |
+
+---
+
+# ATIVIDADE 1 
+
+class Queue {
+  constructor() {
+    this.count = 0;
+    this.lowestCount = 0;
+    this.items = {};
+  }
+
+  enqueue(element) {
+    this.items[this.count] = element;
+    this.count++;
+  }
+
+  dequeue() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    const result = this.items[this.lowestCount];
+    delete this.items[this.lowestCount];
+    this.lowestCount++;
+    return result;
+  }
+
+  isEmpty() {
+    return this.count - this.lowestCount === 0;
+  }
+
+  peek() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    return this.items[this.lowestCount];
+  }
+
+  size() {
+    return this.count - this.lowestCount;
+  }
+}
+
+
+Agora você pode criar uma instância da classe Queue e testar os métodos:
+
+const queue = new Queue();
+queue.enqueue(5);
+queue.enqueue(8);
+console.log(queue.peek()); // 5
+console.log(queue.dequeue()); // 5
+console.log(queue.size()); // 1
+  
+## Vamos detalhar as passagens da implementação da classe Queue 
+
+1. Construtor
+
+constructor() {
+  this.count = 0;
+  this.lowestCount = 0;
+  this.items = {};
+}
+
+- count: variável que armazena o número total de elementos na fila.
+- lowestCount: variável que armazena o índice do primeiro elemento da fila.
+- items: objeto que armazena os elementos da fila.
+
+2. Método enqueue(element)
+
+enqueue(element) {
+  this.items[this.count] = element;
+  this.count++;
+}
+
+- Adiciona um elemento ao final da fila.
+- O elemento é armazenado no índice count do objeto items.
+- Incrementa o valor de count.
+
+3. Método dequeue()
+
+dequeue() {
+  if (this.isEmpty()) {
+    return undefined;
+  }
+  const result = this.items[this.lowestCount];
+  delete this.items[this.lowestCount];
+  this.lowestCount++;
+  return result;
+}
+
+- Remove o elemento do início da fila.
+- Se a fila estiver vazia, retorna undefined.
+- Armazena o elemento a ser removido em result.
+- Remove o elemento do objeto items.
+- Incrementa o valor de lowestCount.
+
+4. Método isEmpty()
+
+isEmpty() {
+  return this.count - this.lowestCount === 0;
+}
+
+- Verifica se a fila está vazia.
+- Retorna true se a fila estiver vazia, false caso contrário.
+
+5. Método peek()
+
+peek() {
+  if (this.isEmpty()) {
+    return undefined;
+  }
+  return this.items[this.lowestCount];
+}
+
+- Retorna o elemento do início da fila sem removê-lo.
+- Se a fila estiver vazia, retorna undefined.
+
+6. Método size()
+
+size() {
+  return this.count - this.lowestCount;
+}
+
+- Retorna o número de elementos na fila.
+
+# ATIVIDADE 2
+
+class Queue {
+  constructor() {
+    this.count = 0;
+    this.lowestCount = 0;
+    this.items = {};
+  }
+
+  enqueue(element) {
+    this.items[this.count] = element;
+    this.count++;
+  }
+
+  dequeue() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    const result = this.items[this.lowestCount];
+    delete this.items[this.lowestCount];
+    this.lowestCount++;
+    return result;
+  }
+
+  isEmpty() {
+    return this.count - this.lowestCount === 0;
+  }
+
+  peek() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    return this.items[this.lowestCount];
+  }
+
+  size() {
+    return this.count - this.lowestCount;
+  }
+
+  toString() {
+    if (this.isEmpty()) {
+      return '';
+    }
+    let result = '';
+    for (let i = this.lowestCount; i < this.count; i++) {
+      result += this.items[i] + (i < this.count - 1 ? ', ' : '');
+    }
+    return result;
+  }
+}
+
+
+Agora, crie uma instância da classe Queue e teste os métodos:
+
+const queue = new Queue();
+queue.enqueue(5);
+queue.enqueue(8);
+console.log(queue.toString()); // "5, 8"
+
+
+#** "Vou separar o código para você entender melhor"**:
+
+**Definição da Classe Queue**
+
+class Queue {
+  constructor() {
+    this.count = 0;
+    this.lowestCount = 0;
+    this.items = {};
+  }
+
+  enqueue(element) {
+    this.items[this.count] = element;
+    this.count++;
+  }
+
+  dequeue() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    const result = this.items[this.lowestCount];
+    delete this.items[this.lowestCount];
+    this.lowestCount++;
+    return result;
+  }
+
+  isEmpty() {
+    return this.count - this.lowestCount === 0;
+  }
+
+  peek() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    return this.items[this.lowestCount];
+  }
+
+  size() {
+    return this.count - this.lowestCount;
+  }
+
+  toString() {
+    if (this.isEmpty()) {
+      return '';
+    }
+    let result = '';
+    for (let i = this.lowestCount; i < this.count; i++) {
+      result += this.items[i] + (i < this.count - 1 ? ', ' : '');
+    }
+    return result;
+  }
+}
+
+
+##**Instância da Classe Queue**
+
+const queue = new Queue();
+
+
+##**"Uso dos Métodos da Classe Queue"**
+
+console.log(queue.isEmpty()); // true
+queue.enqueue('John');
+queue.enqueue('Jack');
+console.log(queue.toString()); // "John, Jack"
+console.log(queue.size()); // 2
+queue.enqueue('Camila');
+console.log(queue.toString()); // "John, Jack, Camila"
+
+
+Agora você pode ver claramente as três partes:
+
+1. Definição da Classe Queue: onde definimos a estrutura e os métodos da classe.
+2. Instância da Classe Queue: onde criamos uma instância da classe Queue chamada queue.
+3. Uso dos Métodos da Classe Queue: onde usamos os métodos da classe Queue para realizar operações na instância queue.
+
+
+# 🚀 # Capítulo 8: Conjuntos (Sets) - A Força da Unicidade
+
+Diferente de um Array ou uma Lista Ligada, um **Conjunto** é uma coleção não ordenada de elementos únicos. É a estrutura ideal quando precisamos garantir que não existam duplicados e quando queremos realizar operações matemáticas de agrupamento.
+
+## 🛠️ Operações Clássicas entre Conjuntos
+
+As operações que implementámos seguem os diagramas de Venn, fundamentais na lógica de programação e bases de dados:
+
+1.  **União ($A \cup B$):** Combina todos os elementos de dois conjuntos, removendo as duplicatas.
+2.  **Interseção ($A \cap B$):** Extrai apenas os elementos que estão presentes em ambos os conjuntos ao mesmo tempo.
+3.  **Diferença ($A - B$):** Retorna os elementos que existem no conjunto A, mas que não estão no B.
+4.  **Subconjunto ($A \subseteq B$):** Verifica se todos os elementos de A estão contidos dentro de B.
+
+
+[Image of Venn diagrams for union, intersection, and difference of two sets]
+
+
+## 🚀 Performance: Por que usar Objetos como base?
+
+Na nossa implementação, usamos um objeto JavaScript (`{}`) para armazenar os itens. Isso dá-nos uma vantagem de performance massiva:
+* No Array, para saber se um item existe (`has`), o computador percorre a lista item a item ($O(n)$).
+* No Set (via Objeto), o acesso à chave é direto ($O(1)$). Em conjuntos com milhares de dados, a diferença é de segundos para milissegundos.
+
+---
+
+## 💡 Aplicação Real
+
+Imagine um sistema de e-commerce. Se um cliente filtra por "Tênis" (Conjunto A) e "Marca Nike" (Conjunto B), o resultado exibido é a **Interseção** entre A e B. Se ele quer ver "Nike" ou "Adidas", o resultado é a **União**.
+
+🗺️ O Próximo Passo: Dicionários e Hashes
+
+Agora que entendes como os objetos ajudam a encontrar dados rapidamente, vamos para o Capítulo 9: Dicionários (Maps) e Tabelas Hash.
+
+A diferença é simples:
+
+No Set, armazenamos apenas o valor: [valor1, valor2].
+
+No Dicionário, armazenamos o par Chave e Valor: [chave: valor].
+
+É aqui que vais aprender como o JavaScript organiza nomes de variáveis, como funcionam as tabelas de símbolos e o famoso Algoritmo de Hashing, que transforma qualquer string num índice numérico.
+
+#**Capítulo 9: Dicionários e Tabelas Hash**
+
+Neste capítulo, elevamos o nível da nossa jornada. Saímos das estruturas sequenciais para entender como grandes sistemas (como bancos de dados e mecanismos de busca) encontram informações instantaneamente no meio de milhões de registros.
+
+## 1. Dicionários (Maps)
+
+Um **Dicionário** armazena pares de `[Chave, Valor]`. Diferente dos Arrays, onde o índice é sempre um número sequencial, no Dicionário nós definimos a chave (que pode ser uma string, um objeto ou um número).
+
+
+### Operações Principais:
+* **set(key, value):** Adiciona ou atualiza um elemento.
+* **get(key):** Recupera um valor a partir da sua chave.
+* **hasKey(key):** Verifica se uma chave existe.
+* **remove(key):** Remove o par chave-valor.
+
+## 2. Tabelas Hash (Hash Tables)
+
+A **Tabela Hash** é a versão "turbinada" do dicionário. Ela utiliza uma **Função Hash** para transformar a nossa chave em um número inteiro (índice), permitindo que o computador acesse o endereço de memória de forma direta.
+
+### O Algoritmo djb2
+Para garantir performance e evitar que chaves diferentes caiam no mesmo lugar, utilizamos o algoritmo **djb2**. Ele é famoso por sua velocidade e baixa taxa de colisões.
+
+typescript
+
+private djb2HashCode(key: K): number {
+    const tableKey = JSON.stringify(key);
+    let hash = 5381; // Número primo inicial
+    for (let i = 0; i < tableKey.length; i++) {
+        hash = (hash * 33) + tableKey.charCodeAt(i);
+    }
+    return hash % 1013; // Resto por um número primo
+}
+
+##**3. Tratamento de Colisões: Encadeamento Separado**
+
+Mesmo com um bom algoritmo, colisões podem ocorrer (duas chaves resultando no mesmo hash). Para resolver isso, implementamos o Encadeamento Separado (Separate Chaining).
+
+Em vez de salvar o valor diretamente na posição da tabela, salvamos uma Lista Ligada (LinkedList). Se houver colisão, os elementos são "empilhados" nessa lista.
+
+##**Vantagens desta Abordagem:**
+
+ - Segurança de Dados: Nenhum valor é sobrescrito.
+
+ - Flexibilidade: A tabela pode crescer além do seu tamanho inicial planejado.
+
+
+
+🏁 Comparativo de Performance
+
+| **Estrutura** | **Busca (Melhor Caso)** | **Busca (Pior Caso)** |
+| --- | --- | --- |
+| Array/Lista | O(n) | O(n) |
+| Hash Table | O(1) | O(n)* |
+
+*O pior caso para Hash Table ocorre quando há muitas colisões, o que pode levar a uma busca linear.*
+
+---🛠️ Exemplo Prático de Uso
+
+Imagine um sistema de autenticação onde precisamos buscar o e-mail do usuário rapidamente:
+
+const usuarios = new HashTableChaining<string, string>();
+usuarios.put("luis", "luis@mail.com");
+usuarios.put("torres", "torres@mail.com");
+
+console.log(usuarios.get("luis")); // Saída instantânea: luis@mail.com
+
+### 🚀 Próximo Passo: Capítulo 10 - Recursividade
+
+Antes de avançarmos para as **Árvores (Trees)**, precisamos dominar a **Recursividade**. É a técnica onde uma função chama a si mesma para resolver subproblemas menores.
+
+**Gostaria que eu preparasse o clássico exemplo do Fatorial ou o da Sequência de Fibonacci para abrirmos este novo capítulo?**
+
+## Recursividade:

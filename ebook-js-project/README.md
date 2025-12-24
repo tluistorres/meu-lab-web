@@ -1,83 +1,78 @@
 # 📚 Meu Lab Web: JavaScript Moderno & OO
 
+
 [![Node.js Version](https://img.shields.io/badge/node-v18.19.1+-green.svg)](https://nodejs.org/)
-[![Babel](https://img.shields.io/badge/compiled%20with-babel-yellow.svg)](https://babeljs.io/)
+[![TypeScript](https://img.shields.io/badge/developed%20with-TypeScript-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Este repositório é um laboratório prático de desenvolvimento JavaScript, focado em **Programação Orientada a Objetos (POO)**, **Assincronismo** e **Arquitetura de Projetos Profissionais**. 
+Este repositório é um laboratório prático de desenvolvimento JavaScript e TypeScript, focado em **Estruturas de Dados**, **Programação Orientada a Objetos (POO)** e **Algoritmos Avançados**.
 
-O projeto simula um sistema de gerenciamento de biblioteca (E-books e IT Books) integrado a APIs externas.
+O projeto evoluiu de um sistema de biblioteca para uma implementação completa de estruturas fundamentais de computação, servindo de base para o e-book "JS Moderno: Do Zero ao Profissional".
 
 ---
 
 ## 🚀 Estrutura do Projeto
 
-A organização segue o padrão de mercado, separando o código fonte do código transpilado:
+A organização segue padrões modernos, utilizando TypeScript para garantir tipagem forte e segurança no desenvolvimento:
 
 ```text
 ebook-js-project/
-├── src/                # 🛠️ Código Fonte (ES Modules)
-│   ├── index.js        # Maestro do sistema (Entry Point)
-│   ├── 17-Book.js      # Classe Base
-│   ├── 17-ITBook.js    # Herança e Especialização
-│   ├── 18-Library.js   # Agregação e Lógica de Negócio
-│   └── 19-ApiService.js # Consumo de API (Promises/Async-Await)
-├── lib/                # 📦 Código Distribuído (Gerado pelo Babel)
-├── package.json        # Gerenciamento de dependências e scripts
-└── .babelrc            # Configuração do transpiler
+├── src/                # 🛠️ Código Fonte (TS/ES Modules)
+│   ├── models/         # Interfaces e Classes de suporte (Nodes)
+│   ├── 17-22/          # POO, Herança e Assincronismo
+│   ├── 23-LinkedList/  # Listas Ligadas e Circulares
+│   ├── 24-Doubly/      # Listas Duplamente Ligadas
+│   ├── 26-Sets/        # Conjuntos e Operações Matemáticas
+│   └── 27-Hash/        # Dicionários e Tabelas Hash (djb2)
+├── lib/                # 📦 Código Transpilado (JavaScript)
+├── package.json        # Scripts e Dependências
+└── tsconfig.json       # Configuração do compilador TS
 
 🛠️ Tecnologias Utilizadas
 
-Node.js: Ambiente de execução.
+ - TypeScript: Superconjunto de JavaScript para desenvolvimento seguro.
 
-ES6+ (ECMAScript): Classes, Arrow Functions, Destructuring e Modules.
+ - Node.js: Ambiente de execução.
 
-Babel: Transpilação para garantir compatibilidade.
+ - Babel/TSC: Transpilação para compatibilidade.
 
-Async/Await: Manipulação de operações assíncronas.
+ - ES6+ Concepts: Classes, Generics, Destructuring e Modules.
 
 ⚡ Como Executar
 
 Pré-requisitos
-Node.js instalado (v18+)
 
-NPM (instalado com o Node)
+ -Node.js instalado (v18+)
+
+ - Alias runts configurado (opcional para facilitar execução)
 
 Instalação
 
-Clone o repositório:
+1. Clone o repositório:
 
-Bash
+  git clone [https://github.com/tluistorres/meu-lab-web.git](https://github.com/tluistorres/meu-lab-web.git)
 
-git clone [https://github.com/tluistorres/meu-lab-web.git](https://github.com/tluistorres/meu-lab-web.git)
+2. Entre na pasta e instale as dependências:
 
-Entre na pasta do projeto:
+  cd ebook-js-project && npm install
 
-Bash
+Executando Testes
 
-cd ebook-js-project
+Para rodar qualquer estrutura de dados específica (ex: Tabela Hash):
 
-Instale as dependências:
+  runts test-dict
 
-Bash
+📖 Jornada de Aprendizado 
 
-npm install
+ - Cap 1-4: Fundamentos de POO, Herança e Modularização Profissional.
 
-Rodando o Sistema
+ - Cap 5-6: Pilhas (Stacks) e Filas (Queues) com lógica de algoritmos (Batata Quente).
 
-Para compilar o código e iniciar o sistema em um único comando:
+ - Cap 7: Listas Ligadas, Circulares e Ordenadas (Manipulação de Memória).
 
-Bash
+ - Cap 8: Conjuntos (Sets) e Operações Matemáticas de União e Interseção.
 
-npm start
-
-📖 O que foi aprendido até aqui?
-
-Cap 1-2: Criação de classes, herança e encapsulamento de propriedades (getters e setters).
-
-Cap 3: Manipulação de Promises e simulação de requisições a APIs externas com setTimeout.
-
-Cap 4 (Atual): Modularização profissional, configuração de ambientes de build (src/lib) e resolução de conflitos entre ESM e CommonJS.
+ - Cap 9: Dicionários e Tabelas Hash (Resolução de colisões com Separate Chaining).
 
 👨‍💻 Autor
 
@@ -85,16 +80,6 @@ Luís Torres
 
 GitHub: @tluistorres
 
-Projeto desenvolvido durante o estudo de JavaScript Avançado.
+ - Projeto desenvolvido durante o estudo de Engenharia de Software e Algoritmos.
 
-Este projeto é parte do e-book "JS Moderno: Do Zero ao Profissional".
-
-
----
-
-### Dicas para o README:
-
-1.  **Badges**: Aqueles selos no topo (Node version, License) dão um ar muito profissional.
-2.  **Estrutura de Pastas**: Visualizar a árvore de diretórios ajuda outros desenvolvedores a entenderem seu projeto rapidamente.
-3.  **Instruções Claras**: O bloco "Como Executar" evita que as pessoas tenham dúvidas de como testar seu código.
-
+ - Este projeto é a implementação prática dos exemplos do e-book "JS Moderno: Do Zero ao Profissional".
