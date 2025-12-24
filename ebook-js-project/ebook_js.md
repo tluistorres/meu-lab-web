@@ -1682,3 +1682,63 @@ let copia = original; // Isso NÃO é uma cópia real!
 copia.push(4);
 
 console.log(original); // [1, 2, 3, 4] -> O original foi alterado
+
+# Capítulo 6: Estruturas de Dados Lineares na Prática
+
+As estruturas lineares organizam elementos em uma sequência lógica, mas diferem radicalmente na forma como permitem o acesso, inserção e remoção de dados.
+
+## 1. Pilha (Stack) — O Princípio LIFO
+* **Conceito:** *Last-In, First-Out* (O último a entrar é o primeiro a sair).
+* **Analogia:** Uma pilha de pratos ou de livros.
+* **Uso Comum:** Histórico de navegação, botão "Desfazer" (Ctrl+Z) e gerenciamento de chamadas de funções (Call Stack).
+
+
+
+## 2. Fila (Queue) — O Princípio FIFO
+* **Conceito:** *First-In, First-Out* (O primeiro a entrar é o primeiro a sair).
+* **Analogia:** Fila de banco ou de impressão.
+* **Uso Comum:** Escalonamento de processos e sistemas de mensagens (Buffer).
+
+
+
+## 3. Deque (Double-Ended Queue) — Flexibilidade Total
+* **Conceito:** Fila de duas extremidades. Permite inserção e remoção em ambos os lados.
+* **Analogia:** Um vagão de trem com portas em ambas as pontas.
+* **Uso Comum:** Verificador de palíndromos e algoritmos de "roubo de tarefas" (work-stealing).
+
+
+
+---
+
+## 🛠️ Lições do Laboratório: Erros e Soluções
+
+Durante a implementação prática em TypeScript, enfrentamos e resolvemos desafios reais de compilação que consolidaram o aprendizado:
+
+### A. Erro de Escopo e Redeclaração (`TS2451`)
+* **O Erro:** `Cannot redeclare block-scoped variable 'stack'`.
+* **A Causa:** Tentar declarar `const stack` duas vezes no mesmo arquivo de teste.
+* **A Solução:** Em TypeScript/ES6, variáveis de escopo de bloco não podem ser redeclaradas. Deve-se reutilizar a variável ou isolar os testes em escopos ou arquivos diferentes.
+
+### B. Erros de Sintaxe e Posicionamento (`TS1005` e `TS1434`)
+* **O Erro:** `';' expected` ou `Unexpected keyword`.
+* **A Causa:** Ocorreu ao tentar escrever o método `toString()` fora das chaves `{ }` da classe, ou por erros de digitação como `consolo.log` (typos).
+* **A Solução:** Garantir que todos os métodos pertençam ao corpo da classe e utilizar o corretor do compilador para identificar erros ortográficos em comandos globais.
+
+### C. Proteção de Membros Privados (`TS7053`)
+* **O Erro:** Falha ao tentar acessar `stack.items` externamente.
+* **A Causa:** Atributos marcados como `private` são inacessíveis fora da classe no TypeScript.
+* **A Solução:** Respeitar o encapsulamento. A segurança do modificador `private` torna desnecessário o uso de artifícios como `Symbols` para ocultar dados, garantindo uma API mais limpa e segura.
+
+---
+
+## 📊 Comparativo Técnico de Performance
+
+| Estrutura | Regra | Entrada | Saída | Complexidade (Remoção) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Pilha** | LIFO | Topo | Topo | $O(1)$ |
+| **Fila** | FIFO | Fim | Início | $O(1)$ (com objeto) |
+| **Deque** | Livre | Ambas pontas | Ambas pontas | $O(1)$ |
+
+> **Dica de Engenharia:** A implementação de Filas e Deques usando **Objetos Literais** (`{}`) é superior ao uso de **Arrays** (`[]`) para grandes volumes de dados, pois evita o custo de reindexação (reordenar os índices) ao remover o primeiro elemento (índice 0).
+
+---
