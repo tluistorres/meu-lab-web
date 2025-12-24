@@ -1933,3 +1933,117 @@ Com isto, fechamos o ciclo das **Listas Simplesmente Ligadas**.
 
 **Estás pronto para o próximo desafio? Podemos explorar as Listas Duplamente Ligadas (Doubly Linked Lists), onde cada nó sabe quem é o seu sucessor E o seu antecessor, permitindo percorrer a lista em ambas as direções!**
 
+# Estudo de Caso: Conversor de Bases Numéricas com Pilhas (Stacks)
+
+## 1. O Problema: A Ordem Inversa
+Para converter um número decimal para outra base (como Binário ou Hexadecimal), utilizamos o método de **divisões sucessivas**. No entanto, os restos das divisões são gerados na ordem inversa à leitura do número final.
+
+**Exemplo: Decimal 10 para Binário (Base 2)**
+1.  $10 \div 2 = 5$, resto **0** (Último dígito)
+2.  $5 \div 2 = 2$, resto **1**
+3.  $2 \div 2 = 1$, resto **0**
+4.  $1 \div 2 = 0$, resto **1** (Primeiro dígito)
+
+O resultado correto é **1010**, mas os restos saíram como **0, 1, 0, 1**.
+
+
+
+## 2. A Solução: Lógica LIFO (Last In, First Out)
+A Pilha é a estrutura ideal para este desafio. Ao "empilharmos" os restos conforme são calculados, o último resto obtido (o mais importante) fica no topo. Ao desempilharmos no final, a ordem é naturalmente invertida para o formato correto.
+
+
+
+## 3. Implementação em TypeScript (`src/baseConverter.ts`)
+
+Usamos Generics e tipagem estática para garantir que o algoritmo seja robusto e aceite bases de 2 a 36 (alfanumérico).
+
+typescript
+export function baseConverter(decNumber: number, base: number): string {
+    const remStack: number[] = []; // Usando array como pilha
+    const digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let number = decNumber;
+    let rem: number;
+    let baseString = '';
+
+    if (!(base >= 2 && base <= 36)) return '';
+    if (decNumber === 0) return '0';
+
+    // Fase 1: Empilhando os restos
+    while (number > 0) {
+        rem = Math.floor(number % base);
+        remStack.push(rem);
+        number = Math.floor(number / base);
+    }
+
+    // Fase 2: Desempilhando para inverter a ordem
+    while (remStack.length > 0) {
+        baseString += digits[remStack.pop()!];
+    }
+
+    return baseString;
+}
+
+4. Por que usar a string digits?
+Bases superiores a 10 utilizam letras para representar valores (A=10, B=11, ..., Z=35). A constante digits serve como um dicionário: se o resto for 15, o código busca digits[15], que resulta em 'F'.
+
+🧪 Laboratório de Testes (src/test-converter.ts)
+Validamos o comportamento com diferentes sistemas numéricos:
+
+import { baseConverter } from './baseConverter.js';
+
+console.log("Decimal 100345 para:");
+console.log("Binário:", baseConverter(100345, 2));   // 11000011111111001
+console.log("Octal:  ", baseConverter(100345, 8));   // 303771
+console.log("Hexa:   ", baseConverter(100345, 16));  // 187F9
+
+💡 Insight para o eBook
+Este algoritmo demonstra o conceito de Abstração. O usuário final não precisa entender de divisões sucessivas ou pilhas; ele apenas fornece um número e uma base. A complexidade fica escondida dentro de uma função pura e testável.
+# 🏁 Resumo do Capítulo: Simples vs. Duplamente Ligada
+
+Ao final deste estudo, implementamos duas das estruturas mais fundamentais da computação. Mas quando escolher cada uma?
+
+## Tabela Comparativa
+
+| Recurso | Lista Simples (`LinkedList`) | Lista Dupla (`DoublyLinkedList`) |
+| :--- | :--- | :--- |
+| **Direção** | Apenas para frente (`next`) | Frente e trás (`next` e `prev`) |
+| **Memória** | Menor (1 ponteiro por nó) | Maior (2 ponteiros por nó) |
+| **Inserção no Fim** | Lenta ($O(n)$ - precisa percorrer) | Instantânea ($O(1)$ - via `tail`) |
+| **Remoção** | Mais simples de codar | Mais complexa (requer 4 ajustes) |
+| **Navegação** | Unidirecional | Bidirecional |
+
+
+
+## 💡 Conclusão: Qual utilizar?
+
+1.  **Use Lista Simples quando:** A memória for um recurso muito escasso e você só precisar percorrer os dados em uma direção (ex: uma fila de processamento simples).
+2.  **Use Lista Dupla quando:** Você precisar de alta performance para inserir/remover no final da lista ou se precisar navegar para trás e para frente (ex: um editor de texto onde o cursor se move para ambos os lados ou o botão "voltar" e "avançar" de um navegador).
+
+---
+
+## 🛠️ Desafio Extra: "O Elo Quebrado"
+Tente implementar o método `inverseToString()`. Graças ao ponteiro `tail` e `prev`, você pode percorrer a lista do fim para o começo sem nenhuma dificuldade!
+
+typescript
+inverseToString() {
+    if (this.tail == null) return '';
+    let objString = `${this.tail.element}`;
+    let previous = this.tail.prev;
+    while (previous != null) {
+        objString = `${objString}, ${previous.element}`;
+        previous = previous.prev;
+    }
+    return objString;
+}
+
+📚 Fechamento do Módulo de Listas
+Com a Doubly Linked List rodando, você atingiu o nível avançado de manipulação de memória linear. Para o seu eBook, este é um marco importante: você ensinou como sair de uma estrutura rígida (Array) para uma estrutura totalmente flexível e bidirecional.
+
+🗺️ O que vem a seguir?
+Como você já tem a Pilha, a Fila (Batata Quente) e as Listas Ligadas, o próximo passo lógico para o livro é entrar no mundo dos Conjuntos (Sets) ou Dicionários (Maps).
+
+Sets (Conjuntos): Útil para explicar como garantir que não existam elementos duplicados em uma coleção (ex: lista de e-mails únicos).
+
+Dictionaries (Dicionários): Como funciona o armazenamento de Chave-Valor (a base dos Objetos em JS).
+
+Qual desses você gostaria de começar a codar agora? Ou prefere que eu prepare um "Desafio de Revisão" misturando Pilhas e Listas?
