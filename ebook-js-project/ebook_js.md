@@ -2447,10 +2447,148 @@ usuarios.put("torres", "torres@mail.com");
 
 console.log(usuarios.get("luis")); // Saída instantânea: luis@mail.com
 
-### 🚀 Próximo Passo: Capítulo 10 - Recursividade
+### 🚀** Capítulo 10 - Recursividade**
 
-Antes de avançarmos para as **Árvores (Trees)**, precisamos dominar a **Recursividade**. É a técnica onde uma função chama a si mesma para resolver subproblemas menores.
+A Recursividade é muitas vezes vista como um "bicho de sete cabeças", mas no seu e-book 
+vamos tratá-la como o que ela realmente é: uma ferramenta de elegância.
 
-**Gostaria que eu preparasse o clássico exemplo do Fatorial ou o da Sequência de Fibonacci para abrirmos este novo capítulo?**
+O que é? É quando uma função chama a si mesma.Para que serve? Para resolver problemas 
+que podem ser divididos em subproblemas idênticos (como navegar em pastas de ficheiros ou 
+percorrer árvores).
 
-## Recursividade:
+Para uma função recursiva não rodar para sempre (o famoso Stack Overflow), ela precisa de 
+duas coisas:
+
+1. Caso de Base: A condição de paragem (quando a função para de se chamar).
+
+2. Caso Recursivo: Onde a função chama a si mesma com um valor menor ou diferente.
+
+🛠️ Primeiro Exemplo: O Fatorial (src/30-Recursion.ts)
+
+O fatorial de 5 O fatorial de 5 (5!) é 5x4x3x2x1, ou seja: 5xfatorial(4).
+
+Vamos criar este ficheiro para testar:
+
+TypeScript
+
+/**
+ * Cálculo de Fatorial de forma recursiva
+ */
+export function factorial(n: number): number {
+    // Caso de Base
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+    // Caso Recursivo
+    return n * factorial(n - 1);
+}
+
+// Teste rápido
+console.log("--- 🔄 Lab Luis-Tech: Recursividade ---");
+console.log("Fatorial de 5:", factorial(5)); // Deve ser 120
+
+🧪 Teste o aquecimento
+
+Crie o ficheiro `src/test-recursion.ts:`
+
+TypeScript
+
+import { factorial } from './30-Recursion.js';
+
+console.log("Fatorial de 5:", factorial(5));
+console.log("Fatorial de 3:", factorial(3));
+
+Bash
+
+runts test-recursion
+
+#**Terminal Integrado -> "Ctrl + `", para abrir o terminal diretamente dentro VS Code**
+
+⚠️ Nota importante para o seu E-book: O Custo da Recursão
+
+Aqui está um "segredo" técnico valioso para o seu texto: A recursão simples para Fibonacci é 
+ineficiente para números grandes. Para calcular fibonacci(50), o computador faria trilhões 
+de chamadas repetidas.
+
+A recursividade é excelente para legibilidade, mas para performance em cálculos massivos, 
+usamos uma técnica chamada Memoization (guardar os resultados já calculados) ou apenas laços 
+de repetição simples.
+
+🚀 O que vem a seguir?
+
+Com o domínio da recursividade (função chamando função), você desbloqueou a habilidade 
+necessária para o Capítulo 11: Árvores (Trees).
+
+Em uma árvore, para encontrar um valor, você olha para a "raiz", depois chama a mesma lógica p
+ara o "galho da esquerda" ou "galho da direita". É recursividade pura!
+
+Capítulo 10: Recursividade - A Arte da Auto-Referência
+
+A recursividade é uma técnica de programação onde uma função chama a si mesma para resolver 
+subproblemas menores do mesmo tipo. Na computação, ela é a base para percorrer estruturas 
+complexas como árvores e grafos.
+
+1. A Anatomia de uma Função Recursiva
+
+Para que uma função não entre em um loop infinito (causando o erro de Stack Overflow), ela deve 
+obrigatoriamente possuir dois componentes:
+
+1.1. Caso de Base (Condição de Parada): 
+
+É o momento em que a função para de chamar a si mesma e retorna um valor concreto.
+
+1.2. Caso Recursivo: 
+
+É a parte onde a lógica principal acontece e a função chama a si mesma com um 
+argumento reduzido.
+
+2. Exemplo Clássico: O Fatorial
+
+O cálculo de n! é definido como n x (n-1) x (n-2)... Em termos recursivos: fatorial(n) = n x fatorial(n - 1).
+
+TypeScript
+
+export function factorial(n: number): number {
+    if (n === 0 || n === 1) return 1; // Caso de Base
+    return n * factorial(n - 1);      // Caso Recursivo
+}
+
+3. A Sequência de Fibonacci
+
+Fibonacci é o exemplo perfeito de dupla recursão. Cada número é a soma dos 
+dois anteriores.
+
+TypeScript
+
+export function fibonacci(n: number): number {
+    if (n < 1) return 0;
+    if (n <= 2) return 1;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+⚠️ Ponto de Atenção: Call Stack (Pilha de Chamadas)
+
+Cada vez que uma função chama a si mesma, o JavaScript coloca essa chamada no topo da 
+Call Stack. 
+
+Se a recursão for profunda demais (ex: calcular o fatorial de 1.000.000), a pilha estoura.
+
+  Dica para o E-book: Use recursividade quando a legibilidade e a estrutura do 
+  problema forem naturalmente divisíveis (como pastas de arquivos). 
+  Para cálculos matemáticos puramente intensivos em performance, loops 
+  tradicionais (for/while) costumam ser mais rápidos e seguros para a memória. 
+
+🗺️ O que vem a seguir?
+
+Agora que o seu cérebro já está "pensando recursivamente", você está pronto para o Capítulo 11: 
+Árvores Binárias de Busca (BST).
+
+Diferente das listas ligadas (que são uma linha), as árvores são hierárquicas. Para inserir um nó 
+em uma árvore, usamos exatamente a lógica que você acabou de aprender:
+
+ - Se o valor é menor, chame inserir para a esquerda.
+ - Se o valor é maior, chame inserir para a direita.
+
+ 
+
+
