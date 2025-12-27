@@ -2589,6 +2589,142 @@ em uma árvore, usamos exatamente a lógica que você acabou de aprender:
  - Se o valor é menor, chame inserir para a esquerda.
  - Se o valor é maior, chame inserir para a direita.
 
- 
+ Para o seu eBook: "Tabela de Recuperação de Desastres"
+Você pode incluir esta tabela no seu capítulo sobre Git ou Ferramentas de Desenvolvimento:
+
+
+| Comando | Ação Realizada | Contexto de Uso |
+| :--- | :--- | :--- |
+| git ls-files --deleted | Lista arquivos removidos do disco | Verificar o que foi perdido por engano. |
+| git checkout . | Restaura todos os arquivos deletados | Recuperação total após uma limpeza acidental. |
+| git checkout [arquivo] | Restaura um arquivo específico | Recuperação cirúrgica de um módulo. |
+
+| Arquivo | Conteúdo Técnico |
+| :--- | :--- |
+| *23-LinkedList.ts* | Listas Ligadas (Fundamentos) |
+| *24-DoublyLinkedList.ts* | Listas Duplamente Ligadas |
+| *25-SpecializedLists.ts* | Pilhas e Filas baseadas em Listas |
+| *29-HashTableChaining.ts* | Tabelas Hash com Tratamento de Colisão |
+| *31-BinarySearchTree.ts* | Árvores Binárias (O coração do Cap 11) |
+
+🚀 Introdução ao Capítulo 12: Grafos (O Mapa das Conexões)
+Agora que as árvores (que são grafos sem ciclos) estão dominadas, vamos para o nível mais alto das estruturas de dados.
+
+O que é um Grafo? Se uma Árvore Binária é uma hierarquia (pai e filho), um Grafo é uma rede. Pense no Google Maps (cidades conectadas por estradas) ou no Instagram (pessoas conectadas por amizades).
+
+Os Componentes Básicos:
+
+1. Vértices (Nodes): Os pontos (ex: Cidades).
+
+2. Arestas (Edges): As linhas que conectam os pontos (ex: Estradas).
+
+🛠️ Preparando o Próximo Lab
+
+Para começar o Capítulo 12, vamos criar o arquivo base. No seu terminal, execute:
+
+ touch src/models/32-Graph.ts
+
+📊 Tabela Completa de Organização do Projeto 
+
+| Assunto | Estrutura | Arquivo no Projeto | Comando para Executar |
+| :--- | :--- | :--- |
+| *Arrays (Fundamentos)* | src/models/01-Arrays.ts | npm run test:array |
+| *Pilhas (Stacks)* | src/models/02-Stacks.ts | npm run test:stack |
+| *Filas (Queues)* | src/models/03-Queues.ts | npm run test:queue |
+| *Listas Ligadas* | src/models/23-LinkedList.ts | npm run test:list |
+| *Listas Duplas* | src/models/24-DoublyLinkedList.ts | npm run test:doubly |
+| *Tabelas Hash* | src/models/29-HashTableChaining.ts | npm run test:hash |
+| *Árvores (BST)* | src/models/31-BinarySearchTree.ts | npm run test:tree |
+| *Grafos* | src/models/32-Graph.ts | npm run test:graph |
+
+🛠️ Configuração do package.json Profissional
+
+Substitua o conteúdo do seu package.json por este. Eu adicionei uma seção de scripts que mapeia cada assunto. Assim, você não precisa decorar caminhos de pastas, basta usar o comando npm run.
+
+{
+  "name": "ebook-js-project",
+  "version": "1.0.0",
+  "description": "Laboratório de Estruturas de Dados - Luis Tech",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test:array": "tsx src/models/01-Arrays.ts",
+    "test:stack": "tsx src/models/02-Stacks.ts",
+    "test:queue": "tsx src/models/03-Queues.ts",
+    "test:list": "tsx src/models/test-linked-list.ts",
+    "test:doubly": "tsx src/models/test-doubly.ts",
+    "test:hash": "tsx src/models/29-HashTableChaining.ts",
+    "test:tree": "tsx src/models/test-tree.ts",
+    "test:graph": "tsx src/models/test-graph.ts",
+    "build": "tsc",
+    "clean": "rm -rf lib dist"
+  },
+  "keywords": [],
+  "author": "Luis Torres",
+  "license": "ISC",
+  "dependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.0.0"
+  }
+}
+
+
+📖 Como usar agora?
+
+Sempre que você quiser estudar ou tirar um print para o livro, basta abrir o terminal e digitar:
+
+ - npm run test:tree (Para ver a árvore que acabamos de fazer)
+
+ - npm run test:list (Para revisar as listas que recuperamos)
+
+
+📖 Como recuperar uma cópia do GitHub:
+
+Como você tem uma cópia do arquivo no GitHub, recuperá-lo é um processo simples. O Git foi feito exatamente para lidar com essas situações.
+
+Aqui estão as três formas principais de proceder, dependendo da sua necessidade:
+
+1. Se você quer apenas o texto de volta (Rápido)
+
+ - Se você não quer usar comandos de terminal agora e só precisa do conteúdo:
+
+ - Vá até o seu repositório no site do GitHub.
+
+ - Clique no arquivo ebook_js.md.
+
+ - Clique no botão "Raw" (no canto superior direito do conteúdo do arquivo).
+
+ - O navegador abrirá apenas o texto puro. Dê um Ctrl+A para selecionar tudo, Ctrl+C para copiar e cole de volta no seu editor local.
+
+2. Recuperar via Terminal (Recomendado)
+
+Se você quer que o Git "sobrescreva" a sua versão local (que está incompleta) pela versão exata que está no servidor (GitHub):
+
+No seu terminal, dentro da pasta do projeto, digite:
+
+Bash
+
+git checkout origin/main -- ebook_js.md
+
+Isso diz ao Git: "Pegue o arquivo ebook_js.md do servidor (origin) e coloque-o exatamente como está aqui na minha pasta".
+
+3. Sincronizar todo o repositório
+
+Se você acha que outros arquivos também podem ter problemas ou se faz tempo que não atualiza sua máquina, você pode dar um "reset" para ficar igual ao GitHub:
+
+Cuidado: Isso apagará qualquer alteração local que você ainda não enviou para o GitHub.
+
+Bash
+
+git fetch origin
+git reset --hard origin/main
+
+Dica de Prevenção:
+
+Para evitar que isso aconteça novamente sem você perceber, sempre verifique o status do seu trabalho antes de commitar:
+
+Use git diff ebook_js.md para ver o que mudou antes de salvar.
+
+Se o arquivo sumiu por engano e você ainda não commitou a exclusão, um simples git restore ebook_js.md resolve o problema na hora.
 
 
