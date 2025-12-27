@@ -2727,4 +2727,1124 @@ Use git diff ebook_js.md para ver o que mudou antes de salvar.
 
 Se o arquivo sumiu por engano e você ainda não commitou a exclusão, um simples git restore ebook_js.md resolve o problema na hora.
 
+## Resumo de POO, ARRAY, LISTAS, PILHAS E FILHAS;
 
+# **Antes de entrarmos em detalhes sobre as diferenças entre pilha e fila, é importante entender o que cada uma dessas estruturas representa.**
+
+Pilha (Stack)
+
+Uma pilha é uma estrutura de dados que segue o princípio LIFO (Last In, First Out), ou seja, o último elemento a entrar é o primeiro a sair. 
+
+Imagine uma pilha de pratos: você coloca um prato no topo e, quando precisa de um prato, pega o do topo. 
+
+Na programação, a operação de inserir um elemento na pilha é chamada de "push" e a de remover um elemento é chamada de "pop".
+
+Fila (Queue)
+
+Já a fila segue o princípio FIFO (First In, First Out), onde o primeiro elemento a entrar é o primeiro a sair. 
+
+Pense em uma fila de pessoas no caixa do supermercado: a primeira pessoa a entrar na fila é a primeira a ser a…
+
+{
+
+    dequeue() {
+        // Remove e retorna o primeiro elemento da fila (FIFO)
+        if (this.items.length == 0) return "Underflow";
+        return this.items.shift(); // Operação O(n) no array
+    }
+
+    front() {
+        // Retorna o primeiro elemento sem removê-lo
+        if (this.items.length == 0) return "No elements in Queue";
+        return this.items[0];
+    }
+
+    isEmpty() {
+        // Verifica se a fila está vazia
+        return this.items.length == 0;
+    }
+}
+
+// Uso da Fila
+
+const fila = new Queue();
+fila.enqueue("A");
+fila.enqueue("B");
+console.log(fila.dequeue()); // Saída: A
+
+# Listas Ligadas (Linked Lists) com POO
+
+Diferente de arrays, as listas ligadas não armazenam elementos em posições de memória contíguas. Cada elemento (nó) contém o dado e uma referência (ponteiro) para o próximo nó. Isso permite inserções e remoções eficientes no início/fim (O(1)), o que é superior ao 
+
+Array nativo para operações de fila otimizadas. 
+
+A implementação de uma lista ligada geralmente envolve duas classes: Node (Nó) e LinkedList (Lista Ligada).
+
+javascript
+
+class Node {
+    constructor(value) {
+        this.value = value;
+        this.next = null; // Referência para o próximo nó
+    }
+}
+
+class LinkedList {
+    constructor() {
+        this.head = null; // O primeiro nó da lista
+    }
+
+    add(value) {
+        const newNode = new Node(value);
+        if (!this.head) {
+            this.head = newNode;
+            return;
+        }
+        let current = this.head;
+        while (current.next) {
+            current = current.next;
+        }
+        current.next = newNode;
+    }
+
+    // Outros métodos como remove(), search(), etc.
+}
+
+Em resumo, a POO permite encapsular a lógica e as regras de acesso dessas estruturas, usando o Array ou implementações baseadas em Node como mecanismos de armazenamento.
+
+
+## Estruturas de dados em JavaScript – com exemplos de código
+
+Neste artigo vamos dar uma olhada em um tópico chave quando se trata de ciência da computação e desenvolvimento de software: estruturas de dados.
+
+É definitivamente um tópico obrigatório para quem trabalha no mundo do desenvolvimento de software, mas pode ser difícil de entender e até um pouco intimidador quando você está começando.
+
+Neste artigo, tentarei dar uma explicação simples sobre estruturas de dados, o que são, quando são úteis e como podemos implementá-las usando JavaScript.
+
+# O que abordaremos:
+
+ - O que é uma estrutura de dados?
+
+Arrays
+
+- Objects (hash tables)
+
+- Pilhas
+
+- Queues Listas vinculadas
+ 
+- Árvores
+
+- Gráficos
+
+O que é uma estrutura de dados?
+
+Na ciência da computação, uma estrutura de dados é um formato para organizar, gerenciar e armazenar dados de forma a permitir acesso e modificações efieicientes.
+
+Mais precisamente, uma estrutura de dados é uma coleção de valores de dados, os relacionamentos entre eles e as funções ou operações que podem ser aplicadas a esses dados.
+
+Essas definicições podem parecer um pouco abstratas no começo, mas pense bem. Se você está codificando há algum tempo, deve ter usado estrutura de dados antes.
+
+Você já usou arrays e objetos? Essas são todas as estruturas de dados. Todos eles são uma coleção de valores que se relacionam entre si e podem ser operados por você.
+
+// A collection of the values 1, 2 and 3
+const arr = [1, 2, 3]
+
+// Cada valor está relacionado entre si, no sentido de que cada um é indexado em uma posição do array
+const indexOfTwo = arr.indexOf(2)
+console.log(arr[indexOfTwo-1]) // 1
+console.log(arr[indexOfTwo+1]) // 3
+
+// Podemos realizar muitas operações no array, como inserir novos valores nele
+arr.push(4)
+console.log(arr) // [1,2,3,4]
+
+# JavaScript tem estruturas de dados primitivas(integradas) e não primitivas(não incorporadas).
+
+As estruturas de dados primitivas vêm por padrão com a linguagem de programação e você pode implementá-las imediatamente (como arrays e objetos). Estruturas de dados não primitivas, não vêm por padrão e você deve codificá-las se quiser usá-las.
+
+Existem diferentes estruturas de dados, porque algumas delas são mais adequadas para certos tipos de operações. Você provavelmente será capaz de lidar com a maioria das tarefas de programação com estrutura de dados incorporadas, mas para algumas tarefas muito específicas, uma estrutura de dados não primitiva pode ser útil.
+
+Agora vamos examinar as estruturas de dados mais populares e ver como cada uma delas funciona, em que ocasiões elas são úteis e como podemos codificá-las em JavaScript.
+
+Arrays
+
+Uma array é uma coleção de itens armazenados em locais de memória contíguos.
+
+Cada item pode ser acessado através de seu número de índice(posição). Arrays sempre começam no índice 0, então em uma array de 4 elementos, podemos acessar o 3º elemento usando o índice 2.
+
+const arr = ['a', 'b', 'c', 'd']
+console.log(arr[2]) // c
+
+A propriedade length de um array é definida como o número de elementos que ele contém. Se a array contém 4 elementos, podemos dizer que a array tem um comprimento de 4.
+
+const arr = ['a', 'b', 'c', 'd']
+console.log(arr.length) // 4
+
+Em algumas linguagens de programação, o usuário só pode armazenar valores do mesmo tipo em um array e o comprimento do array deve ser definido no momento de sua criação e não pode ser modificado posteriormente.
+
+Em JavaScript não é assim, pois podemos armazenar valores de qualquer tipo no mesmo array e o comprimento dele pode ser dinâmico (pode aumentar ou diminuir o quanto for necessário).
+
+const arr = ['store', 1, 'whatever', 2, 'you want', 3]
+
+Qualquer tipo de dado pode ser armazenado em um array, e isso inclui arrays também. Uma array que contém outras arrays dentro de si, é chamada de array multidimensional.
+
+const arr = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9],
+]
+
+# Em JavaScript, os arrays vêm com muitas propriedades.
+
+Estruturas de dados em JavaScript – com exemplos de código
+
+Neste artigo vamos dar uma olhada em um tópico chave quando se trata de ciência da computação e desenvolvimento de software: estruturas de dados.
+
+É definitivamente um tópico obrigatório para quem trabalha no mundo do desenvolvimento de software, mas pode ser difícil de entender e até um pouco intimidador quando você está começando.
+
+Neste artigo, tentarei dar uma explicação simples sobre estruturas de dados, o que são, quando são úteis e como podemos implementá-las usando JavaScript.
+
+O que abordaremos:
+
+ - O que é uma estrutura de dados?
+
+ - Arrays
+
+ - Objects (hash tables)
+
+ - Pilhas
+
+ - Queues
+
+ - Listas vinculadas
+
+ - Árvores
+
+ - Gráficos
+
+## O que é uma estrutura de dados?
+
+Na ciência da computação, uma estrutura de dados é um formato para organizar, gerenciar e armazenar dados de forma a permitir acesso e modificações efieicientes.
+
+Mais precisamente, uma estrutura de dados é uma coleção de valores de dados, os relacionamentos entre eles e as funções ou operações que podem ser aplicadas a esses dados.
+
+Essas definicições podem parecer um pouco abstratas no começo, mas pense bem. Se você está codificando há algum tempo, deve ter usado estrutura de dados antes.
+
+Você já usou arrays e objetos? Essas são todas as estruturas de dados. Todos eles são uma coleção de valores que se relacionam entre si e podem ser operados por você.
+
+// A collection of the values 1, 2 and 3
+const arr = [1, 2, 3]
+
+// Cada valor está relacionado entre si, no sentido de que cada um é indexado em uma posição do array
+const indexOfTwo = arr.indexOf(2)
+console.log(arr[indexOfTwo-1]) // 1
+console.log(arr[indexOfTwo+1]) // 3
+
+// Podemos realizar muitas operações no array, como inserir novos valores nele
+arr.push(4)
+console.log(arr) // [1,2,3,4]
+
+JavaScript tem estruturas de dados primitivas(integradas) e não primitivas(não incorporadas).
+
+As estruturas de dados primitivas vêm por padrão com a linguagem de programação e você pode implementá-las imediatamente (como arrays e objetos). Estruturas de dados não primitivas, não vêm por padrão e você deve codificá-las se quiser usá-las.
+
+Existem diferentes estruturas de dados, porque algumas delas são mais adequadas para certos tipos de operações. Você provavelmente será capaz de lidar com a maioria das tarefas de programação com estrutura de dados incorporadas, mas para algumas tarefas muito específicas, uma estrutura de dados não primitiva pode ser útil.
+
+Agora vamos examinar as estruturas de dados mais populares e ver como cada uma delas funciona, em que ocasiões elas são úteis e como podemos codificá-las em JavaScript.
+
+Arrays
+
+Uma array é uma coleção de itens armazenados em locais de memória contíguos.
+
+Cada item pode ser acessado através de seu número de índice(posição). Arrays sempre começam no índice 0, então em uma array de 4 elementos, podemos acessar o 3º elemento usando o índice 2.
+
+const arr = ['a', 'b', 'c', 'd']
+console.log(arr[2]) // c
+
+A propriedade length de um array é definida como o número de elementos que ele contém. Se a array contém 4 elementos, podemos dizer que a array tem um comprimento de 4.
+
+const arr = ['a', 'b', 'c', 'd']
+console.log(arr.length) // 4
+
+Em algumas linguagens de programação, o usuário só pode armazenar valores do mesmo tipo em um array e o comprimento do array deve ser definido no momento de sua criação e não pode ser modificado posteriormente.
+
+Em JavaScript não é assim, pois podemos armazenar valores de qualquer tipo no mesmo array e o comprimento dele pode ser dinâmico (pode aumentar ou diminuir o quanto for necessário).
+
+const arr = ['store', 1, 'whatever', 2, 'you want', 3]
+
+## Qualquer tipo de dado pode ser armazenado em um array, e isso inclui arrays também. Uma array que contém outras arrays dentro de si, é chamada de array multidimensional.
+
+const arr = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9],
+]
+
+Em JavaScript, os arrays vêm com muitas propriedades e métodos integrados que podemos usar com diferentes finalidades, como adicionar ou excluir itens do array, classificá-lo, filtrar seus valores, saber seu comprimento e assim por diante.
+
+Como mencionei, em arrays, cada elemento possui um índice definido por sua posição no array. Quando adicionamos um novo item no final do array, ele pega apenas o número do índice que segue o último item anterior do array.
+
+Mas quando adicionamos/exclúimos um novo item no início ou no meio do array, os índices de todos os elementos que vêm após o elemento adicionado/excluído, devem ser alterados. É claro que isso tem um custo computacional e é um dos pontos fracos dessa estrutura de dados.
+
+Arrays são úteis quando temos que armazenar valores individuais e adicionar/excluir valores do final da estrutura de dados. Mas quando precisamos adicionar/excluir qualquer parte dele, existem outras estruturas de dados que funcionam com mais eficiência (falaremos sobre elas mais adiante).
+
+## Objects (hash tables)
+
+Em JavaScript, um objeto é uma coleção de pares chave-valor. Essa estrutura de dados também é chamada de map, dicionário ou tabela de hash em outras linguagens de programação.
+
+Um objeto JS típico se parece com isso:
+
+const obj = {
+    prop1: "I'm",
+    prop2: "an",
+    prop3: "object"
+}
+Uma coisa importante a mencionar é que cada chave deve ser única dentro do objeto. Você não pode ter duas chaves com o mesmo nome.
+
+Os objetos podem armazenar valores e funções. Ao falar sobre objetos, os valores são chamados de propriedades e as funções são chamadas de métodos.
+
+const obj = {
+    prop1: "Hello!",
+    prop3: function() {console.log("I'm a property dude!")
+}}
+
+Para acessar as propriedades, você pode usar duas sintaxes diferentes, object.property ou object["property"]. Para acessar os métodos, chamamos object.method().
+
+console.log(obj.prop1) // "Hello!"
+console.log(obj["prop1"]) // "Hello!"
+obj.prop3() // "I'm a property dude!"
+
+A sintaxe para atribuir novos valores é bastante semelhante:
+
+obj.prop4 = 125
+obj["prop5"] = "The new prop on the block"
+obj.prop6 = () => console.log("yet another example")
+
+console.log(obj.prop4) // 125
+console.log(obj["prop5"]) // "The new prop on the block"
+obj.prop6() // "yet another example"
+
+Assim como os arrays, os objetos em JavaScript vêm com muitos métodos integrados que nos permitem realizar diferentes operações e obter informações de um determinado objeto.
+
+Os objetos são uma boa maneira de agrupar dados que têm algo em comum ou estão de alguma forma relacionados. Além disso, graças ao fato de que os nomes das propriedades são únicos, os objetos são úteis quando temos que separar os dados com base em uma condição única.
+
+Um exemplo poderia ser contar quantas pessoas gostam de diferentes alimentos:
+
+const obj = {
+    pizzaLovers: 1000,
+    pastaLovers: 750,
+    argentinianAsadoLovers: 12312312312313123
+}
+
+## Pilhas
+
+Pilhas são estruturas de dados que armazenam informações na forma de uma lista. Eles permitem apenas adicionar e remover elementos sob um padrão LIFO (último a entrar, primeiro a sair) . Nas pilhas, os elementos não podem ser adicionados ou removidos fora de ordem, eles sempre devem seguir o padrão LIFO.
+
+Para entender como isso funciona, imagine uma pilha de papéis em cima de sua mesa. Você só pode adicionar mais papéis à pilha colocando-os em cima de todos os outros. E você pode tirar um papel da pilha apenas pegando aquele que está em cima de todos os outros. Ultimo a entrar primeiro a sair. LIFO. 😉
+
+Pilha de papéis
+
+As pilhas são úteis quando precisamos garantir que os elementos sigam o padrão LIFO . Alguns exemplos de uso de pilha são:
+
+Pilha de chamadas do JavaScript.
+
+Gerenciando invocações de função em várias linguagens de programação.
+
+ - A funcionalidade de desfazer/refazer muitos programas oferecem.
+ - Há mais de uma maneira de implementar uma pilha, mas provavelmente a mais simples é usar um array com seus métodos push e pop .  - Se usarmos apenas pop e push para adicionar e excluir elementos, sempre seguiremos o padrão LIFO e operaremos sobre ele como uma pilha.
+
+# Outra maneira é implementá-lo como uma lista, que pode ser assim:
+
+// We create a class for each node within the stack
+class Node {
+    // Each node has two properties, its value and a pointer that indicates the node that follows
+    constructor(value){
+        this.value = value
+        this.next = null
+    }
+}
+
+// Criamos uma classe para cada nó dentro da pilha
+class Stack {
+    // Cada nó possui duas propriedades, seu valor e um ponteiro que indica o nó seguinte
+    constructor(){
+        this.first = null
+        this.last = null
+        this.size = 0
+    }
+    // O método push recebe um valor e o adiciona ao "topo" da pilha
+    push(val){
+        var newNode = new Node(val)
+        if(!this.first){
+            this.first = newNode
+            this.last = newNode
+        } else {
+            var temp = this.first
+            this.first = newNode
+            this.first.next = temp
+        }
+        return ++this.size
+    }
+    // O método pop elimina o elemento do "topo" da pilha e retorna seu valor
+    pop(){
+        if(!this.first) return null
+        var temp = this.first
+        if(this.first === this.last){
+            this.last = null
+        }
+        this.first = this.first.next
+        this.size--
+        return temp.value
+    }
+}
+
+const stck = new Stack
+
+stck.push("value1")
+stck.push("value2")
+stck.push("value3")
+
+console.log(stck.first) /* 
+        Node {
+        value: 'value3',
+        next: Node { value: 'value2', next: Node { value: 'value1', next: null } }
+        }
+    */
+console.log(stck.last) // Node { value: 'value1', next: null }
+console.log(stck.size) // 3
+
+stck.push("value4")
+console.log(stck.pop()) // value4
+O grande O dos métodos de pilha é o seguinte:
+
+I| Estrutura | Inserção | Remoção | Busca | Acesso |
+| :--- | :--- | :--- | :--- | :--- |
+| **Array** | $O(1)$ (no fim) | $O(1)$ (no fim) | $O(n)$ | $O(1)$ |
+| **Pilha** | $O(1)$ | $O(1)$ | $O(n)$ | $O(n)$ |
+| **Fila** | $O(1)$ | $O(1)$ | $O(n)$ | $O(n)$ |
+| **Lista Ligada** | $O(1)$ | $O(1)$ | $O(n)$ | $O(n)$ |
+| **Árvore (BST)** | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ |
+
+As filas funcionam de maneira muito semelhante às pilhas, mas os elementos seguem um padrão diferente para adição e remoção. As filas permitem apenas um padrão FIFO (primeiro a entrar, primeiro a sair) . Nas filas, os elementos não podem ser adicionados ou removidos fora de ordem, eles sempre devem seguir o padrão FIFO.
+
+Para entender isso, imagine pessoas fazendo fila para comprar comida. A lógica aqui é que, se você pegar a fila primeiro, será o primeiro a ser atendido. Se você chegar lá primeiro, será o primeiro a sair. FIFO.😉
+
+Uma fila de clientes
+
+Alguns exemplos de uso de fila são:
+
+## Tarefas em segundo plano.
+
+Impressão/processamento de tarefas.
+Assim como nas filas, há mais de uma maneira de implementar uma pilha. Mas provavelmente o mais simples é usar um array com seus métodos push e shift.
+
+Se usarmos push e shift apenas para adicionar e excluir elementos, sempre seguiremos o padrão FIFO e, portanto, operaremos sobre ele como uma fila.
+
+Outra maneira é implementá-lo como uma lista, que pode ser assim:
+
+// Criamos uma classe para cada nó dentro da fila
+class Node {
+    //Cada nó possui duas propriedades, seu valor e um ponteiro que indica o nó seguinte
+    constructor(value){
+        this.value = value
+        this.next = null
+    }
+}
+
+// Criamos uma classe para a fila
+class Queue {
+    // A fila tem três propriedades, o primeiro nó, o último nó e o tamanho da pilha
+    constructor(){
+        this.first = null
+        this.last = null
+        this.size = 0
+    }
+    // O método enqueue recebe um valor e o adiciona ao "final" da fila
+    enqueue(val){
+        var newNode = new Node(val)
+        if(!this.first){
+            this.first = newNode
+            this.last = newNode
+        } else {
+            this.last.next = newNode
+            this.last = newNode
+        }
+        return ++this.size
+    }
+    // O método dequeue elimina o elemento no "início" da fila e retorna seu valor
+    dequeue(){
+        if(!this.first) return null
+
+        var temp = this.first
+        if(this.first === this.last) {
+            this.last = null
+        }
+        this.first = this.first.next
+        this.size--
+        return temp.value
+    }
+}
+
+const quickQueue = new Queue
+
+quickQueue.enqueue("value1")
+quickQueue.enqueue("value2")
+quickQueue.enqueue("value3")
+
+console.log(quickQueue.first) /* 
+        Node {
+            value: 'value1',
+            next: Node { value: 'value2', next: Node { value: 'value3', next: null } }
+        }
+    */
+console.log(quickQueue.last) // Node { value: 'value3, next: null }
+console.log(quickQueue.size) // 3
+
+quickQueue.enqueue("value4")
+console.log(quickQueue.dequeue()) // value1
+O grande O dos métodos de fila é o seguinte:
+
+## Listas vinculadas
+
+As listas encadeadas são um tipo de estrutura de dados que armazena valores na forma de uma lista . Dentro da lista, cada valor é considerado um nó , e cada nó é conectado com o seguinte valor na lista (ou nulo caso o elemento seja o último da lista) por meio de um ponteiro .
+
+Existem dois tipos de listas encadeadas, listas encadeadas individualmente e listas encadeadas duplamente. Ambos funcionam de maneira muito semelhante, mas a diferença está nas listas vinculadas individualmente, cada nó possui um único ponteiro que indica o próximo nó na lista. Enquanto em listas duplamente encadeadas, cada nó possui dois ponteiros , um apontando para o próximo nó e outro apontando para o nó anterior .
+
+Na lista encadeada individualmente cada nó tem um único ponteiro
+
+Na lista duplamente encadeada, cada nó tem dois ponteiros
+
+O primeiro elemento da lista é considerado a cabeça e o último elemento é considerado a cauda . Assim como nos arrays, a propriedade length é definida como o número de elementos que a lista contém.
+
+As principais diferenças em comparação com os arrays são as seguintes:
+
+As listas não têm índices . Cada valor apenas "conhece" os valores aos quais está conectado por meio de ponteiros. Como as listas não possuem índices, não podemos acessar os valores aleatoriamente . Quando queremos acessar um valor, sempre temos que procurá-lo percorrendo a lista a partir de sua cabeça ou cauda.
+
+O bom de não ter índices, é que a inserção/exclusão em qualquer parte da lista é mais eficiente do que com arrays. Nós apenas temos que redirecionar os ponteiros dos valores "vizinhos", enquanto nos arrays, os valores precisam ser reindexados.
+Como qualquer estrutura de dados, diferentes métodos são implementados para operar sobre os dados. Os mais comuns incluem: push, pop, unshift, shift, get, set, insert, remove e reverse.
+
+Primeiro vamos ver como implementar uma lista encadeada simples e depois uma lista encadeada duplamente.
+
+Lista encadeada individualmente
+
+Uma implementação completa de uma lista encadeada individualmente poderia ser assim:
+
+// Criamos uma classe para cada nó dentro da lista
+class Node{
+    // Each node has two properties, its value and a pointer that indicates the node that follows
+    constructor(val){
+        this.val = val
+        this.next = null
+    }
+}
+
+// Criamos uma classe para a lista
+class SinglyLinkedList{
+    // The list has three properties, the head, the tail and the list size
+    constructor(){
+        this.head = null
+        this.tail = null
+        this.length = 0
+    }
+    // O método push pega um valor como parâmetro e o atribui como final da lista
+    push(val) {
+        const newNode = new Node(val)
+        if (!this.head){
+            this.head = newNode
+            this.tail = this.head
+        } else {
+            this.tail.next = newNode
+            this.tail = newNode
+        }
+        this.length++
+        return this
+    }
+    // O método pop remove o final da lista
+    pop() {
+        if (!this.head) return undefined
+        const current = this.head
+        const newTail = current
+        while (current.next) {
+            newTail = current
+            current = current.next
+        }
+        this.tail = newTail
+        this.tail.next = null
+        this.length--
+        if (this.length === 0) {
+            this.head = null
+            this.tail = null
+        }
+        return current
+    }
+    // O método shift remove o cabeçalho da lista
+    shift() {
+        if (!this.head) return undefined
+        var currentHead = this.head
+        this.head = currentHead.next
+        this.length--
+        if (this.length === 0) {
+            this.tail = null
+        }
+        return currentHead
+    }
+    // O método unshift pega um valor como parâmetro e o atribui como cabeça da lista
+    unshift(val) {
+        const newNode = new Node(val)
+        if (!this.head) {
+            this.head = newNode
+            this.tail = this.head
+        }
+        newNode.next = this.head
+        this.head = newNode
+        this.length++
+        return this
+    }
+    // O método get pega um número de índice como parâmetro e retorna o valor do nó naquele índice
+    get(index) {
+        if(index < 0 || index >= this.length) return null
+        const counter = 0
+        const current = this.head
+        while(counter !== index) {
+            current = current.next
+            counter++
+        }
+        return current
+    }
+    // O método set recebe um número de índice e um valor como parâmetros e modifica o valor do nó no índice fornecido na lista
+    set(index, val) {
+        const foundNode = this.get(index)
+        if (foundNode) {
+            foundNode.val = val
+            return true
+        }
+        return false
+    }
+    //O método insert recebe um número de índice e um valor como parâmetros e insere o valor no índice fornecido na lista
+    insert(index, val) {
+        if (index < 0 || index > this.length) return false
+        if (index === this.length) return !!this.push(val)
+        if (index === 0) return !!this.unshift(val)
+
+        const newNode = new Node(val)
+        const prev = this.get(index - 1)
+        const temp = prev.next
+        prev.next = newNode
+        newNode.next = temp
+        this.length++
+        return true
+    }
+    // O método remove pega um número de índice como parâmetro e remove o nó no índice fornecido na lista
+    remove(index) {
+        if(index < 0 || index >= this.length) return undefined
+        if(index === 0) return this.shift()
+        if(index === this.length - 1) return this.pop()
+        const previousNode = this.get(index - 1)
+        const removed = previousNode.next
+        previousNode.next = removed.next
+        this.length--
+        return removed
+    }
+    // O método reverse inverte a lista e todos os ponteiros para que a cabeça se torne a cauda e a cauda se torne a cabeça
+    reverse(){
+      const node = this.head
+      this.head = this.tail
+      this.tail = node
+      let next
+      const prev = null
+      for(let i = 0; i < this.length; i++) {
+        next = node.next
+        node.next = prev
+        prev = node
+        node = next
+      }
+      return this
+    }
+}
+
+## Listas duplamente ligadas
+
+Conforme mencionado, a diferença entre listas duplamente vinculadas e listas simples é que as listas duplamente vinculadas têm seus nós conectados por meio de ponteiros com o valor anterior e o próximo. Por outro lado, as listas vinculadas individualmente conectam apenas seus nós com o próximo valor.
+
+Essa abordagem de ponteiro duplo permite que listas duplamente vinculadas tenham um desempenho melhor com certos métodos em comparação com listas vinculadas individualmente, mas ao custo de consumir mais memória (com listas duplamente vinculadas, precisamos armazenar dois ponteiros em vez de um).
+
+Uma implementação completa de uma lista duplamente encadeada pode ser mais ou menos assim:
+
+// Criamos uma classe para cada nó dentro da lista
+class Node{
+    // Cada nó possui três propriedades, seu valor, um ponteiro que indica o nó seguinte e um ponteiro que indica o nó anterior
+    constructor(val){
+        this.val = val;
+        this.next = null;
+        this.prev = null;
+    }
+}
+
+// We create a class for the list
+class DoublyLinkedList {
+    // The list has three properties, the head, the tail and the list size
+    constructor(){
+        this.head = null
+        this.tail = null
+        this.length = 0
+    }
+    // O método push pega um valor como parâmetro e o atribui como final da lista
+    push(val){
+        const newNode = new Node(val)
+        if(this.length === 0){
+            this.head = newNode
+            this.tail = newNode
+        } else {
+            this.tail.next = newNode
+            newNode.prev = this.tail
+            this.tail = newNode
+        }
+        this.length++
+        return this
+    }
+    // O método pop remove o final da lista
+    pop(){
+        if(!this.head) return undefined
+        const poppedNode = this.tail
+        if(this.length === 1){
+            this.head = null
+            this.tail = null
+        } else {
+            this.tail = poppedNode.prev
+            this.tail.next = null
+            poppedNode.prev = null
+        }
+        this.length--
+        return poppedNode
+    }
+    // O método shift remove o cabeçalho da lista
+    shift(){
+        if(this.length === 0) return undefined
+        const oldHead = this.head
+        if(this.length === 1){
+            this.head = null
+            this.tail = null
+        } else{
+            this.head = oldHead.next
+            this.head.prev = null
+            oldHead.next = null
+        }
+        this.length--
+        return oldHead
+    }
+    // O método unshift pega um valor como parâmetro e o atribui como cabeça da lista
+    unshift(val){
+        const newNode = new Node(val)
+        if(this.length === 0) {
+            this.head = newNode
+            this.tail = newNode
+        } else {
+            this.head.prev = newNode
+            newNode.next = this.head
+            this.head = newNode
+        }
+        this.length++
+        return this
+    }
+    // O método get pega um número de índice como parâmetro e retorna o valor do nó naquele índice
+    get(index){
+        if(index < 0 || index >= this.length) return null
+        let count, current
+        if(index <= this.length/2){
+            count = 0
+            current = this.head
+            while(count !== index){
+                current = current.next
+                count++
+            }
+        } else {
+            count = this.length - 1
+            current = this.tail
+            while(count !== index){
+                current = current.prev
+                count--
+            }
+        }
+        return current
+    }
+    // O método set recebe um número de índice e um valor como parâmetros e modifica o valor do nó no índice fornecido na lista
+    set(index, val){
+        var foundNode = this.get(index)
+        if(foundNode != null){
+            foundNode.val = val
+            return true
+        }
+        return false
+    }
+    // O método insert recebe um número de índice e um valor como parâmetros e insere o valor no índice fornecido na lista
+    insert(index, val){
+        if(index < 0 || index > this.length) return false
+        if(index === 0) return !!this.unshift(val)
+        if(index === this.length) return !!this.push(val)
+
+        var newNode = new Node(val)
+        var beforeNode = this.get(index-1)
+        var afterNode = beforeNode.next
+
+        beforeNode.next = newNode, newNode.prev = beforeNode
+        newNode.next = afterNode, afterNode.prev = newNode
+        this.length++
+        return true
+    }
+}
+
+
+## **Árvores**
+
+Árvores são estruturas de dados que ligam nós em um relacionamento pai/filho , no sentido de que há nós que dependem ou saem de outros nós.
+
+As árvores são formadas por um nó raiz (o primeiro nó da árvore), e todos os nós que saem dessa raiz são chamados de filhos . Os nós na parte inferior da árvore, que não têm "descendentes", são chamados de nós de folha . E a altura da árvore é determinada pelo número de conexões pai/filho que ela possui.
+
+Ao contrário das listas encadeadas ou arrays, as árvores não são lineares , no sentido de que, ao iterar a árvore, o fluxo do programa pode seguir direções diferentes dentro da estrutura de dados e, portanto, chegar a valores diferentes.
+
+Enquanto estiver em listas encadeadas ou arrays, o programa só pode iterar a estrutura de dados de um extremo ao outro, seguindo sempre o mesmo caminho.
+
+Um requisito importante para a formação da árvore é que a única conexão válida entre os nós seja do pai para o filho . Conexões entre irmãos ou de filho para pai não são permitidas em árvores (esses tipos de conexões formam grafos, um tipo diferente de estrutura de dados). Outro requisito importante é que as árvores tenham apenas uma raiz .
+
+
+# Alguns exemplos de uso de árvore na programação são:
+
+O modelo DOM.
+
+Análise de situação em inteligência artificial.
+Pastas de arquivos em sistemas operacionais.
+Existem muitos tipos diferentes de árvores. Em cada tipo de árvore, os valores podem ser organizados seguindo diferentes padrões que tornam essa estrutura de dados mais adequada para uso em diferentes tipos de problemas. Os tipos de árvores mais comumente usados ​​são árvores binárias e heaps.
+
+Árvores binárias
+
+As árvores binárias são um tipo de árvore em que cada nó tem no máximo dois filhos.
+
+Uma árvore binária
+
+Uma situação-chave em que as árvores binárias são realmente úteis é na pesquisa. E para pesquisar, um certo tipo de árvore binária é usado, chamado árvores binárias de pesquisa (BSTs) .
+
+BSTs são como árvores binárias, mas as informações dentro delas são ordenadas de forma a torná-las uma estrutura de dados adequada para pesquisa.
+
+No BST, os valores são ordenados de forma que cada nó que desce para o lado esquerdo de seu pai deve ter um valor menor que seu pai, e cada nó que desce para o lado direito de seu pai deve ter um valor maior que seu pai.
+
+Uma árvore de busca binária
+
+Essa ordem em seus valores torna essa estrutura de dados ótima para busca, pois em cada nível da árvore podemos identificar se o valor que está sendo procurado é maior ou menor que o nó pai, e a partir dessa comparação descartamos progressivamente cerca de metade dos dados até chegamos ao nosso valor.
+
+Ao inserir ou excluir valores, o algoritmo seguirá os seguintes passos:
+
+Verificar se há um nó raiz.
+
+Se houver, verifique se o valor a adicionar/excluir é maior ou menor que o nó.
+Se for menor, verifique se há nó à esquerda e repita a operação anterior. Se não houver, adicione/remova o nó nessa posição. Se for maior, verifique se há nó à direita e repita a operação anterior. Se não houver, adicione/remova o nó nessa posição.
+A pesquisa em BSTs é muito semelhante, apenas em vez de adicionar/excluir valores, verificamos a igualdade dos nós com o valor que estamos procurando.
+
+A grande complexidade O dessas operações é logarítmica (log(n)) . Mas é importante reconhecer que para que essa complexidade seja alcançada, a árvore deve ter uma estrutura balanceada para que a cada passo de busca, aproximadamente metade dos dados possam ser “descartados”. Se mais valores forem armazenados em um lado ou outro de três, a eficiência da estrutura de dados será afetada.
+
+Uma implementação de um BST pode ser assim:
+
+// Criamos uma classe para cada nó dentro da árvore
+class Node{
+    // Cada nó possui três propriedades, seu valor, um ponteiro que indica o nó à sua esquerda e um ponteiro que indica o nó à sua direita
+    constructor(value){
+        this.value = value
+        this.left = null
+        this.right = null
+    }
+}
+// Criamos uma classe para o BST
+class BinarySearchTree {
+    // A árvore tem apenas uma propriedade que é seu nó raiz
+    constructor(){
+        this.root = null
+    }
+    // O método insert pega um valor como parâmetro e insere o valor em seu lugar correspondente dentro da árvore
+    insert(value){
+        const newNode = new Node(value)
+        if(this.root === null){
+            this.root = newNode
+            return this
+        }
+        let current = this.root
+        while(true){
+            if(value === current.value) return undefined
+            if(value < current.value){
+                if(current.left === null){
+                    current.left = newNode
+                    return this
+                }
+                current = current.left
+            } else {
+                if(current.right === null){
+                    current.right = newNode
+                    return this
+                } 
+                current = current.right
+            }
+        }
+    }
+  // O método find pega um valor como parâmetro e percorre a árvore procurando por esse valor
+    // Se o valor for encontrado, retorna o nó correspondente e se não for, retorna undefined
+    find(value){
+        if(this.root === null) return false
+        let current = this.root,
+            found = false
+        while(current && !found){
+            if(value < current.value){
+                current = current.left
+            } else if(value > current.value){
+                current = current.right
+            } else {
+                found = true
+            }
+        }
+        if(!found) return undefined
+        return current
+    }
+    // O método contém recebe um valor como parâmetro e retorna verdadeiro se o valor for encontrado dentro da árvore
+    contains(value){
+        if(this.root === null) return false
+        let current = this.root,
+            found = false
+        while(current && !found){
+            if(value < current.value){
+                current = current.left
+            } else if(value > current.value){
+                current = current.right
+            } else {
+                return true
+            }
+        }
+        return false
+    }
+}
+
+# Heaps
+
+Heaps são outro tipo de árvore que possui algumas regras específicas. Existem dois tipos principais de heaps, MaxHeaps e MinHeaps . Em MaxHeaps, os nós pais são sempre maiores que seus filhos, e em MinHeaps, os nós pais são sempre menores que seus filhos.
+
+Uma pilha máxima
+
+Uma pilha mínima
+
+Nesta estrutura de dados não há garantias entre irmãos , o que significa que nós no mesmo "nível" não seguem nenhuma regra além de serem maiores/inferiores que seus pais.
+
+Além disso, os heaps são os mais compactos possíveis, o que significa que cada nível contém todos os nós que pode conter sem espaços vazios, e os novos filhos são colocados primeiro nos espaços à esquerda da árvore.
+
+Heaps, e em particular heaps binários , são frequentemente usados ​​para implementar filas de prioridade , que ao mesmo tempo são frequentemente usadas em algoritmos conhecidos, como o algoritmo de descoberta de caminho de Dijkstra.
+
+As filas de prioridade são um tipo de estrutura de dados em que cada elemento tem uma prioridade associada e os elementos com maior prioridade são apresentados primeiro.
+
+#Gráficos
+
+Grafos são uma estrutura de dados formada por um grupo de nós e certas conexões entre esses nós. Ao contrário das árvores, os grafos não possuem nós raiz e folha, nem uma "cabeça" ou uma "cauda". Nós diferentes estão conectados entre si e não há nenhuma conexão pai-filho implícita entre eles.
+
+Os gráficos são estruturas de dados geralmente úteis para:
+
+ - Redes sociais
+
+ - Geolocalização
+
+ - Sistemas de recomendação
+
+# Os grafos podem ser classificados em diferentes tipos de acordo com as características das conexões entre os nós:
+
+Grafos não direcionados e direcionados
+
+Dizemos que um grafo é não direcionado se não houver direção implícita nas conexões entre os nós.
+
+Se pegarmos a imagem de exemplo a seguir, você pode ver que não há direção na conexão entre o nó 2 e o nó 3. A conexão ocorre nos dois sentidos, o que significa que você pode percorrer a estrutura de dados do nó 2 para o nó 3 e do nó 3 para nó 2. Não direcionado significa que as conexões entre os nós podem ser usadas nos dois sentidos.
+
+# **Um gráfico não direcionado**
+
+E como você deve ter adivinhado, gráficos direcionados são exatamente o oposto. Vamos reutilizar a imagem do exemplo anterior e ver que aqui há uma direção implícita nas conexões entre os nós.
+
+Neste gráfico específico, você pode percorrer do nó A ao nó B, mas não pode ir do nó B ao A.
+
+# **Um gráfico direcionado**
+
+Gráficos ponderados e não ponderados
+
+Dizemos que um grafo é ponderado se as conexões entre os nós tiverem um peso atribuído. Nesse caso, peso significa apenas um valor atribuído a uma conexão específica. São informações sobre a conexão em si, não sobre os nós.
+
+Seguindo este exemplo, podemos ver que a conexão entre os nós 0 e 4 tem peso 7. E a conexão entre os nós 3 e 1 tem peso 4.
+
+Um gráfico ponderado<br>
+
+Para entender o uso de grafos ponderados, imagine se você quisesse representar um mapa com vários locais diferentes e fornecer ao usuário informações sobre quanto tempo ele pode levar para ir de um lugar a outro.
+
+Um gráfico ponderado seria perfeito para isso, pois você poderia usar cada nó para salvar informações sobre o local, as conexões poderiam representar as estradas disponíveis entre cada local e os pesos representariam a distância física de um local a outro.
+
+Gráficos ponderados são muito usados ​​em sistemas de geolocalização
+
+E como você deve ter adivinhado mais uma vez, grafos não ponderados são aqueles em que as conexões entre os nós não têm pesos atribuídos. Portanto, não há informações específicas sobre as conexões entre os nós, apenas sobre os próprios nós.
+
+Como representar gráficos
+
+Ao codificar gráficos, existem dois métodos principais que podemos usar: uma array de adjacência e uma array de adjacência. Vamos explicar como ambos funcionam e ver seus prós e contras.
+
+Uma array de adjacência é uma estrutura bidimensional que representa os nós em nosso grafo e as conexões entre eles.
+
+# **IMAGERM DE GRÁFICOS**
+
+Você pode ver que a array é como uma tabela, onde as colunas e linhas representam os nós em nosso gráfico, e o valor das células representam as conexões entre os nós. Se a célula for 1, há uma conexão entre a linha e a coluna, e se for 0, não há.
+
+A tabela pode ser facilmente replicada usando um array bidimensional:
+
+[
+    [0, 1, 1, 0]
+    [1, 0, 0, 1]
+    [1, 0, 0, 1]
+    [0, 1, 1, 0]
+]
+Por outro lado, uma array de adjacência pode ser pensada como uma estrutura de par chave-valor onde as chaves representam cada nó em nosso grafo e os valores são as conexões que aquele nó em particular possui.
+
+Usando o mesmo gráfico de exemplo, nossa array de adjacências poderia ser representada com este objeto:
+
+{
+    A: ["B", "C"],
+    B: ["A", "D"],
+    C: ["A", "D"],
+    D: ["B", "C"],
+}
+Você pode ver que para cada nó temos uma chave e armazenamos todas as conexões do nó em um array.
+
+Então, qual é a diferença entre array de adjacência e listas? Bem, as listas tendem a ser mais eficientes quando se trata de adicionar ou remover nós, enquanto as matrizes são mais eficientes ao consultar conexões específicas entre os nós.
+
+Para ver isso, imagine que queremos adicionar um novo nó ao nosso gráfico:
+
+Imagem de gráfico
+
+Já para fazer o mesmo em uma lista, basta adicionar um valor às conexões B e um par chave-valor para representar E:
+
+{
+    A: ["B", "C"],
+    B: ["A", "D", "E"],
+    C: ["A", "D"],
+    D: ["B", "C"],
+    E: ["B"],
+}
+Agora imagine que queremos verificar se existe uma conexão entre os nós B e E. Verificar isso em uma array é muito fácil, pois sabemos exatamente a posição na array que representa essa conexão.
+
+Mas em uma lista, não temos as informações que precisaríamos para iterar em todo o array que representa B conexões e ver o que está lá. Então você pode ver que existem prós e contras para cada abordagem.
+
+Uma implementação completa de um grafo usando uma lista de adjacências pode ser assim. Para manter as coisas simples, representaremos um grafo não direcionado e não ponderado.
+
+// Criamos uma classe para o grafo
+class Graph{
+    // O grafo tem apenas uma propriedade que é a lista de adjacências
+    constructor() {
+        this.adjacencyList = {}
+    }
+    // O método addNode pega um valor de nó como parâmetro e o adiciona como uma chave para o adjacencyList se não estiver presente anteriormente
+    addNode(node) {
+        if (!this.adjacencyList[node]) this.adjacencyList[node] = []
+    }
+    // O addConnection usa dois nós como parâmetros e adiciona cada nó à matriz de conexões do outro.
+    addConnection(node1,node2) {
+        this.adjacencyList[node1].push(node2)
+        this.adjacencyList[node2].push(node1)
+    }
+    // O removeConnection usa dois nós como parâmetros e remove cada nó da matriz de conexões do outro.
+    removeConnection(node1,node2) {
+        this.adjacencyList[node1] = this.adjacencyList[node1].filter(v => v !== node2)
+        this.adjacencyList[node2] = this.adjacencyList[node2].filter(v => v !== node1)
+    }
+    // O método removeNode recebe um valor de nó como parâmetro. Ele remove todas as conexões para esse nó presentes no gráfico e, em seguida, exclui a chave do nó da lista adj.
+    removeNode(node){
+        while(this.adjacencyList[node].length) {
+            const adjacentNode = this.adjacencyList[node].pop()
+            this.removeConnection(node, adjacentNode)
+        }
+        delete this.adjacencyList[node]
+    }
+}
+
+const Argentina = new Graph()
+Argentina.addNode("Buenos Aires")
+Argentina.addNode("Santa fe")
+Argentina.addNode("Córdoba")
+Argentina.addNode("Mendoza")
+Argentina.addConnection("Buenos Aires", "Córdoba")
+Argentina.addConnection("Buenos Aires", "Mendoza")
+Argentina.addConnection("Santa fe", "Córdoba")
+
+console.log(Argentina)
+// Graph {
+//     adjacencyList: {
+//         'Buenos Aires': [ 'Córdoba', 'Mendoza' ],
+//         'Santa fe': [ 'Córdoba' ],
+//         'Córdoba': [ 'Buenos Aires', 'Santa fe' ],
+//         Mendoza: [ 'Buenos Aires' ]
+//     }
+// }
+
+# **Conclusão**
+
+É isso, pessoal. Neste artigo apresentamos as principais estruturas de dados utilizadas na ciência da computação e no desenvolvimento de software. Essas estruturas são a base da maioria dos programas que usamos no dia a dia, então é um conhecimento muito bom ter.
+
+Embora esse tópico possa parecer um pouco abstrato e intimidador no início, acredito que podemos entendê-lo melhor apenas pensando nas estruturas de dados como maneiras pelas quais organizamos os dados para melhor realizar determinadas tarefas.
+
+## Diagramas de Listas Ligadas e Filas Duplas https://gemini.google.com/share/cd80eda9adcd).
+
+# **Mermaid** 
+
+**É o segredo dos desenvolvedores seniores para documentação, pois o diagrama é gerado a partir de texto. O VS Code e o GitHub renderizam isso nativamente.**
+
+1. Diagrama de Fila (Queue - FIFO)
+
+Snippet de código
+
+graph LR
+    A[Entrada/Enqueue] --> B(Nó 3)
+    B --> C(Nó 2)
+    C --> D(Nó 1)
+    D --> E[Saída/Dequeue]
+    style D fill:#f96,stroke:#333,stroke-width:2px
+
+2. Diagrama de Lista Ligada (Singly Linked List)
+
+Snippet de código
+
+graph LR
+    Head((Head)) --> Node1[Valor | Próximo]
+    Node1 --> Node2[Valor | Próximo]
+    Node2 --> Node3[Valor | Próximo]
+    Node3 --> Null[NULL]
+
+3. Diagrama de Lista Duplamente Ligada (Doubly Linked List)
+
+Snippet de código
+
+graph LR
+    NULL1[NULL] <--> Node1[Anterior | Valor | Próximo]
+    Node1 <--> Node2[Anterior | Valor | Próximo]
+    Node2 <--> Node3[Anterior | Valor | Próximo]
+    Node3 <--> NULL2[NULL]
+
+4. Comparativo Visual: Pilha vs Fila
+
+Snippet de código
+
+grid
+  graph TD
+    subgraph Pilha_LIFO
+    P1[Prato 3 - Topo]
+    P2[Prato 2]
+    P3[Prato 1 - Base]
+    end
+    
+    subgraph Fila_FIFO
+    F1[Pessoa 1] --> F2[Pessoa 2] --> F3[Pessoa 3]
+    end
+
+Por que usar assim no eBook?
+
+ - Não perde qualidade: Você pode dar zoom infinito e a imagem não pixeliza.
+
+ - Fácil de editar: Se você quiser mudar o nome de um nó, basta mudar o texto no código.
+
+ - Leve: Ocupa apenas alguns bytes, ao contrário de arquivos .png ou .jpg.
+
+## 
