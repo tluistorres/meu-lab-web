@@ -3805,46 +3805,255 @@ graph LR
 
 2. Diagrama de Lista Ligada (Singly Linked List)
 
-Snippet de código
-
+```mermaid
 graph LR
     Head((Head)) --> Node1[Valor | Próximo]
     Node1 --> Node2[Valor | Próximo]
     Node2 --> Node3[Valor | Próximo]
     Node3 --> Null[NULL]
 
-3. Diagrama de Lista Duplamente Ligada (Doubly Linked List)
+`3. Diagrama de Lista Duplamente Ligada (Doubly Linked List)
 
-Snippet de código
-
+```mermaid
 graph LR
     NULL1[NULL] <--> Node1[Anterior | Valor | Próximo]
     Node1 <--> Node2[Anterior | Valor | Próximo]
     Node2 <--> Node3[Anterior | Valor | Próximo]
     Node3 <--> NULL2[NULL]
 
-4. Comparativo Visual: Pilha vs Fila
+`4. Comparativo Visual: Pilha vs Fila
 
-Snippet de código
-
-grid
-  graph TD
-    subgraph Pilha_LIFO
-    P1[Prato 3 - Topo]
-    P2[Prato 2]
-    P3[Prato 1 - Base]
+```mermaid
+graph TD
+    subgraph Pilha LIFO
+        P1[Prato 3 - Topo]
+        P2[Prato 2]
+        P3[Prato 1 - Base]
     end
-    
     subgraph Fila_FIFO
-    F1[Pessoa 1] --> F2[Pessoa 2] --> F3[Pessoa 3]
+        F1[Pessoa 1] --> F2[Pessoa 2] --> F3[Pessoa 3]
     end
-
-Por que usar assim no eBook?
+`
+# **Por que usar assim no eBook?**
 
  - Não perde qualidade: Você pode dar zoom infinito e a imagem não pixeliza.
 
  - Fácil de editar: Se você quiser mudar o nome de um nó, basta mudar o texto no código.
 
  - Leve: Ocupa apenas alguns bytes, ao contrário de arquivos .png ou .jpg.
+
+## 🔢 Conversor de Decimal para Binário com Pilhas
+O algoritmo utiliza o método de divisões sucessivas por 2. Os restos são empilhados (Stack) para que possamos invertê-los ao final, obtendo a representação binária correta.
+
+Definição da Classe Stack e Função de Conversão
+JavaScript
+
+class Stack {
+    constructor() {
+        this.items = [];
+    }
+    push(element) {
+        this.items.push(element);
+    }
+    isEmpty() {
+        return this.items.length === 0;
+    }
+    pop() {
+        return this.items.pop();
+    }
+}
+
+function decimalToBinary(decNumber) {
+  // Validação Melhorada: Verifica se é número, se é negativo ou se é float
+  if (typeof decNumber !== 'number') return 'Erro: A entrada deve ser um número.';
+  if (decNumber < 0) return 'Erro: Números negativos não são permitidos.';
+  if (!Number.isInteger(decNumber)) return `Erro: O número ${decNumber} é um float. Insira um número inteiro.`;
+
+  // Caso especial para o número 0
+  if (decNumber === 0) return '0';
+
+  const remStack = new Stack();
+  let number = decNumber;
+  let rem;
+  let binaryString = '';
+
+  while (number > 0) {
+    rem = Math.floor(number % 2);
+    remStack.push(rem);
+    number = Math.floor(number / 2);
+  }
+
+  while (!remStack.isEmpty()) {
+    binaryString += remStack.pop().toString();
+  }
+
+  return binaryString;
+}
+Instância e Testes de Validação
+Aqui testamos como o código reage a números inteiros, negativos e decimais (floats).
+
+JavaScript
+
+console.log("--- Sucesso ---");
+console.log(decimalToBinary(233)); // 11101001
+console.log(decimalToBinary(10));  // 1010
+console.log(decimalToBinary(0));   // 0
+
+console.log("\n--- Validação de Erros ---");
+// Teste com Número Float
+console.log(decimalToBinary(3.14)); 
+// Saída: Erro: O número 3.14 é um float. Insira um número inteiro.
+
+// Teste com Número Negativo
+console.log(decimalToBinary(-10));  
+// Saída: Erro: Números negativos não são permitidos.
+
+// Teste com String
+console.log(decimalToBinary("15")); 
+// Saída: Erro: A entrada deve ser um número.
+
+O que foi melhorado?
+
+Number.isInteger(decNumber): Esta é a forma mais moderna e legível do JavaScript para verificar se um número não é float. Substitui o decNumber % 1 !== 0.
+
+Mensagens Amigáveis: Em vez de uma mensagem genérica, o código agora explica exatamente o que está errado (se é float ou se é negativo).
+
+Tratamento do Zero: Adicionamos um if (decNumber === 0), pois sem ele, o programa retornaria uma string vazia, o que é tecnicamente incorreto para o valor zero.
+
+Template Strings: Usamos as crases (backticks) ` para incluir o valor do número errado diretamente na mensagem de erro.`
+
+## 🛡️ Validação Robusta de Tipos de Dados
+Nesta versão, o algoritmo protege a aplicação contra entradas maliciosas ou acidentais, como palavras, caracteres especiais ou tipos nulos, garantindo que a lógica da Pilha (Stack) só processe inteiros válidos.
+
+Definição da Função com Validação de Tipos
+
+JavaScript
+
+function decimalToBinary(decNumber) {
+  // 1. Verifica se o tipo é diferente de 'number' (Captura strings, nomes, letras)
+  if (typeof decNumber !== 'number') {
+    return `Erro: "${decNumber}" não é um número. Por favor, insira um valor numérico.`;
+  }
+
+  // 2. Verifica se é NaN (Not a Number - caso o input venha de operações inválidas)
+  if (isNaN(decNumber)) {
+    return 'Erro: A entrada resultou em um valor inválido (NaN).';
+  }
+
+  // 3. Verifica se é um número float (decimal)
+  if (!Number.isInteger(decNumber)) {
+    return `Erro: O valor ${decNumber} é decimal. Para binário, use apenas inteiros.`;
+  }
+
+  // 4. Verifica se é negativo
+  if (decNumber < 0) {
+    return `Erro: ${decNumber} é negativo. Insira um inteiro positivo.`;
+  }
+
+  // Caso especial para o número 0
+  if (decNumber === 0) return '0';
+
+  // --- Lógica da Pilha (Mesmo código anterior) ---
+  const remStack = new Stack();
+  let number = decNumber;
+  let binaryString = '';
+
+  while (number > 0) {
+    let rem = Math.floor(number % 2);
+    remStack.push(rem);
+    number = Math.floor(number / 2);
+  }
+
+  while (!remStack.isEmpty()) {
+    binaryString += remStack.pop().toString();
+  }
+
+  return binaryString;
+}
+
+Uso e Testes de Erros de String e Tipos
+Aqui você pode ver como o código lida com entradas que não são números:
+
+JavaScript
+
+console.log("--- Testando Nomes e Letras ---");
+console.log(decimalToBinary("Luis"));    
+// Saída: Erro: "Luis" não é um número. Por favor, insira um valor numérico.
+
+console.log(decimalToBinary("a"));       
+// Saída: Erro: "a" não é um número. Por favor, insira um valor numérico.
+
+console.log(decimalToBinary("10"));      
+// Saída: Erro: "10" não é um número... (Note que mesmo o número entre aspas é bloqueado)
+
+console.log("\n--- Testando Outros Tipos ---");
+console.log(decimalToBinary(undefined)); 
+// Saída: Erro: "undefined" não é um número...
+
+console.log(decimalToBinary(true));      
+// Saída: Erro: "true" não é um número...
+
+O que mudou para suportar nomes e letras?
+
+typeof decNumber !== 'number': Esta é a primeira linha de defesa. No JavaScript, se você passar uma palavra ou uma única letra para essa função, o typeof retornará 'string'. Como 'string' !== 'number', o erro é disparado imediatamente antes de tentar converter ou calcular.
+
+Proteção de Coerção: O JavaScript às vezes tenta ser "esperto" e converter "10" (string) em 10 (número). Ao usar o typeof rigoroso, você impede que strings numéricas passem, forçando o usuário a enviar o tipo de dado correto.
+
+Template Strings com Aspas: Usei "${decNumber}" na mensagem de erro para que o usuário veja exatamente o texto que ele digitou e entenda que aquilo foi lido como uma string e não como um valor.
+
+
+🔒 Encapsulamento: Protegendo a Lógica Interna
+
+O uso do # transforma um método em algo "secreto". Imagine que o desconto é um cálculo interno da empresa que o cliente não pode ver ou alterar diretamente; ele só tem acesso ao resultado final (calcularCusto).
+
+1. Definição da Classe com Método Privado
+
+class Job {
+    constructor(valorHora, tempoEstimado, desconto) {
+        this.valorHora = valorHora;
+        this.tempoEstimado = tempoEstimado;
+        this.desconto = desconto;
+    }
+
+    // MÉTODO PRIVADO: Só a classe Job pode ler isso.
+    #aplicarDesconto() {
+        return this.valorHora * this.tempoEstimado * (this.desconto / 100);
+    }
+
+    // MÉTODO PÚBLICO: Qualquer um pode chamar.
+    calcularCusto() {
+        // Internamente, eu consigo usar o método privado
+        return (this.valorHora * this.tempoEstimado) - this.#aplicarDesconto();
+    }
+}
+
+2. Uso Correto (Instância)
+
+const job1 = new Job(50, 20, 10);
+console.log(`Custo Total Job 1: R$ ${job1.calcularCusto()}`); // Funciona!
+
+const job2 = new Job(150, 200, 28);
+console.log(`Custo Total Job 2: R$ ${job2.calcularCusto()}`); // Funciona!
+
+3. O que causa o Erro (O que não fazer)
+
+// ❌ Erro 1: Tentar acessar o privado fora da classe
+// console.log(job1.#aplicarDesconto()); 
+// -> Erro: Private field '#aplicarDesconto' must be declared in an enclosing class
+
+// ❌ Erro 2: Tentar chamar o método pela Classe (como se fosse estático)
+// Job.#aplicarDesconto();
+// -> Erro: Mesmo que não fosse privado, métodos comuns precisam de uma 'new Job'
+
+Explicação para o seu Ebook:
+Segurança: Métodos privados (#) impedem que outros desenvolvedores (ou você mesmo no futuro) alterem uma lógica sensível de fora da classe.
+
+Abstração: O usuário da classe Job só precisa saber que existe o método calcularCusto(). Como o desconto é calculado por baixo dos panos não importa para quem está usando o objeto.
+
+Diferença de Acesso:
+
+Público: objeto.metodo() ✅
+
+Privado: objeto.#metodo() ❌ (Gera erro de sintaxe)
 
 ## 
