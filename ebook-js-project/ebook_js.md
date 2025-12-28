@@ -3794,8 +3794,7 @@ Embora esse tópico possa parecer um pouco abstrato e intimidador no início, ac
 
 1. Diagrama de Fila (Queue - FIFO)
 
-Snippet de código
-
+```mermaid
 graph LR
     A[Entrada/Enqueue] --> B(Nó 3)
     B --> C(Nó 2)
@@ -3812,7 +3811,7 @@ graph LR
     Node2 --> Node3[Valor | Próximo]
     Node3 --> Null[NULL]
 
-`3. Diagrama de Lista Duplamente Ligada (Doubly Linked List)
+3. Diagrama de Lista Duplamente Ligada (Doubly Linked List)
 
 ```mermaid
 graph LR
@@ -3821,7 +3820,7 @@ graph LR
     Node2 <--> Node3[Anterior | Valor | Próximo]
     Node3 <--> NULL2[NULL]
 
-`4. Comparativo Visual: Pilha vs Fila
+ 4. Comparativo Visual: Pilha vs Fila
 
 ```mermaid
 graph TD
@@ -3833,7 +3832,7 @@ graph TD
     subgraph Fila_FIFO
         F1[Pessoa 1] --> F2[Pessoa 2] --> F3[Pessoa 3]
     end
-`
+
 # **Por que usar assim no eBook?**
 
  - Não perde qualidade: Você pode dar zoom infinito e a imagem não pixeliza.
@@ -4056,4 +4055,127 @@ Público: objeto.metodo() ✅
 
 Privado: objeto.#metodo() ❌ (Gera erro de sintaxe)
 
-## 
+## 🛡️ Getters: Criando Propriedades de Apenas Leitura
+
+Nesta evolução da classe Job, vamos permitir que o cliente veja quanto foi o desconto aplicado, mas de forma protegida.
+
+1. Definição da Classe com Getter e Método Privado
+JavaScript
+
+class Job {
+    constructor(valorHora, tempoEstimado, desconto) {
+        this.valorHora = valorHora;
+        this.tempoEstimado = tempoEstimado;
+        this._descontoPercentual = desconto; // Usamos _ para indicar que é interno
+    }
+
+    // MÉTODO PRIVADO: Cálculo interno que ninguém vê de fora
+    #calcularValorDoDesconto() {
+        return (this.valorHora * this.tempoEstimado) * (this._descontoPercentual / 100);
+    }
+
+    // GETTER: Permite ler o valor do desconto, mas não permite alterá-lo diretamente
+    get valorEconomizado() {
+        return `R$ ${this.#calcularValorDoDesconto().toFixed(2)}`;
+    }
+
+    // MÉTODO PÚBLICO: O resultado final para o cliente
+    calcularCusto() {
+        const bruto = this.valorHora * this.tempoEstimado;
+        return bruto - this.#calcularValorDoDesconto();
+    }
+}
+
+2. Instância e Uso do Getter
+
+JavaScript
+
+const meuProjeto = new Job(100, 10, 15); // R$ 1000 brutos, 15% de desconto
+
+console.log("--- RELATÓRIO DO PROJETO ---");
+console.log(`Custo Total: R$ ${meuProjeto.calcularCusto()}`);
+
+// Acessamos o getter como se fosse uma variável comum (sem parênteses)
+console.log(`Você economizou: ${meuProjeto.valorEconomizado}`);
+
+3. Por que isso é importante para o programador?
+
+Sintaxe Amigável: Note que chamamos meuProjeto.valorEconomizado (sem ()). Para quem usa o código, parece uma propriedade simples, mas por trás está a executar uma lógica complexa.
+
+Imutabilidade: Se alguém tentar fazer meuProjeto.valorEconomizado = 500;, o JavaScript simplesmente ignorará a ação (ou dará erro em modo restrito), protegendo o seu cálculo.
+
+Dica de Debug para o seu Erro Anterior:
+
+Nunca se esqueça:
+
+#metodo() -> Privado. Só existe dentro de { class }.
+
+get metodo() -> Público para leitura. Acede-se como objeto.metodo.
+
+Job.metodo() -> Estático. Só funciona se escrever static antes do método na classe.
+
+O que acha de fecharmos este capítulo com um desafio de "Validação de Dados" dentro do Constructor? (Para impedir, por exemplo, que alguém crie um Job com valor hora negativo). 
+
+# 🛡️ Validação de Dados: Blindando o Constructor
+
+Nesta versão, a classe Job torna-se inteligente. Ela valida os dados antes mesmo de salvar as informações na memória.
+
+1. Definição da Classe com Proteção
+
+JavaScript
+
+class Job {
+    constructor(valorHora, tempoEstimado, desconto) {
+        // Validação: Valor hora não pode ser zero ou negativo
+        if (valorHora <= 0) {
+            throw new Error("O valor da hora deve ser maior que zero.");
+        }
+
+        // Validação: Tempo não pode ser negativo
+        if (tempoEstimado < 0) {
+            throw new Error("O tempo estimado não pode ser negativo.");
+        }
+
+        this.valorHora = valorHora;
+        this.tempoEstimado = tempoEstimado;
+        this._descontoPercentual = desconto;
+    }
+
+    #calcularValorDoDesconto() {
+        return (this.valorHora * this.tempoEstimado) * (this._descontoPercentual / 100);
+    }
+
+    get valorEconomizado() {
+        return `R$ ${this.#calcularValorDoDesconto().toFixed(2)}`;
+    }
+
+    calcularCusto() {
+        return (this.valorHora * this.tempoEstimado) - this.#calcularValorDoDesconto();
+    }
+}
+
+2. Testando a Segurança (Try/Catch)
+
+Como o constructor agora lança um Erro, precisamos usar o bloco try/catch para capturar a mensagem e não deixar o programa "crashar".
+
+JavaScript
+
+console.log("--- TESTE DE SEGURANÇA ---");
+
+try {
+    const jobInvalido = new Job(-10, 20, 5); // Isso vai disparar o erro!
+} catch (erro) {
+    console.error(`Falha ao criar Job: ${erro.message}`);
+}
+
+console.log("\n--- TESTE DE SUCESSO ---");
+const jobValido = new Job(100, 5, 10);
+console.log(`Custo do Job Válido: R$ ${jobValido.calcularCusto()}`);
+
+Resumo para o seu Ebook:
+
+throw new Error(): É a forma oficial de dizer: "Pare tudo! Algo está errado".
+
+Proteção de Negócio: Impedimos que cálculos financeiros sejam feitos com números impossíveis no mundo real.
+
+Experiência do Desenvolvedor: A mensagem de erro clara ajuda quem está usando sua classe a entender rapidamente o que precisa ser corrigido.
