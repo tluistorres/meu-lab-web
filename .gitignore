@@ -1,2 +1,30 @@
+# Logs e textos temporários
+besteira.txt
+besteira_corrigida.txt
+luis.txt
+original.txt
+dados.txt
+test.txt
+texto.txt
+maiusculas.txt
+
+# Binários e arquivos sem extensão (executáveis de C ou scripts sem .sh)
+# Cuidado para não apagar o que não deve, mas geralmente:
+medieval
+fifo1
+pipe1
+ave
+done
+echo
+read
+sleep
+teste
+quequeisso
+
+# Node e dependências
 node_modules/
-lib/
+package-lock.json
+
+# Imagens de teste
+*.jpg
+*.png
